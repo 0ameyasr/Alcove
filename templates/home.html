@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bored.ai</title>
+    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="static/img/web_icon.png">
+    <link rel="stylesheet" href="static/styles/main.css">
+    <link rel="stylesheet" href="static/styles/login.css">
+    <link rel="stylesheet" href="static/styles/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+  </head>
+
+  <body>
+    <header class="p-3 mb-3 border-bottom">
+      <div class="container-fluid">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+            <img class="bi me-2" width="40" height="40" src="static/img/web_icon.png"/>
+            <span class="shiny">bored.ai</span>
+          </a>
+          
+          <div class="dropdown text-end order-lg-3">
+            <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="static/img/user.png" alt="user" width="32" height="32" class="profile-icon rounded-circle">
+            </a>
+            <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+              <li class="back-icon"><center>{{session["nickname"]}}</center></li>
+              <li><a class="dropdown-item" href="#"><i class="fa-solid fa-square-poll-vertical"></i> Statistics</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gears"></i> Settings</a></li>
+              <li><a class="logout dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log-out</a></li>
+            </ul>
+          </div>
+    
+          <ul class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0 order-lg-2"></ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-fluid pb-1">
+      <div class="main d-flex gap-1">
+        <div class="body-div-1 border rounded-3">
+          <video class="video-back" id="video-back" autoplay muted loop><source id="video-back-source" src="static/img/intro.mp4" type="video/mp4"/></video>
+        </div>
+        <div class="body-div-2">
+          <div class="s-div-1">
+            <h1 class="fs-3 bold fc-dark">I've read you</h1>
+            <p class="fs-6">{{desc}}</p>
+          </div>
+          <div class="s-div-2">
+            <p class="fs-3 fc-light">
+              Don't know where to start?
+            </p>
+            <p class="fs-6">
+              <form action="/chat" method="GET">
+                <button class="continue" type="submit">Talk to <b>bored.ai</b></button>
+              </form>
+            </p>
+          </div>  
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+        <p class="col-md-4 mb-0 text-body-secondary">&copy; {{ year }}</p>
+    
+        <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"></a>
+        <ul class="nav col-md-4 justify-content-end">
+          <li class="nav-item"><a href="/home" class="nav-link px-2 text-body-secondary">Home</a></li>
+        </ul>
+      </footer>
+    </div> 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="static/scripts/home.js"></script>
+  </body>
+</html>

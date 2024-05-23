@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bored.ai</title>
+    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="icon" href="static/img/web_icon.png">
+    <link rel="stylesheet" href="static/styles/main.css">
+    <link rel="stylesheet" href="static/styles/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+  </head>
+
+  <body>
+    <div class="main-div">
+      <div id="icon" hidden>
+        <img width="80" height="80" draggable="false" src="static/img/web_icon.png">
+      </div>
+      <p class="fs-1" id="talk"></p>
+      <button class="generic-button" id="forgot" onclick="window.location.href='{{ url_for('reset') }}'" hidden><i class="fa-brands fa-google"></i> Login with Google</button>
+      <div class="details-body col-md-10 mx-auto col-lg-5" hidden>
+        <form class="p-4 p-md-5" action="/register" method="POST">
+          <div class="form-floating mb-3">
+            <input type="text" class="w-100 details" id="nickname-input" name="nickname" placeholder="Enter a nickname" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="right" title="6 to 20 characters<br>Alphanumeric">
+            <div class="shiny form-text">.. for personalized results</div>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="w-100 details" id="safeword-input" name="safeword" placeholder="Enter a safeword" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="right" title="6 to 32 characters<br>1 uppercase letter<br>1 lowercase letter<br>1 digit<br>Alphanumeric<br>">
+            <div class="shiny form-text">.. this won't be revealed to anyone</div>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="email" class="w-100 details" id="recovery-input" name="recovery" placeholder="Enter a recovery email" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="right" title="Any valid G-mail address">
+            <div class="shiny form-text">.. for account recovery, if need be</div>
+          </div>
+          
+          <p class="fs-6" id="login-status"><b>Ensure that your credentials are valid.</b></p>
+          <center id="register-recaptcha" hidden><div class="g-recaptcha" data-sitekey="{{SITE_KEY}}" data-callback="onRecaptchaSubmitRegister"></div><br></center>
+          <button class="w-50 continue" id="register-continue" type="submit" disabled>Register</button>
+          <a class="fs-6 register-direct" onclick="loginDirect()"><br><br>I want to login</a>
+        </form>
+      </div>
+      <div class="login-body col-md-10 mx-auto col-lg-5" hidden>
+        <form class="p-4 p-md-5" action="/login" method="POST">
+          <div class="form-floating mb-3">
+            <input type="text" class="w-100 details" id="log-nickname-input" name="nickname" placeholder="Enter your nickname" title="" required>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="w-100 details" id="log-safeword-input" name="safeword" placeholder="Enter your safeword" title="" required>
+          </div>
+        
+          <center><div class="g-recaptcha" data-sitekey="{{SITE_KEY}}" data-callback="onRecaptchaSubmitLogin"></div><br></center>
+          <button class="w-50 continue" id="login-continue" type="submit" disabled>Log-in</button>
+          <a class="fs-6 register-direct" onclick="registerDirect()"><br><br>I haven't registered yet</a>
+           | <a class="fs-6 register-direct" onclick="forgotPassword()">Forgot safeword?</a>
+        </form>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="static/scripts/login.js"></script>
+  </body>
+</html>

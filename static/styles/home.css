@@ -1,0 +1,90 @@
+@import url(main.css);
+
+.profile-icon {
+    border: 1px solid var(--font-color);
+}
+
+.main {
+    flex-wrap: wrap;
+}
+
+.body-div-1 {
+    width: 100vw;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.video-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.body-div-2 {
+    width: 100vw;
+    height: 40vh;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+    color: var(--primary-color);
+    gap:10px;
+}
+
+.s-div-1 {
+    width: 60%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+.s-div-1>p {
+    text-align: center;
+    padding: 10px;
+    color: var(--secondary-color);
+}
+
+.s-div-2 {
+    width: 40%;
+    height: 100%;
+    background-color: var(--font-color);
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.s-div-2>p{
+    text-align: center;
+    padding: 10px;
+}
+
+.intro-head {
+    color: var(--primary-color);
+    background-color: rgba(0,0,0,0.50);
+    text-align: center;
+}
+
+.chat-redirect {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.chat-redirect:hover {
+    text-decoration: none;
+    cursor: pointer;
+}

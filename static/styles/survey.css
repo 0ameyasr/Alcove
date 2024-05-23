@@ -1,0 +1,85 @@
+@import url(main.css);
+
+.survey {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    width: 100vw;
+    height: 80vh;
+    gap: 10px;
+}
+
+.survey-item {
+    border: 1px solid var(--font-color);
+    border-radius: 1rem;
+    padding: 10px;
+}
+
+.survey-body {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+}
+
+.survey-submit {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 10vh;
+}
+.survey-submit > button {
+    height: 50%;
+    width: 25%;
+}
+
+.survey-radio {
+    appearance: none;
+    border: 1px solid black;
+    border-radius: 50%;
+    width:16px;
+    height: 16px;
+}
+.survey-radio:checked {
+    border: 2px solid black;
+    background-color: var(--accent-color);
+}
+
+.question {
+    text-align: center;
+}
+
+.question-list {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 10vh;
+}
+
+.nav-pills {
+    --bs-nav-pills-border-radius: 0.25rem;
+    --bs-nav-pills-link-active-color: var(--font-color);
+    --bs-nav-pills-link-active-bg: var(--accent-color);
+    --bs-nav-pills-border-color: #000;
+    gap:2px;
+}
+
+.nav {
+    --bs-nav-link-color: var(--font-color);
+}
+
+.nav-link:hover {
+    font-weight: bold;
+    color: var(--font-color);
+}
+
+.nav-item {
+    border: 1px solid #000;
+    border-radius: 0.25rem;
+}
