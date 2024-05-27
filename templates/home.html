@@ -2,81 +2,337 @@
 <html lang="en">
   <head>
     <title>bored.ai</title>
-    
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-    <link rel="icon" href="static/img/web_icon.png">
-    <link rel="stylesheet" href="static/styles/main.css">
-    <link rel="stylesheet" href="static/styles/login.css">
-    <link rel="stylesheet" href="static/styles/home.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link rel="icon" href="static/img/web_icon.png" />
+    <link rel="stylesheet" href="static/styles/main.css" />
+    <link rel="stylesheet" href="static/styles/home.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
   </head>
 
   <body>
-    <header class="p-3 mb-3 border-bottom">
+    <header class="p-3 mb-3">
       <div class="container-fluid">
-        <div class="d-flex flex-wrap align-items-center justify-content-between">
-          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
-            <img class="bi me-2" width="40" height="40" src="static/img/web_icon.png"/>
-            <span class="shiny">bored.ai</span>
+        <div
+          class="d-flex flex-wrap align-items-center justify-content-between"
+        >
+          <button
+            class="btn toggle-sidebar fc-dark"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebar"
+          >
+            <i class="fa-solid fa-bars fs-5"></i>
+          </button>
+          <a
+            href="/"
+            class="d-flex align-items-center mb-lg-0 text-dark text-decoration-none"
+            draggable="false"
+          >
+            <span class="shiny"
+              ><img
+                src="static/img/web_icon.png"
+                alt="user"
+                width="32"
+                height="32"
+            /></span>
           </a>
-          
-          <div class="dropdown text-end order-lg-3">
-            <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="static/img/user.png" alt="user" width="32" height="32" class="profile-icon rounded-circle">
+          <div class="order-lg-3">
+            <a data-bs-toggle="modal" data-bs-target="#profile" class="d-block">
+              <img
+                src="static/img/user.png"
+                alt="user"
+                width="32"
+                height="32"
+                class="profile-icon rounded-circle"
+              />
             </a>
-            <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-              <li class="back-icon"><center>{{session["nickname"]}}</center></li>
-              <li><a class="dropdown-item" href="#"><i class="fa-solid fa-square-poll-vertical"></i> Statistics</a></li>
-              <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gears"></i> Settings</a></li>
-              <li><a class="logout dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log-out</a></li>
-            </ul>
           </div>
-    
-          <ul class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0 order-lg-2"></ul>
         </div>
       </div>
     </header>
-
-    <div class="container-fluid pb-1">
-      <div class="main d-flex gap-1">
-        <div class="body-div-1 border rounded-3">
-          <video class="video-back" id="video-back" autoplay muted loop><source id="video-back-source" src="static/img/intro.mp4" type="video/mp4"/></video>
-        </div>
-        <div class="body-div-2">
-          <div class="s-div-1">
-            <h1 class="fs-3 bold fc-dark">I've read you</h1>
-            <p class="fs-6">{{desc}}</p>
-          </div>
-          <div class="s-div-2">
-            <p class="fs-3 fc-light">
-              Don't know where to start?
-            </p>
-            <p class="fs-6">
-              <form action="/chat" method="GET">
-                <button class="continue" type="submit">Talk to <b>bored.ai</b></button>
-              </form>
-            </p>
-          </div>  
-        </div>
+    <div class="central-division container">
+      <div class="fs-1 info">
+        Hello, <span class="shine">{{session["nickname"]}}</span>!
+      </div>
+      <br />
+      <div class="tipbar">
+        <p class="h4"><i class="fa-regular fa-lightbulb"></i> Tip of the day</p>
+        <p class="fs-6">{{data["desc"]}}</p>
       </div>
     </div>
-    <div class="container-fluid">
-      <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-        <p class="col-md-4 mb-0 text-body-secondary">&copy; {{ year }}</p>
-    
-        <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"></a>
-        <ul class="nav col-md-4 justify-content-end">
-          <li class="nav-item"><a href="/home" class="nav-link px-2 text-body-secondary">Home</a></li>
-        </ul>
-      </footer>
-    </div> 
+
+    <div class="container px-4 py-5" id="custom-cards">
+      <h2 class="pb-2 border-bottom">Tags for you</h2>
+      <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+        <div class="col">
+          <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top1"]}}.jpg');">
+            <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+              <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top1"]}}</h3>
+              <ul class="d-flex list-unstyled mt-auto">
+                <li class="me-auto">
+                  <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top2"]}}.jpg');">
+            <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+              <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top2"]}}</h3>
+              <ul class="d-flex list-unstyled mt-auto">
+                <li class="me-auto">
+                  <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top3"]}}.jpg');">
+            <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
+              <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold"><a>{{data["top3"]}}</a></h3>
+              <ul class="d-flex list-unstyled mt-auto">
+                <li class="me-auto">
+                  <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="static/scripts/home.js"></script>
+    <div class="modal fade" id="profile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="border-none modal-header">
+            <h1 class="modal-title fs-5" id="profile-title">Profile</h1>
+          </div>
+          <div class="border-none modal-body">
+            <div class="profile-tab">
+              <div class="user-icon">
+                <img
+                  src="static/img/user.png"
+                  alt="user"
+                  width="100"
+                  height="100"
+                />
+              </div>
+              <div
+                class="d-flex flex-column flex-wrap flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center"
+              >
+                <div class="list-group">
+                  <a
+                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
+                    aria-current="true"
+                  >
+                    <div class="d-flex gap-2 w-100 justify-content-between">
+                      <div>
+                        <h6 class="mb-0">Nickname</h6>
+                        <p class="mb-0 opacity-75">{{session["nickname"]}}</p>
+                      </div>
+                    </div>
+                  </a>
+                  <a
+                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
+                    aria-current="true"
+                  >
+                    <div class="d-flex gap-2 w-100 justify-content-between">
+                      <div>
+                        <h6 class="mb-0">Recovery mail</h6>
+                        <p class="mb-0 opacity-75">{{session["recovery"]}}</p>
+                      </div>
+                    </div>
+                  </a>
+                  <a
+                    href="/logout"
+                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
+                    aria-current="true"
+                  >
+                    <div class="d-flex gap-2 w-100 justify-content-between">
+                      <div>
+                        <h6 class="mb-0">Log-out</h6>
+                        <p class="mb-0 opacity-75">
+                          Log-out from this session.
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="border-none modal-footer">
+            <button type="button" class="btn dismiss" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="button" class="btn continue">Apply Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="offcanvas offcanvas-start offcanvas-menu" data-bs-backdrop="static" tabindex="-1" id="sidebar">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title">bored.ai - Menu</h5>
+        <button type="button" class="btn dismiss" data-bs-dismiss="offcanvas">
+          Close
+        </button>
+      </div>
+      <div class="menu-content offcanvas-body">
+        <div
+          class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center"
+        >
+          <div class="list-group">
+            <a
+              href="/chat"
+              class="list-group-item list-group-item-action d-flex gap-3 py-3"
+              aria-current="true"
+            >
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0 highlight">
+                    <i class="fa-solid fa-comments"></i> Talk away boredom
+                  </h6>
+                  <p class="mb-0 opacity-75">
+                    Talk to bored.ai, whenever and wherever and about whatever
+                    you want.
+                  </p>
+                </div>
+              </div>
+            </a>
+            <a
+              href="#"
+              class="list-group-item list-group-item-action d-flex gap-3 py-3"
+              aria-current="true"
+            >
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0 highlight">
+                    <i class="fa-solid fa-lines-leaning"></i> Learn something
+                    new
+                  </h6>
+                  <p class="mb-0 opacity-75">
+                    Explore various ideas, theories or things you might find
+                    interesting.
+                  </p>
+                </div>
+              </div>
+            </a>
+            <a
+              href="#"
+              class="list-group-item list-group-item-action d-flex gap-3 py-3"
+              aria-current="true"
+            >
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0 highlight">
+                    <i class="fa-solid fa-magnifying-glass"></i> Dive into
+                    anything
+                  </h6>
+                  <p class="mb-0 opacity-75">
+                    If you're wanting to discuss something you find interesting
+                    or would like to know better.
+                  </p>
+                </div>
+              </div>
+            </a>
+            <a
+              href="#"
+              class="list-group-item list-group-item-action d-flex gap-3 py-3"
+              aria-current="true"
+            >
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0 highlight">
+                    <i class="fa-solid fa-puzzle-piece"></i> Solve challenges
+                    and puzzles
+                  </h6>
+                  <p class="mb-0 opacity-75">
+                    Brainstorm over engaging puzzles and difficult challenges.
+                  </p>
+                </div>
+              </div>
+            </a>
+            <a
+              href="#"
+              class="list-group-item list-group-item-action d-flex gap-3 py-3"
+              aria-current="true"
+            >
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0 highlight">
+                    <i class="fa-solid fa-leaf"></i> Relax and unwind
+                  </h6>
+                  <p class="mb-0 opacity-75">
+                    Take some time off and enjoy moments of calm and relaxation.
+                  </p>
+                </div>
+              </div>
+            </a>
+
+            <a
+              href="#"
+              class="list-group-item list-group-item-action d-flex gap-3 py-3"
+              aria-current="true"
+            >
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0 highlight">
+                    <i class="fa-solid fa-tasks"></i> Organize yourself
+                  </h6>
+                  <p class="mb-0 opacity-75">
+                    Create a plan, declutter your space, and manage your time
+                    effectively.
+                  </p>
+                </div>
+              </div>
+            </a>
+
+            <a
+              href="#"
+              class="list-group-item list-group-item-action d-flex gap-3 py-3"
+              aria-current="true"
+            >
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0 highlight">
+                    <i class="fa-solid fa-paint-brush"></i> Discover hobbies
+                  </h6>
+                  <p class="mb-0 opacity-75">
+                    Explore new activities and find your passion in various
+                    hobbies.
+                  </p>
+                </div>
+              </div>
+            </a>
+
+            <a
+              href="#"
+              class="list-group-item list-group-item-action d-flex gap-3 py-3"
+              aria-current="true"
+            >
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0 highlight">
+                    <i class="fa-solid fa-map-marker-alt"></i> Explore new POIs
+                  </h6>
+                  <p class="mb-0 opacity-75">
+                    Discover new points of interest and expand your horizons.
+                  </p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

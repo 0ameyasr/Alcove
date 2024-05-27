@@ -15,6 +15,7 @@ mongo = PyMongo(app)
 oauth = OAuth(app)
 home_engine = engine_client(app.config["MONGO_URI"])
 dynamic_web = curate_web()
+data = {}
 
 google = oauth.register(
     name='google',
@@ -45,6 +46,10 @@ def intro():
 def clear_session():
     session.clear()
     return redirect("/")
+
+@app.route("/data")
+def print_data():
+    return str(data)
 
 @app.route("/clear_cookies")
 def clear_cookies():
@@ -82,8 +87,9 @@ def login():
         return render_template("response.html",code=100) #Not registered
     if existing_user and existing_user["safeword"] == safeword:
         session["nickname"] = nickname
+        session["recovery"] = existing_user["recovery"]
         response = make_response(redirect("/home"))
-        response.set_cookie("visited","true")
+        response.set_cookie("first_visit","true")
         return response
     elif existing_user and existing_user["safeword"] != safeword:
         return render_template("response.html",code=150) #Invalid safeword
@@ -103,30 +109,41 @@ def authorize():
     valid_user = mongo.db.users.find_one({"recovery":user_info['email']})
     if valid_user:
         session["nickname"] = valid_user["nickname"]
+        session["recovery"] = valid_user["recovery"]
         response = make_response(redirect("/home"))
-        response.set_cookie("visited","true")
+        response.set_cookie("first_visit","true")
         return response
     else:
         return render_template("response.html",code=100)
     
 @app.route("/home",methods=["GET","POST"])
 def home():
-    year = str(datetime.now().year)
+    data["year"] = str(datetime.now().year)
     if session:    
         user_class = mongo.db.user_classes.find_one({"nickname":session["nickname"]})
         if user_class:
-            desc = dynamic_web.get_class_description(user_class["class"])
-        display_result = False
+            data["desc"] = dynamic_web.get_class_description(user_class["class"])
+        data["display_result"] = False
         if not (mongo.db.survey.find_one({"nickname":session["nickname"]})):
             return redirect("/survey")
         for cookie in request.cookies:
+            if cookie == "first_visit":
+                prompts = prompt_corpus(home_engine.build_tags(session["nickname"]))
+                recommendations = [tag.capitalize() for tag in fit_prompt(prompts.get_sentiment_corpus(True)).split()]
+                data["top1"] = recommendations[0]
+                data["top2"] = recommendations[1]
+                data["top3"] = recommendations[2]
+                response = make_response(render_template("home.html",data=data))
+                response.set_cookie("first_visit",expires=0)
+                return response
+
             if cookie == "survey":
-                display_result = True
-                response = make_response(render_template("home.html",year=year,desc=desc,display_result=display_result))
+                data["display_result"] = True
+                response = make_response(render_template("home.html",data=data))
                 response.set_cookie("survey",expires=0)
                 return response
         else:
-            return render_template("home.html",year=year,desc=desc,display_result=display_result)
+            return render_template("home.html",data=data)
     else:
         return redirect("/")
     
@@ -145,10 +162,11 @@ def survey_submit():
     survey_det = dict(request.form)
     survey_det["nickname"] = session["nickname"]
     for cookie in request.cookies:
-        if "visited" in cookie:
+        if "first_visit" in cookie:
             response.set_cookie("survey","true")
             mongo.db.survey.insert_one(survey_det)
             prompts = prompt_corpus(home_engine.build_tags(session["nickname"]))
             user_class = fit_prompt(prompts.get_sentiment_corpus())
+            data["user_class"] = user_class.capitalize()
             mongo.db.user_classes.insert_one({"nickname":session["nickname"],"class":user_class})
     return response

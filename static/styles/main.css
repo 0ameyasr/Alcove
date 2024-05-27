@@ -20,9 +20,6 @@
     color: var(--secondary-color);
 }
 
-.shiny {
-    color: var(--font-color);
-}
 
 .form-control {
     color: var(--primary-color);
@@ -70,4 +67,56 @@
 
 .fc-dark {
     color: var(--font-color);
+}
+
+.border-none {
+    border: none;
+}
+
+.dismiss {
+    background-color: red;
+    border-radius: 1rem;
+    color: var(--primary-color);
+}
+.dismiss:hover{
+    font-weight: bold;
+}
+
+.continue{
+    background-color: var(--button-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 1rem;
+}
+.continue:hover{
+    font-weight: bold;
+}
+.continue:disabled{
+    color: var(--font-color);
+    background-color: var(--disabled-button-color);
+}
+
+.generic-button{
+    background-color: var(--button-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 1rem;
+}
+.generic-button:hover{
+    border: 1px solid var(--font-color);
+}
+
+@keyframes shiny-font {
+    0% {
+        color: var(--secondary-color);
+    }
+    50% {
+        color: var(--accent-color);
+    }
+    100% {
+        color: var(--secondary-color);
+    }
+}
+.shine {
+    animation: shiny-font 5s linear infinite;
 }

@@ -39,7 +39,7 @@
           
           <p class="fs-6" id="login-status"><b>Ensure that your credentials are valid.</b></p>
           <center id="register-recaptcha" hidden><div class="g-recaptcha" data-sitekey="{{SITE_KEY}}" data-callback="onRecaptchaSubmitRegister"></div><br></center>
-          <button class="w-50 continue" id="register-continue" type="submit" disabled>Register</button>
+          <button class="w-50 btn continue" id="register-continue" type="submit" disabled>Register</button>
           <a class="fs-6 register-direct" onclick="loginDirect()"><br><br>I want to login</a>
         </form>
       </div>
@@ -53,7 +53,7 @@
           </div>
         
           <center><div class="g-recaptcha" data-sitekey="{{SITE_KEY}}" data-callback="onRecaptchaSubmitLogin"></div><br></center>
-          <button class="w-50 continue" id="login-continue" type="submit" disabled>Log-in</button>
+          <button class="w-50 btn continue" id="login-continue" type="submit" disabled>Log-in</button>
           <a class="fs-6 register-direct" onclick="registerDirect()"><br><br>I haven't registered yet</a>
            | <a class="fs-6 register-direct" onclick="forgotPassword()">Forgot safeword?</a>
         </form>
