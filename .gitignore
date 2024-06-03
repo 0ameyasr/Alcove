@@ -161,3 +161,5 @@ cython_debug/
 
 *.docx
 *.txt
+secrets.cfg
+bored-ai.pptx
