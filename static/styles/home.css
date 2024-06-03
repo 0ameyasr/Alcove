@@ -2,6 +2,10 @@
 
 body {
     background-color: var(--background-color);
+    overflow: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: black white;
+    overflow-x: hidden;
 }
 
 .profile-icon {
@@ -64,18 +68,41 @@ body {
     text-align: left;
 }
 
-.sidebar {
-    height: 80vh;
+#sidebar {
+    background-color: var(--primary-color);
 }
 
 .menu-content {
     overflow: scroll;
-    scrollbar-color: black white;
+    scrollbar-color: black var(--primary-color);
     scrollbar-width: thin;
     overflow-x: hidden;
 }
 
+
 .card-back {
     background-size: cover; 
     background-position: center;
+}
+
+.card-desc {
+    background-color: #000;
+}
+
+.about {
+    background-color: var(--accent-color);
+    padding: 10px;
+}
+
+.h-center {
+    text-align: center;
+}
+
+.p-center {
+    text-align: center;
+}
+
+.m-icon {
+    width: 48px;
+    height: 48px;
 }

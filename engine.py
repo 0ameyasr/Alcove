@@ -69,10 +69,3 @@ class engine_client:
         else:
             print("[ERROR] engine_client > build_tags(): No associated survey response found.")
             return None
-        
-
-if __name__ == "__main__":
-    mongo_client = engine_client(open("mongodb.txt","r").read())
-    tags = mongo_client.build_tags("AmeyaSr")
-    prompt_engine = prompt_corpus(tags)
-    print(fit_prompt(prompt_engine.get_sentiment_corpus()))

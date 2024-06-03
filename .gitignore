@@ -159,8 +159,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-key.txt
-mongodb.txt
-gemini.py
-bored-briefings.docx
 *.docx
+*.txt

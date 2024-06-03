@@ -1,20 +1,21 @@
 from flask import Flask, render_template,redirect,request,session,make_response,url_for
 from flask_pymongo import PyMongo
 from authlib.integrations.flask_client import OAuth
-from prompts import prompt_corpus
-from gemini import fit_prompt
-from engine import engine_client
-from dynaweb import curate_web
+import dynaweb,engine,gemini,prompts
 from datetime import datetime
+import configparser
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "[REDACTED]"
-app.config["SECRET_KEY"] = "[REDACTED]"
-app.config["SITE_KEY"] = "[REDACTED]"
+config = configparser.ConfigParser()
+config.read("secrets.cfg")
+
+app.config["MONGO_URI"] = config['mongodb']['uri']
+app.config["SECRET_KEY"] = config['captcha']['secret_key']
+app.config["SITE_KEY"] = config['captcha']['site_key']
 mongo = PyMongo(app)
 oauth = OAuth(app)
-home_engine = engine_client(app.config["MONGO_URI"])
-dynamic_web = curate_web()
+home_engine = engine.engine_client(app.config["MONGO_URI"])
+dynamic_web = dynaweb.curate_web()
 data = {}
 
 google = oauth.register(
@@ -119,6 +120,8 @@ def authorize():
 @app.route("/home",methods=["GET","POST"])
 def home():
     data["year"] = str(datetime.now().year)
+    desc_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
+    
     if session:    
         user_class = mongo.db.user_classes.find_one({"nickname":session["nickname"]})
         if user_class:
@@ -127,22 +130,36 @@ def home():
         if not (mongo.db.survey.find_one({"nickname":session["nickname"]})):
             return redirect("/survey")
         for cookie in request.cookies:
-            if cookie == "first_visit":
-                prompts = prompt_corpus(home_engine.build_tags(session["nickname"]))
-                recommendations = [tag.capitalize() for tag in fit_prompt(prompts.get_sentiment_corpus(True)).split()]
-                data["top1"] = recommendations[0]
-                data["top2"] = recommendations[1]
-                data["top3"] = recommendations[2]
-                response = make_response(render_template("home.html",data=data))
-                response.set_cookie("first_visit",expires=0)
-                return response
-
             if cookie == "survey":
                 data["display_result"] = True
                 response = make_response(render_template("home.html",data=data))
                 response.set_cookie("survey",expires=0)
                 return response
+            if cookie == "first_visit":
+                rec_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
+
+                recommendations = [tag.capitalize() for tag in gemini.fit_prompt(rec_prompts.get_sentiment_corpus(True)).split()]
+                data["top1"] = recommendations[0]
+                data["top2"] = recommendations[1]
+                data["top3"] = recommendations[2]
+                data["top1_desc"] = dynamic_web.get_tag_tooltip(data["top1"])
+                data["top2_desc"] = dynamic_web.get_tag_tooltip(data["top2"])
+                data["top3_desc"] = dynamic_web.get_tag_tooltip(data["top3"])
+                data["first_visit"] = True
+                response = make_response(render_template("home.html",data=data))
+                response.set_cookie("first_visit",expires=0)
         else:
+            rec_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
+
+            recommendations = [tag.capitalize() for tag in gemini.fit_prompt(rec_prompts.get_sentiment_corpus(True)).split()]
+            data["top1"] = recommendations[0]
+            data["top2"] = recommendations[1]
+            data["top3"] = recommendations[2]
+            data["top1_desc"] = dynamic_web.get_tag_tooltip(data["top1"])
+            data["top2_desc"] = dynamic_web.get_tag_tooltip(data["top2"])
+            data["top3_desc"] = dynamic_web.get_tag_tooltip(data["top3"])
+            data["first_visit"] = False
+            print(data)
             return render_template("home.html",data=data)
     else:
         return redirect("/")
@@ -165,8 +182,8 @@ def survey_submit():
         if "first_visit" in cookie:
             response.set_cookie("survey","true")
             mongo.db.survey.insert_one(survey_det)
-            prompts = prompt_corpus(home_engine.build_tags(session["nickname"]))
-            user_class = fit_prompt(prompts.get_sentiment_corpus())
+            Prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
+            user_class = gemini.fit_prompt(Prompts.get_sentiment_corpus())
             data["user_class"] = user_class.capitalize()
             mongo.db.user_classes.insert_one({"nickname":session["nickname"],"class":user_class})
     return response

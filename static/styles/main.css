@@ -20,7 +20,6 @@
     color: var(--secondary-color);
 }
 
-
 .form-control {
     color: var(--primary-color);
 }
@@ -119,4 +118,25 @@
 }
 .shine {
     animation: shiny-font 5s linear infinite;
+}
+.shade {
+    background-color: rgba(0,0,0,0.25);
+}
+
+::-webkit-scrollbar {
+display: none;
+}
+
+
+.statistics {
+    background-color: var(--accent-color);
+    height: 50vh;
+}
+
+.div-link {
+    text-decoration: none;
+}
+
+.link-tab {
+    border: 1px solid var(--secondary-color);
 }

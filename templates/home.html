@@ -43,13 +43,7 @@
           </a>
           <div class="order-lg-3">
             <a data-bs-toggle="modal" data-bs-target="#profile" class="d-block">
-              <img
-                src="static/img/user.png"
-                alt="user"
-                width="32"
-                height="32"
-                class="profile-icon rounded-circle"
-              />
+              <img src="static/img/user.png" alt="user" width="32" height="32" class="profile-icon rounded-circle"/>
             </a>
           </div>
         </div>
@@ -68,48 +62,84 @@
 
     <div class="container px-4 py-5" id="custom-cards">
       <h2 class="pb-2 border-bottom">Tags for you</h2>
-      <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
-        <div class="col">
-          <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top1"]}}.jpg');">
-            <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
-              <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top1"]}}</h3>
-              <ul class="d-flex list-unstyled mt-auto">
-                <li class="me-auto">
-                  <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
-                </li>
-              </ul>
-            </div>
+        <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+          <div class="col">
+            <a href="/{{data["top1"].lower()}}" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click for more">
+              <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top1"]}}.jpg');">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1 shade">
+                  <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top1"]}}</h3>
+                  <ul class="d-flex list-unstyled mt-auto">
+                    <li class="me-auto">
+                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body card-desc">
+                  {{data["top1_desc"]}}
+                </div>
+              </div>
+            </a>
           </div>
-        </div>
-        <div class="col">
-          <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top2"]}}.jpg');">
-            <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
-              <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top2"]}}</h3>
-              <ul class="d-flex list-unstyled mt-auto">
-                <li class="me-auto">
-                  <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
-                </li>
-              </ul>
-            </div>
+          <div class="col">
+            <a href="/{{data["top2"].lower()}}" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click for more">
+              <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top2"]}}.jpg');">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1 shade">
+                  <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top2"]}}</h3>
+                  <ul class="d-flex list-unstyled mt-auto">
+                    <li class="me-auto">
+                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body card-desc">
+                  {{data["top2_desc"]}}
+                </div>
+              </div>
+            </a>
           </div>
-        </div>
-        <div class="col">
-          <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top3"]}}.jpg');">
-            <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
-              <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold"><a>{{data["top3"]}}</a></h3>
-              <ul class="d-flex list-unstyled mt-auto">
-                <li class="me-auto">
-                  <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
-                </li>
-              </ul>
-            </div>
+          <div class="col">
+            <a href="/{{data["top3"].lower()}}" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click for more">
+              <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top3"]}}.jpg');">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1 shade">
+                  <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top3"]}}</h3>
+                  <ul class="d-flex list-unstyled mt-auto">
+                    <li class="me-auto">
+                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                    </li>
+                  </ul>
+                </div>  
+                <div class="card-body card-desc">
+                  {{data["top3_desc"]}}
+                </div>
+              </div>
+            </a>
           </div>
-        </div>
       </div>
     </div>  
+    
+    <div class="about container-fluid">
+      <p class="h-center fs-1 fc-light">
+        An Empty Mind is the Devil's Lair
+      </p>
+      <p class="p-center">
+        When our minds are idle, they become susceptible to resurfacing insecurities and 
+        behaviors that swarm us within the drudgery of a mechanized world. Boredom, a 
+        state of mental inactivity, can exacerbate this vulnerability. In our daily lives,
+        prolonged boredom can lead to unhealthy habits, anxiety, and even destructive actions 
+        as we seek stimulation. By staying engaged with meaningful activities and maintaining 
+        mental stimulation, we can prevent negative influences from taking hold and promote a 
+        healthier, more productive mindset.<br>
+        <br>
+        Inspired by boredom, bored.ai is an initiative to tackle inactivity and the slow 
+        descent of motivating the inertial state and procastination. 
+        It aims to make this mindless state, something more "mindful".
+      </p>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="static/scripts/home.js"></script>
+
     <div class="modal fade" id="profile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -174,11 +204,11 @@
             <button type="button" class="btn dismiss" data-bs-dismiss="modal">
               Close
             </button>
-            <button type="button" class="btn continue">Apply Changes</button>
           </div>
         </div>
       </div>
     </div>
+
     <div class="offcanvas offcanvas-start offcanvas-menu" data-bs-backdrop="static" tabindex="-1" id="sidebar">
       <div class="offcanvas-header border-bottom">
         <h5 class="offcanvas-title">bored.ai - Menu</h5>
@@ -187,15 +217,9 @@
         </button>
       </div>
       <div class="menu-content offcanvas-body">
-        <div
-          class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center"
-        >
-          <div class="list-group">
-            <a
-              href="/chat"
-              class="list-group-item list-group-item-action d-flex gap-3 py-3"
-              aria-current="true"
-            >
+        <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
+          <div class="link-lists list-group">
+            <a href="/chat" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <h6 class="mb-0 highlight">
@@ -208,11 +232,7 @@
                 </div>
               </div>
             </a>
-            <a
-              href="#"
-              class="list-group-item list-group-item-action d-flex gap-3 py-3"
-              aria-current="true"
-            >
+            <a href="/seeker" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <h6 class="mb-0 highlight">
@@ -226,16 +246,11 @@
                 </div>
               </div>
             </a>
-            <a
-              href="#"
-              class="list-group-item list-group-item-action d-flex gap-3 py-3"
-              aria-current="true"
-            >
+            <a href="/scholar" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-magnifying-glass"></i> Dive into
-                    anything
+                    <i class="fa-solid fa-magnifying-glass"></i> Dive into anything
                   </h6>
                   <p class="mb-0 opacity-75">
                     If you're wanting to discuss something you find interesting
@@ -244,11 +259,7 @@
                 </div>
               </div>
             </a>
-            <a
-              href="#"
-              class="list-group-item list-group-item-action d-flex gap-3 py-3"
-              aria-current="true"
-            >
+            <a href="/challenger" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <h6 class="mb-0 highlight">
@@ -261,11 +272,7 @@
                 </div>
               </div>
             </a>
-            <a
-              href="#"
-              class="list-group-item list-group-item-action d-flex gap-3 py-3"
-              aria-current="true"
-            >
+            <a href="/shaman" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <h6 class="mb-0 highlight">
@@ -278,11 +285,7 @@
               </div>
             </a>
 
-            <a
-              href="#"
-              class="list-group-item list-group-item-action d-flex gap-3 py-3"
-              aria-current="true"
-            >
+            <a href="/ace" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <h6 class="mb-0 highlight">
@@ -296,11 +299,7 @@
               </div>
             </a>
 
-            <a
-              href="#"
-              class="list-group-item list-group-item-action d-flex gap-3 py-3"
-              aria-current="true"
-            >
+            <a href="/generalist" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <h6 class="mb-0 highlight">
@@ -314,11 +313,7 @@
               </div>
             </a>
 
-            <a
-              href="#"
-              class="list-group-item list-group-item-action d-flex gap-3 py-3"
-              aria-current="true"
-            >
+            <a href="/wanderer" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <h6 class="mb-0 highlight">
@@ -334,5 +329,57 @@
         </div>
       </div>
     </div>
+
+    {% if data["first_visit"]: %}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="toast-header">
+          <img src="static/img/web_icon.png" class="rounded me-2" alt="ai" width="32" height="32">
+          <strong class="me-auto">bored.ai</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          <h2 class="fw-bold mb-0">Welcome</h2>
+    
+          <ul class="d-grid gap-4 my-5 list-unstyled small">
+            <li class="d-flex gap-4">
+              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
+                <i class="fa-solid fa-bars fs-1"></i>
+              </span>
+              <div>
+                <h5 class="mb-0">Get Started</h5>
+                Click on the menu icon for quick links to various tools.
+              </div>
+            </li>
+            <li class="d-flex gap-4">
+              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
+                <i class="fa-solid fa-user-clock fs-2"></i>
+              </span>
+              <div>
+                <h5 class="mb-0">No limits</h5>
+                Usage has no limits, but this may depend on how frequent
+                you're using bored.ai
+              </div>
+            </li>
+            <li class="d-flex gap-4">
+              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
+                <i class="fa-solid fa-wand-magic-sparkles fs-2"></i>
+              </span>
+              <div>
+                <h5 class="mb-0">For you</h5>
+                Your experience on bored.ai has been curated as per your interests, learning from every interaction.
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </body>
+  <script>
+    window.onload = () => {
+    const toast = document.getElementById('liveToast')
+    const toast_bs = bootstrap.Toast.getOrCreateInstance(toast)
+    toast_bs.show()}
+  </script>
 </html>

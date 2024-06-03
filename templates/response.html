@@ -19,7 +19,7 @@
             {% if code == 100: %}
                 <p class="fs-6">No such user exists. Consider registering?</p>
                 <form method="GET" action="/">
-                  <button class="continue" type="submit">Register</button>
+                  <button class="btn continue" type="submit">Register</button>
                 </form>
             {% endif %}
             {% if code == 150: %}
@@ -31,7 +31,7 @@
             {% if code == 250: %}
                 <p class="fs-6">Thankyou for registering! Login to proceed.</p>
                 <form method="GET" action="/">
-                  <button class="continue" type="submit">Log-in</button>
+                  <button class="btn continue" type="submit">Log-in</button>
                 </form>
             {% endif %}
     </div>
