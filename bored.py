@@ -1,9 +1,10 @@
-from flask import Flask, render_template,redirect,request,session,make_response,url_for
+from flask import Flask, render_template,redirect,request,session,make_response,url_for,jsonify
 from flask_pymongo import PyMongo
 from authlib.integrations.flask_client import OAuth
 import dynaweb,engine,gemini,prompts
 from datetime import datetime
 import configparser
+import google.generativeai as gemini_model
 
 app = Flask(__name__)
 config = configparser.ConfigParser()
@@ -187,3 +188,19 @@ def survey_submit():
             data["user_class"] = user_class.capitalize()
             mongo.db.user_classes.insert_one({"nickname":session["nickname"],"class":user_class})
     return response
+
+@app.route("/dynamo")
+def dynamo():
+    icebreaker = dynamic_web.get_dynamo_icebreaker()
+    session["icebreaker"] = icebreaker
+    session["chat_config"] = prompts.prompt_corpus([]).get_chat_config(icebreaker=session["icebreaker"])
+    session["chat_history"] = []
+    gemini.config_dynamo(session["icebreaker"])
+
+    return render_template("dynamo.html",talk=session["icebreaker"])
+
+@app.route("/chat",methods=["POST"])
+def chat():
+    message = request.form["message"]
+    response = gemini.chat_dynamo(message)
+    return render_template("dynamo.html",talk=response.text)

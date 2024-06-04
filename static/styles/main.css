@@ -124,9 +124,17 @@
 }
 
 ::-webkit-scrollbar {
-display: none;
+width: 10px;
 }
 
+::-webkit-scrollbar-track {
+background: var(--primary-color);
+}
+
+::-webkit-scrollbar-thumb {
+background-color: rgba(0,0,0,0.25);
+border-radius: 0.25rem;
+}
 
 .statistics {
     background-color: var(--accent-color);

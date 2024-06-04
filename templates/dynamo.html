@@ -12,34 +12,19 @@
     <link rel="icon" href="static/img/web_icon.png" />
     <link rel="stylesheet" href="static/styles/main.css" />
     <link rel="stylesheet" href="static/styles/home.css" />
+    <link rel="stylesheet" href="static/styles/dynamo.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
   </head>
 
   <body>
     <header class="p-3 mb-3">
       <div class="container-fluid">
-        <div
-          class="d-flex flex-wrap align-items-center justify-content-between"
-        >
-          <button
-            class="btn toggle-sidebar fc-dark"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#sidebar"
-          >
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+          <button class="btn toggle-sidebar fc-dark" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
             <i class="fa-solid fa-bars fs-5"></i>
           </button>
-          <a
-            href="/"
-            class="d-flex align-items-center mb-lg-0 text-dark text-decoration-none"
-            draggable="false"
-          >
-            <span class="shiny"
-              ><img
-                src="static/img/web_icon.png"
-                alt="user"
-                width="32"
-                height="32"
-            /></span>
+          <a href="/" class="d-flex align-items-center mb-lg-0 text-dark text-decoration-none" draggable="false">
+            <span class="shiny"><img src="static/img/web_icon.png" alt="user" width="32" height="32"/></span>
           </a>
           <div class="order-lg-3">
             <a data-bs-toggle="modal" data-bs-target="#profile" class="d-block">
@@ -49,97 +34,28 @@
         </div>
       </div>
     </header>
-    <div class="central-division container">
-      <div class="fs-1 info">
-        Hello, <span class="shine">{{session["nickname"]}}</span>!
-      </div>
-      <br />
-      <div class="tipbar">
-        <p class="h4"><i class="fa-regular fa-lightbulb"></i> Tip of the day</p>
-        <p class="fs-6">{{data["desc"]}}</p>
-      </div>
-    </div>
 
-    <div class="container px-4 py-5" id="custom-cards">
-      <h2 class="pb-2 border-bottom">Tags for you</h2>
-        <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
-          <div class="col">
-            <a href="/{{data["top1"].lower()}}" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click for more">
-              <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top1"]}}.jpg');">
-                <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1 shade">
-                  <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top1"]}}</h3>
-                  <ul class="d-flex list-unstyled mt-auto">
-                    <li class="me-auto">
-                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
-                    </li>
-                  </ul>
-                </div>
-                <div class="card-body card-desc">
-                  {{data["top1_desc"]}}
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col">
-            <a href="/{{data["top2"].lower()}}" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click for more">
-              <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top2"]}}.jpg');">
-                <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1 shade">
-                  <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top2"]}}</h3>
-                  <ul class="d-flex list-unstyled mt-auto">
-                    <li class="me-auto">
-                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
-                    </li>
-                  </ul>
-                </div>
-                <div class="card-body card-desc">
-                  {{data["top2_desc"]}}
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col">
-            <a href="/{{data["top3"].lower()}}" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click for more">
-              <div class="card-back card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('/static/img/{{data["top3"]}}.jpg');">
-                <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1 shade">
-                  <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top3"]}}</h3>
-                  <ul class="d-flex list-unstyled mt-auto">
-                    <li class="me-auto">
-                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
-                    </li>
-                  </ul>
-                </div>  
-                <div class="card-body card-desc">
-                  {{data["top3_desc"]}}
-                </div>
-              </div>
-            </a>
-          </div>
+    <div class="window container-fluid d-flex flex-col">
+      <div class="chat-window container-fluid">
+        <p id="talk" class="fs-6">
+          {{talk}}
+        </p>
       </div>
-    </div>  
-    
-    <div class="about container-fluid">
-      <p class="h-center fs-1 fc-light">
-        An Empty Mind is the Devil's Lair
-      </p>
-      <p class="p-center">
-        When our minds are idle, they become susceptible to resurfacing insecurities and 
-        behaviors that swarm us within the drudgery of a mechanized world. Boredom, a 
-        state of mental inactivity, can exacerbate this vulnerability. In our daily lives,
-        prolonged boredom can lead to unhealthy habits, anxiety, and even destructive actions 
-        as we seek stimulation. By staying engaged with meaningful activities and maintaining 
-        mental stimulation, we can prevent negative influences from taking hold and promote a 
-        healthier, more productive mindset.<br>
-        <br>
-        Inspired by boredom, bored.ai is an initiative to tackle inactivity and the slow 
-        descent of motivating the inertial state and procastination. 
-        It aims to make this mindless state, something more "mindful".
-      </p>
+      <div class="action-bar container">          
+        <div class="search-bar input-group">
+          <form id="chat" action="/chat" method="POST"><div class="input-group">
+            <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage"></textarea>
+            <button class="btn continue" type="submit"><i class="fa-solid fa-paper-plane"></i></button></div>    
+          </form>
+        </div>
+      </div>
     </div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-    <script src="static/scripts/home.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRQat7KEhk+l/6rjoQ1Vd+tSp8PfuHT5ewJ2hVZih" crossorigin="anonymous"></script>
+    <script src="static/scripts/dynamo.js"></script>
     <div class="modal fade" id="profile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -329,57 +245,5 @@
         </div>
       </div>
     </div>
-
-    {% if data["first_visit"]: %}
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
-        <div class="toast-header">
-          <img src="static/img/web_icon.png" class="rounded me-2" alt="ai" width="32" height="32">
-          <strong class="me-auto">bored.ai</strong>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-          <h2 class="fw-bold mb-0">Welcome</h2>
-    
-          <ul class="d-grid gap-4 my-5 list-unstyled small">
-            <li class="d-flex gap-4">
-              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
-                <i class="fa-solid fa-bars fs-1"></i>
-              </span>
-              <div>
-                <h5 class="mb-0">Get Started</h5>
-                Click on the menu icon for quick links to various tools.
-              </div>
-            </li>
-            <li class="d-flex gap-4">
-              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
-                <i class="fa-solid fa-user-clock fs-2"></i>
-              </span>
-              <div>
-                <h5 class="mb-0">No limits</h5>
-                Usage has no limits, but this may depend on how frequent
-                you're using bored.ai
-              </div>
-            </li>
-            <li class="d-flex gap-4">
-              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
-                <i class="fa-solid fa-wand-magic-sparkles fs-2"></i>
-              </span>
-              <div>
-                <h5 class="mb-0">For you</h5>
-                Your experience on bored.ai has been curated as per your interests, learning from every interaction.
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    {% endif %}
   </body>
-  <script>
-    window.onload = () => {
-    const toast = document.getElementById('liveToast')
-    const toast_bs = bootstrap.Toast.getOrCreateInstance(toast)
-    toast_bs.show()}
-  </script>
 </html>
