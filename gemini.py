@@ -5,7 +5,24 @@ config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
 gemini.configure(api_key=config['gemini']['api_key'])
-model =gemini.GenerativeModel(model_name="gemini-pro")
+model =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE",
+    },
+])
 dynamo = model.start_chat(history=[])
 
 def fit_prompt(prompt):

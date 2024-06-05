@@ -163,3 +163,5 @@ cython_debug/
 *.txt
 secrets.cfg
 bored-ai.pptx
+client_secret.json
+creds.py

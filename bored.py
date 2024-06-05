@@ -5,6 +5,7 @@ import dynaweb,engine,gemini,prompts
 from datetime import datetime
 import configparser
 import google.generativeai as gemini_model
+import markdown
 
 app = Flask(__name__)
 config = configparser.ConfigParser()
@@ -196,11 +197,10 @@ def dynamo():
     session["chat_config"] = prompts.prompt_corpus([]).get_chat_config(icebreaker=session["icebreaker"])
     session["chat_history"] = []
     gemini.config_dynamo(session["icebreaker"])
-
     return render_template("dynamo.html",talk=session["icebreaker"])
 
 @app.route("/chat",methods=["POST"])
 def chat():
     message = request.form["message"]
     response = gemini.chat_dynamo(message)
-    return render_template("dynamo.html",talk=response.text)
+    return render_template("dynamo.html",talk=markdown.markdown(response.text))
