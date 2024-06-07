@@ -34,8 +34,24 @@
                   <button class="btn continue" type="submit">Log-in</button>
                 </form>
             {% endif %}
-            {% if code == 300: %}
-              <p class="fs-6">Internal error.</p>
+            {% if code == 500: %}
+              <p class="fs-6">Internal server error, please try again later.</p>
+            {% endif %}
+            {% if code == 404: %}
+              <h1>404</h1>
+              <p class="fs-6">Not Found</p>
+            {% endif %}
+            {% if code == 405: %}
+              <h1>405</h1>
+              <p class="fs-6">Method not allowed</p>
+            {% endif %}
+            {% if code == 408: %}
+              <h1>408</h1>
+              <p class="fs-6">Request timed out, please try again later</p>
+            {% endif %}
+            {% if code == 410: %}
+              <h1>Warning</h1>
+              <p class="fs-6">This request is not allowed or the server could not understand it.</p>
             {% endif %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>

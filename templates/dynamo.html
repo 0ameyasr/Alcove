@@ -36,20 +36,26 @@
     </header>
 
     <div class="window container-fluid d-flex flex-col">
-      <div class="chat-window container-fluid">
+      {% if error: %}
+        <div class="alert alert-danger" role="alert" id="alertBar">
+          Maybe it's time to switch to a new topic, or an internal error has occured. You can restart your conversation.
+        </div>
+      {% endif %}
+      <div id="chatWindow" class="chat-window container-fluid">
         {{talk | safe}}
       </div>
       <div class="action-bar container">          
         <div class="search-bar input-group">
           <form id="chat" action="/chat" method="POST">
             <div class="chat-element input-group">
-              <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage"></textarea>
-              <button class="btn continue" type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+              <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage" required></textarea>
+              <button class="p-lg continue" type="submit"><i class="fa-solid fa-paper-plane"></i></button>
             </div>    
           </form>
         </div>
         <div class="item-bar">
           <div><a class="link-icon" href="/dynamo" data-bs-toggle="tooltip" data-bs-placement="left" title="Restart chat"><i class="fa-solid fa-arrows-rotate fs-5"></i></a></div>
+          <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#personalizeModal"><i class="fa-solid fa-wand-sparkles fs-5" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Personalize"></i></a></div>
           <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#infoModal" ><i class="fa-solid fa-circle-info fs-5" data-bs-toggle="tooltip" data-bs-placement="right" title="About Dynamo"></i></a></div>
         </div>
       </div>
@@ -61,6 +67,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRQat7KEhk+l/6rjoQ1Vd+tSp8PfuHT5ewJ2hVZih" crossorigin="anonymous"></script>
     <script src="static/scripts/home.js"></script>
+    <script src="static/scripts/dynamo.js"></script>
     <div class="modal fade" id="profile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -136,13 +143,19 @@
             <h1 class="modal-title fs-5">Dynamo</h1>
           </div>
           <div class="modal-body">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">An item</li>
-              <li class="list-group-item">A second item</li>
-              <li class="list-group-item">A third item</li>
-              <li class="list-group-item">A fourth item</li>
-              <li class="list-group-item">And a fifth one</li>
+            Dynamo is your chat companion on bored.ai; designed best for 
+            small, honest and relatable conversations. You can talk to it
+            about anything you like, as long as it is safe and respectful.
+            <br><br>
+            Here are some ways you can engage in conversations with it:
+            <ul>
+              <li>Start by answering the icebreaker, or switch to another topic.</li>
+              <li>Talk about what you like and how you spend your time, or just go with the flow.</li>
+              <li>Ask Dynamo to discuss and interpret various ideas, like stories, poems or songs</li>
+              <li>Ask for links to various webpages based on the topic of your conversation or ask for something specific. (*)</li>
             </ul>
+            <br>
+            * Some of the links Dynamo may produce could be deprecated or invalid
           </div>
           <div class="modal-footer border-none">
             <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
@@ -266,6 +279,25 @@
                 </div>
               </div>
             </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" data-bs-backdrop="static" id="personalizeModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-none">
+            <h1 class="modal-title fs-5" id="exampleModalToggleLabel">About Personalization</h1>
+          </div>
+          <div class="modal-body">
+            By using Personalization, you are allowing bored.ai to analyse your chats, 
+            conversations and extract highlights and sentiments from past experiences.
+            If you proceed, Dynamo will begin to keep track of the previous few conversations
+            and curate it's responses accordingly. Press proceed to continue.
+          </div>
+          <div class="modal-footer border-none">
+            <a class="btn continue" href="/personalize">Proceed</a>
+            <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
           </div>
         </div>
       </div>

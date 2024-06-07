@@ -5,6 +5,7 @@
     --background-color: #eeeeee;
     --font-color: #31363f;
     --button-color: #607274;
+    --hover-button-color: rgb(96, 114, 116,0.70);
     --disabled-button-color: #c7c8cc;
     --shiny: gold;
 }

@@ -17,13 +17,27 @@
     align-items: center;
     color: var(--primary-color);
     text-wrap: wrap;
-    overflow: auto;
+    overflow-y: auto;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 .chat-window > p {
     color: var(--primary-color);
-    text-align: center;
     animation: fade 0.75s linear;
-    text-wrap: wrap;
+    word-wrap: break-word;
+    text-align: center;
+    margin: 0;
+}
+.chat-window > * {
+    color: var(--primary-color);
+    word-wrap: break-word;
+    text-align: center;
+    margin: 0;
+}
+
+.chat-window.overflow {
+    justify-content: flex-start;
+    overflow-y: auto;
 }
 
 li {
@@ -33,17 +47,13 @@ li {
 a {
     color: var(--primary-color);
 }
-.chat-window > * {
-    color: var(--primary-color);
-    text-wrap: wrap;
-}
 
 .action-bar {
     height: 20vh;
     background-color:  var(--disabled-button-color);
     border-radius: 0.25rem;
     display: flex;
-    gap:10px;
+    gap:20px;
     flex-direction: column;
     align-items: center;
     padding: 10px;
@@ -105,4 +115,11 @@ a {
 .link-icon:hover {
     cursor: pointer;
     color: var(--secondary-color);
+}
+
+.p-lg {
+    padding: 10px;
+}
+.p-lg:hover {
+    background-color:var(--hover-button-color);
 }

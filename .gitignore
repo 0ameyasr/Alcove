@@ -164,5 +164,4 @@ cython_debug/
 secrets.cfg
 bored-ai.pptx
 client_secret.json
-token.json
 creds.py

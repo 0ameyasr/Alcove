@@ -1,10 +1,12 @@
 from flask import Flask, render_template,redirect,request,session,make_response,url_for,jsonify
 from flask_pymongo import PyMongo
 from authlib.integrations.flask_client import OAuth
-import dynaweb,engine,gemini,prompts
+import dynaweb,engine,gemini,prompts,personalizer
 from datetime import datetime
 import configparser
 import google.generativeai as gemini_model
+from werkzeug.exceptions import NotFound,MethodNotAllowed,RequestTimeout,BadRequestKeyError,InternalServerError
+import google.api_core.exceptions as geminiExceptions
 import markdown
 
 app = Flask(__name__)
@@ -38,6 +40,31 @@ try:
 except Exception as e:
     print("Error connecting to MongoDB:", e)
 
+@app.errorhandler(NotFound)
+def not_found(error):
+    return render_template("response.html",code=404)
+
+@app.errorhandler(MethodNotAllowed)
+def method_not_allowed(error):
+    return render_template("response.html",code=405)
+
+@app.errorhandler(RequestTimeout)
+def method_not_allowed(error):
+    return render_template("response.html",code=408)
+
+@app.errorhandler(BadRequestKeyError)
+def bad_request_key_error(error):
+    return render_template("response.html",code=410)
+
+@app.errorhandler(InternalServerError)
+def internal_server_error(error):
+    return render_template("response.html",code=500)
+
+@app.errorhandler(geminiExceptions.InternalServerError)
+def internal_server_error(error):
+    return render_template("response.html",code=500)
+
+
 @app.route("/")
 def intro():
     if not session:
@@ -48,15 +75,11 @@ def intro():
 @app.route("/logout")
 def clear_session():
     session.clear()
-    return redirect("/")
-
-@app.route("/data")
-def print_data():
-    return str(data)
+    return redirect("/clear_cookies")
 
 @app.route("/clear_cookies")
 def clear_cookies():
-    response = make_response("Cookies cleared.")
+    response = make_response(redirect("/"))
     for cookie in request.cookies:
         response.set_cookie(cookie, expires=0)
     return response
@@ -76,10 +99,10 @@ def register():
     existing_user = mongo.db.users.find_one({"nickname":nickname})
     existing_mail = mongo.db.users.find_one({"recovery":recovery})
     if existing_user or existing_mail:
-        return render_template("response.html",code=200) #Duplicate user
+        return render_template("response.html",code=200)
     else:
         mongo.db.users.insert_one(user_creds)
-        return render_template("response.html",code=250) #Successful
+        return render_template("response.html",code=250)
     
 @app.route("/login",methods=["POST"])
 def login():
@@ -87,7 +110,7 @@ def login():
     safeword = request.form.get('safeword')
     existing_user = mongo.db.users.find_one({"nickname":nickname})
     if not existing_user:
-        return render_template("response.html",code=100) #Not registered
+        return render_template("response.html",code=100)
     if existing_user and existing_user["safeword"] == safeword:
         session["nickname"] = nickname
         session["recovery"] = existing_user["recovery"]
@@ -95,7 +118,7 @@ def login():
         response.set_cookie("first_visit","true")
         return response
     elif existing_user and existing_user["safeword"] != safeword:
-        return render_template("response.html",code=150) #Invalid safeword
+        return render_template("response.html",code=150)
     
 @app.route('/reset')
 def reset():
@@ -121,23 +144,37 @@ def authorize():
     
 @app.route("/home",methods=["GET","POST"])
 def home():
-    data["year"] = str(datetime.now().year)
-    desc_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
-    
-    if session:    
-        user_class = mongo.db.user_classes.find_one({"nickname":session["nickname"]})
-        if user_class:
-            data["desc"] = dynamic_web.get_class_description(user_class["class"])
-        data["display_result"] = False
-        if not (mongo.db.survey.find_one({"nickname":session["nickname"]})):
-            return redirect("/survey")
-        for cookie in request.cookies:
-            if cookie == "survey":
-                data["display_result"] = True
-                response = make_response(render_template("home.html",data=data))
-                response.set_cookie("survey",expires=0)
-                return response
-            if cookie == "first_visit":
+    try:
+        data["year"] = str(datetime.now().year)
+        desc_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
+        
+        if session:    
+            user_class = mongo.db.user_classes.find_one({"nickname":session["nickname"]})
+            if user_class:
+                data["desc"] = dynamic_web.get_class_description(user_class["class"])
+            data["display_result"] = False
+            if not (mongo.db.survey.find_one({"nickname":session["nickname"]})):
+                return redirect("/survey")
+            for cookie in request.cookies:
+                if cookie == "survey":
+                    data["display_result"] = True
+                    response = make_response(render_template("home.html",data=data))
+                    response.set_cookie("survey",expires=0)
+                    return response
+                if cookie == "first_visit":
+                    rec_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
+
+                    recommendations = [tag.capitalize() for tag in gemini.fit_prompt(rec_prompts.get_sentiment_corpus(True)).split()]
+                    data["top1"] = recommendations[0]
+                    data["top2"] = recommendations[1]
+                    data["top3"] = recommendations[2]
+                    data["top1_desc"] = dynamic_web.get_tag_tooltip(data["top1"])
+                    data["top2_desc"] = dynamic_web.get_tag_tooltip(data["top2"])
+                    data["top3_desc"] = dynamic_web.get_tag_tooltip(data["top3"])
+                    data["first_visit"] = True
+                    response = make_response(render_template("home.html",data=data))
+                    response.set_cookie("first_visit",expires=0)
+            else:
                 rec_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
 
                 recommendations = [tag.capitalize() for tag in gemini.fit_prompt(rec_prompts.get_sentiment_corpus(True)).split()]
@@ -147,25 +184,14 @@ def home():
                 data["top1_desc"] = dynamic_web.get_tag_tooltip(data["top1"])
                 data["top2_desc"] = dynamic_web.get_tag_tooltip(data["top2"])
                 data["top3_desc"] = dynamic_web.get_tag_tooltip(data["top3"])
-                data["first_visit"] = True
-                response = make_response(render_template("home.html",data=data))
-                response.set_cookie("first_visit",expires=0)
+                data["first_visit"] = False
+                print(data)
+                return render_template("home.html",data=data)
         else:
-            rec_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
-
-            recommendations = [tag.capitalize() for tag in gemini.fit_prompt(rec_prompts.get_sentiment_corpus(True)).split()]
-            data["top1"] = recommendations[0]
-            data["top2"] = recommendations[1]
-            data["top3"] = recommendations[2]
-            data["top1_desc"] = dynamic_web.get_tag_tooltip(data["top1"])
-            data["top2_desc"] = dynamic_web.get_tag_tooltip(data["top2"])
-            data["top3_desc"] = dynamic_web.get_tag_tooltip(data["top3"])
-            data["first_visit"] = False
-            print(data)
-            return render_template("home.html",data=data)
-    else:
+            return redirect("/")
+    except KeyError:
         return redirect("/")
-    
+        
 @app.route("/survey")
 def survey():
     if not session:
@@ -192,15 +218,53 @@ def survey_submit():
 
 @app.route("/dynamo")
 def dynamo():
-    icebreaker = dynamic_web.get_dynamo_icebreaker()
-    session["icebreaker"] = icebreaker
-    session["chat_config"] = prompts.prompt_corpus([]).get_chat_config(icebreaker=session["icebreaker"])
-    session["chat_history"] = []
-    gemini.config_dynamo(session["icebreaker"])
-    return render_template("dynamo.html",talk=session["icebreaker"])
+    try:
+        user = session["nickname"]
+        opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
+        if opted_in_user:
+            history = personalizer.get_dynamo_history(session["nickname"])
+            if not history or history == "":
+                icebreaker = dynamic_web.get_dynamo_icebreaker()
+                session["icebreaker"] = icebreaker
+            else:
+                icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
+                session["icebreaker"] = icebreaker    
+            gemini.config_dynamo(session["icebreaker"],user,history)
+        else:
+            icebreaker = dynamic_web.get_dynamo_icebreaker()
+            session["icebreaker"] = icebreaker
+            gemini.config_dynamo(session["nickname"],user,None)
+        return render_template("dynamo.html",talk=session["icebreaker"],error=False)
+    except KeyError:
+        return redirect("/")
 
 @app.route("/chat",methods=["POST"])
 def chat():
-    message = request.form["message"]
-    response = gemini.chat_dynamo(message)
-    return render_template("dynamo.html",talk=markdown.markdown(response.text))
+    try:
+        message = request.form["message"]
+        response, latest_message = gemini.chat_dynamo(message)
+        user_message = message
+        opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
+        if opted_in_user:
+            user_in_chats = mongo.db.chats.find_one({"nickname":session["nickname"]})
+            if not user_in_chats:
+                mongo.db.chats.insert_one({"nickname":session["nickname"],"history":""})
+            user_in_chats = mongo.db.chats.find_one({"nickname":session["nickname"]})
+            previous_history = user_in_chats["history"]
+            if previous_history == "" or previous_history[-1] == "~":
+                previous_history += "\n[CHAT] "+session["icebreaker"]
+            current_history = personalizer.build_history(previous_history,str(latest_message),user_message)
+            updated_history = mongo.db.chats.update_one({"nickname":session["nickname"]},{"$set":{"nickname":session["nickname"],"history":current_history}})
+        return render_template("dynamo.html",talk=markdown.markdown(response.text),error=False)
+    except Exception as e:
+        print(e)
+        return render_template("dynamo.html",talk=session["icebreaker"],error=True)
+
+@app.route("/personalize")
+def doPersonalize():
+    existing_user = mongo.db.opted_users.find_one({"nickname":session["nickname"]})
+    if not existing_user:
+        mongo.db.opted_users.insert_one({"nickname":session["nickname"]})
+        return redirect("/dynamo")
+    else:
+        return redirect("/dynamo")

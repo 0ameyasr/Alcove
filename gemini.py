@@ -1,6 +1,7 @@
 import google.generativeai as gemini
 import configparser
 import prompts
+import personalizer
 config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
@@ -31,10 +32,10 @@ def fit_prompt(prompt):
     response = model.generate_content(prompt)
     return response.text
 
-def config_dynamo(icebreaker):
-    resp = dynamo.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker=icebreaker))
+def config_dynamo(icebreaker,nickname,history):
+    resp = dynamo.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history))
     return resp
 
 def chat_dynamo(message):
     print(dynamo.history)
-    return dynamo.send_message(message)
+    return dynamo.send_message(message),dynamo.history[-1]
