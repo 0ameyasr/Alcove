@@ -1,4 +1,6 @@
 import random
+import engine
+
 class curate_web:
     def __init__(self) -> None:
         pass 
@@ -10,7 +12,6 @@ class curate_web:
             "challenger": "Engage in puzzles and games to keep your mind active and entertained, especially when your brain feels restless.",
             "generalist": "Explore a variety of activities to discover new hobbies and interests, or to find what truly excites you.",
             "dynamo": "Talk away your boredom by engaging in conversations to find clarity and direction.",
-            "scholar": "You know a lot, or you think you do. Anyways, there's no harm in diving deeper! Immerse yourself in comprehensive learning and expand your knowledge further.",
             "seeker": "Embrace your philosophical curiosity and learn new things to satisfy your quest for meaning.",
             "wanderer": "Embark on a journey of discovery and adventure, whether it is exploring the world or your inner self."
         }
@@ -18,105 +19,48 @@ class curate_web:
     
     def get_tag_tooltip(self,user_class:str) -> str:
         tooltips = {
-            "Shaman": [
-                "Find your inner peace.",
-                "Unwind and let go of worries.",
-                "Relax and destress.",
-                "Practice mindfulness exercises.",
-                "Relax to nature sounds.",
-                "Introspect daily.",
-                "Grow your first plant.",
-                "Meditate for clarity.",
-                "Take care of a plant.",
-                "Connect with nature."
-            ],
-            "Ace": [
-                "Boost your productivity.",
-                "Organize with calendars.",
-                "Find your passion.",
-                "Organize your week.",
-                "Analyze your strengths and weaknesses.",
-                "Plan your daily routine.",
-                "Utilize your time with the pomodoro technique.",
-                "Prepare for interviews.",
-                "Set achievable goals.",
-                "Track your progress."
-            ],
-            "Challenger": [
-                "Engage in mind puzzles.",
-                "Answer a quiz on any topic.",
-                "Play a memory game.",
-                "Solve a daily challenge.",
-                "Brainstorm over riddles.",
-                "Challenge an unbeatable opponent.",
-                "Test your limits.",
-                "Compete in online games.",
-                "Enhance your problem solving.",
-                "Solve complex riddles."
-            ],
-            "Generalist": [
-                "Explore new activities.",
-                "Discover new hobbies.",
-                "Find what excites you.",
-                "Explore a new hobby.",
-                "Try something new.",
-                "Find your new pass-time.",
-                "Sample diverse interests.",
-                "Experiment with crafts.",
-                "Learn a new skill.",
-                "Discover a new hobby."
-            ],
-            "Dynamo": [
-                "Engage in conversations.",
-                "Talk to find clarity.",
-                "Discuss anything.",
-                "Talk away boredom.",
-                "Have a chat.",
-                "Improve your soft-skills.",
-                "Join discussion groups.",
-                "Make a new friend",
-                "Debate topics of interest.",
-                "Enhance communication skills."
-            ],
-            "Scholar": [
-                "Dive into deep learning.",
-                "Expand your knowledge.",
-                "Immerse in comprehensive study.",
-                "Dive deeper into anything.",
-                "Find the best references.",
-                "Consolidate what you know.",
-                "Research thoroughly.",
-                "Study advanced topics.",
-                "Read academic papers.",
-                "Master complex subjects."
-            ],
-            "Seeker": [
-                "Satisfy your curiosity.",
-                "Learn new philosophies.",
-                "Embrace your quest for meaning.",
-                "Explore philosophy.",
-                "Discuss various theories.",
-                "Explore metaphysical concepts.",
-                "Question life's big ideas.",
-                "Debate ethical dilemmas.",
-                "Reflect on existential questions.",
-                "Contemplate spiritual beliefs."
-            ],
-            "Wanderer": [
-                "Embark on an adventure.",
-                "Explore the world.",
-                "Journey into discovery.",
-                "Plan your next vacation.",
-                "Find a new point of interest.",
-                "Travel to unknown places.",
-                "Discover hidden gems.",
-                "Create a travel itinerary.",
-                "Experience different cultures.",
-                "Navigate new territories."
-            ]
+            "Shaman": 
+                """Relax and engage in mindfulness activities,
+                whether it be guided meditation, seeking therapy
+                or doing things your way.
+                """
+            ,
+            "Ace": 
+                """Utilise your time by planning your routine,
+                organizing your schedule or using various tools
+                to enhance efficiency. Or, just get some advice.
+                """
+            ,
+            "Challenger":
+                """Brainstorm over tricky riddles, challenging
+                puzzles or go against an unbeatable opponent
+                in various strategy games.
+                """
+            ,
+            "Generalist": 
+                """Find a new hobby for yourself, and learn 
+                   how to approach it. Or, discover new ways
+                   to enrich those you already enjoy!
+                """
+            ,
+            "Dynamo":
+                """Engage in quick and dynamic conversations with 
+                Dynamo, your AI-chat companion on bored.ai"""
+            ,
+            "Seeker":
+                """Debate on various philosophies and paradoxes, or
+                just discover something you'd like to learn or know
+                about.
+                """
+            ,
+            "Wanderer":
+                """Plan your next vacation or discover various points
+                of interests and places that you might like. Or, virtually
+                explore the world!
+                """
         }
-        return random.choice(tooltips[user_class])
-    
+        return tooltips[user_class]
+
     def get_dynamo_icebreaker(self):
         icebreakers = [
         "What's your favorite hobby?",
@@ -180,3 +124,4 @@ class curate_web:
         "Have you seen anything funny online recently?",
         "What’s something that made you smile today?"]
         return random.choice(icebreakers)
+    

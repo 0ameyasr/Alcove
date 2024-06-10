@@ -37,5 +37,4 @@ def config_dynamo(icebreaker,nickname,history):
     return resp
 
 def chat_dynamo(message):
-    print(dynamo.history)
     return dynamo.send_message(message),dynamo.history[-1]

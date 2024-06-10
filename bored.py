@@ -62,8 +62,11 @@ def internal_server_error(error):
 
 @app.errorhandler(geminiExceptions.InternalServerError)
 def internal_server_error(error):
-    return render_template("response.html",code=500)
+    return redirect("/dynamo")
 
+@app.errorhandler(geminiExceptions.ResourceExhausted)
+def resource_exhausted(error):
+    return redirect("/dynamo")
 
 @app.route("/")
 def intro():
@@ -145,7 +148,7 @@ def authorize():
 @app.route("/home",methods=["GET","POST"])
 def home():
     try:
-        data["year"] = str(datetime.now().year)
+        session["year"] = str(datetime.now().year)
         desc_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
         
         if session:    
@@ -171,6 +174,7 @@ def home():
                     data["top1_desc"] = dynamic_web.get_tag_tooltip(data["top1"])
                     data["top2_desc"] = dynamic_web.get_tag_tooltip(data["top2"])
                     data["top3_desc"] = dynamic_web.get_tag_tooltip(data["top3"])
+                    
                     data["first_visit"] = True
                     response = make_response(render_template("home.html",data=data))
                     response.set_cookie("first_visit",expires=0)
@@ -220,6 +224,8 @@ def survey_submit():
 def dynamo():
     try:
         user = session["nickname"]
+        session["opted_users%"] = home_engine.opted_users_p()
+        session["is_opted"] = home_engine.is_opted(session["nickname"])
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
         if opted_in_user:
             history = personalizer.get_dynamo_history(session["nickname"])
@@ -234,7 +240,7 @@ def dynamo():
             icebreaker = dynamic_web.get_dynamo_icebreaker()
             session["icebreaker"] = icebreaker
             gemini.config_dynamo(session["nickname"],user,None)
-        return render_template("dynamo.html",talk=session["icebreaker"],error=False)
+        return render_template("dynamo.html",talk=session["icebreaker"],data=data,error=False)
     except KeyError:
         return redirect("/")
 
@@ -268,3 +274,9 @@ def doPersonalize():
         return redirect("/dynamo")
     else:
         return redirect("/dynamo")
+
+@app.route("/depersonalize")
+def dontPersonalize():
+    mongo.db.opted_users.delete_one({"nickname":session["nickname"]})
+    mongo.db.chats.delete_one({"nickname":session["nickname"]})
+    return redirect("/dynamo")

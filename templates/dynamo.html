@@ -17,23 +17,7 @@
   </head>
 
   <body>
-    <header class="p-3 mb-3">
-      <div class="container-fluid">
-        <div class="d-flex flex-wrap align-items-center justify-content-between">
-          <button class="btn toggle-sidebar fc-dark" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
-            <i class="fa-solid fa-bars fs-5"></i>
-          </button>
-          <a href="/" class="d-flex align-items-center mb-lg-0 text-dark text-decoration-none" draggable="false">
-            <span class="shiny"><img src="static/img/web_icon.png" alt="user" width="32" height="32"/></span>
-          </a>
-          <div class="order-lg-3">
-            <a data-bs-toggle="modal" data-bs-target="#profile" class="d-block">
-              <img src="static/img/user.png" alt="user" width="32" height="32" class="profile-icon rounded-circle"/>
-            </a>
-          </div>
-        </div>
-      </div>
-    </header>
+    {% include "partial_header.html"%}
 
     <div class="window container-fluid d-flex flex-col">
       {% if error: %}
@@ -60,82 +44,13 @@
         </div>
       </div>
     </div>
-    
-        
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRQat7KEhk+l/6rjoQ1Vd+tSp8PfuHT5ewJ2hVZih" crossorigin="anonymous"></script>
     <script src="static/scripts/home.js"></script>
     <script src="static/scripts/dynamo.js"></script>
-    <div class="modal fade" id="profile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="border-none modal-header">
-            <h1 class="modal-title fs-5" id="profile-title">Profile</h1>
-          </div>
-          <div class="border-none modal-body">
-            <div class="profile-tab">
-              <div class="user-icon">
-                <img
-                  src="static/img/user.png"
-                  alt="user"
-                  width="100"
-                  height="100"
-                />
-              </div>
-              <div
-                class="d-flex flex-column flex-wrap flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center"
-              >
-                <div class="list-group">
-                  <a
-                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
-                    aria-current="true"
-                  >
-                    <div class="d-flex gap-2 w-100 justify-content-between">
-                      <div>
-                        <h6 class="mb-0">Nickname</h6>
-                        <p class="mb-0 opacity-75">{{session["nickname"]}}</p>
-                      </div>
-                    </div>
-                  </a>
-                  <a
-                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
-                    aria-current="true"
-                  >
-                    <div class="d-flex gap-2 w-100 justify-content-between">
-                      <div>
-                        <h6 class="mb-0">Recovery mail</h6>
-                        <p class="mb-0 opacity-75">{{session["recovery"]}}</p>
-                      </div>
-                    </div>
-                  </a>
-                  <a
-                    href="/logout"
-                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
-                    aria-current="true"
-                  >
-                    <div class="d-flex gap-2 w-100 justify-content-between">
-                      <div>
-                        <h6 class="mb-0">Log-out</h6>
-                        <p class="mb-0 opacity-75">
-                          Log-out from this session.
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="border-none modal-footer">
-            <button type="button" class="btn dismiss" data-bs-dismiss="modal">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+
     <div class="modal fade" id="infoModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -163,144 +78,71 @@
         </div>
       </div>
     </div>
-    <div class="offcanvas offcanvas-start offcanvas-menu" data-bs-backdrop="static" tabindex="-1" id="sidebar">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title">bored.ai - Menu</h5>
-        <button type="button" class="btn dismiss" data-bs-dismiss="offcanvas">
-          Close
-        </button>
-      </div>
-      <div class="menu-content offcanvas-body">
-        <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
-          <div class="link-lists list-group">
-            <a href="/dynamo" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-comments"></i> Talk away boredom
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Talk to bored.ai, whenever and wherever and about whatever
-                    you want.
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a href="/seeker" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-lines-leaning"></i> Learn something
-                    new
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Explore various ideas, theories or things you might find
-                    interesting.
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a href="/scholar" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-magnifying-glass"></i> Dive into anything
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    If you're wanting to discuss something you find interesting
-                    or would like to know better.
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a href="/challenger" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-puzzle-piece"></i> Solve challenges
-                    and puzzles
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Brainstorm over engaging puzzles and difficult challenges.
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a href="/shaman" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-leaf"></i> Relax and unwind
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Take some time off and enjoy moments of calm and relaxation.
-                  </p>
-                </div>
-              </div>
-            </a>
-
-            <a href="/ace" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-tasks"></i> Organize yourself
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Create a plan, declutter your space, and manage your time
-                    effectively.
-                  </p>
-                </div>
-              </div>
-            </a>
-
-            <a href="/generalist" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-paint-brush"></i> Discover hobbies
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Explore new activities and find your passion in various
-                    hobbies.
-                  </p>
-                </div>
-              </div>
-            </a>
-
-            <a href="/wanderer" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-map-marker-alt"></i> Explore new POIs
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Discover new points of interest and expand your horizons.
-                  </p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="modal fade" data-bs-backdrop="static" id="personalizeModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+          {% if not session["is_opted"]:%}
           <div class="modal-header border-none">
             <h1 class="modal-title fs-5" id="exampleModalToggleLabel">About Personalization</h1>
           </div>
           <div class="modal-body">
             By using Personalization, you are allowing bored.ai to analyse your chats, 
-            conversations and extract highlights and sentiments from past experiences.
+            conversations and extract highlights, sentiments from past experiences.
             If you proceed, Dynamo will begin to keep track of the previous few conversations
-            and curate it's responses accordingly. Press proceed to continue.
+            and curate it's responses accordingly.
+            <br><br>
+            More than <b>{{session["opted_users%"]}}%</b> of our users have opted-in for Personalization.
+
+            <br><br>
+            <h3>How it works</h3>
+            When Personalization is on, bored.ai analyses your past messages and conversations
+            to improve the responses provided by Dynamo. Here is how it works:
+            <ol>
+              <li>Your history is being stored on our cloud, and undergoes constant analysis</li>
+              <li>Your data and responses are analyzed to ensure the conversations remain relatable</li>
+            </ol>
+            <br>
+            <h3>Benefits of Personalization</h3>
+            <ol>
+              <li>Dynamo remembers your interests and things that you talk about.</li>
+              <li>You can resume new conversations on the context of where you left before.</li>
+              <li>Responses are more accurate and fitting to your style</li>
+            </ol>
+            <br>
+            If you're not using Personalization, Dynamo will not retain inter-conversational text 
+            and your chat history. Each conversation would be treated uniquely.
           </div>
           <div class="modal-footer border-none">
             <a class="btn continue" href="/personalize">Proceed</a>
             <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
           </div>
+          {% endif %}
+          {% if session["is_opted"]:%}
+          <div class="modal-header border-none">
+            <h1 class="modal-title fs-5" id="exampleModalToggleLabel">About Personalization</h1>
+          </div>
+          <div class="modal-body">
+            You are already using Personalization. If you would like to stop this, please press the 
+            "Opt-Out" button. 
+            <br><br>
+            <h3>What's going on</h3>
+            <ol>
+              <li>Your history is being stored on our cloud, and is undergoing constant analysis</li>
+              <li>Your data and responses are being analysed to ensure that conversations remain relatable</li>
+            </ol>
+          </div>
+          <div class="modal-footer border-none">
+            <a class="btn continue dismiss" href="/depersonalize">Opt-Out</a>
+            <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
+
+    {% include "partial_profile.html"%}
+    {% include "partial_menu.html"%}
+    {% include "partial_footer.html"%}
+
   </body>
 </html>

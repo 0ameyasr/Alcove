@@ -16,51 +16,20 @@
   </head>
 
   <body>
-    <header class="p-3 mb-3">
-      <div class="container-fluid">
-        <div
-          class="d-flex flex-wrap align-items-center justify-content-between"
-        >
-          <button
-            class="btn toggle-sidebar fc-dark"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#sidebar"
-          >
-            <i class="fa-solid fa-bars fs-5"></i>
-          </button>
-          <a
-            href="/"
-            class="d-flex align-items-center mb-lg-0 text-dark text-decoration-none"
-            draggable="false"
-          >
-            <span class="shiny"
-              ><img
-                src="static/img/web_icon.png"
-                alt="user"
-                width="32"
-                height="32"
-            /></span>
-          </a>
-          <div class="order-lg-3">
-            <a data-bs-toggle="modal" data-bs-target="#profile" class="d-block">
-              <img src="static/img/user.png" alt="user" width="32" height="32" class="profile-icon rounded-circle"/>
-            </a>
-          </div>
-        </div>
-      </div>
-    </header>
+    {% include "partial_header.html"%}
+
     <div class="central-division container">
       <div class="fs-1 info">
         Hello, <span class="shine">{{session["nickname"]}}</span>!
       </div>
-      <br />
+      <br/>
       <div class="tipbar">
         <p class="h4"><i class="fa-regular fa-lightbulb"></i> Tip of the day</p>
         <p class="fs-6">{{data["desc"]}}</p>
       </div>
     </div>
 
-    <div class="container px-4 py-5" id="custom-cards">
+    <div class="container px-4 py-5">
       <h2 class="pb-2 border-bottom">Tags for you</h2>
         <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
           <div class="col">
@@ -70,11 +39,11 @@
                   <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top1"]}}</h3>
                   <ul class="d-flex list-unstyled mt-auto">
                     <li class="me-auto">
-                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                      <img src="static/img/web_icon.png" width="32" height="32" class="rounded-circle border border-white">
                     </li>
                   </ul>
                 </div>
-                <div class="card-body card-desc">
+                <div class="card-body card-desc text-center">
                   {{data["top1_desc"]}}
                 </div>
               </div>
@@ -87,11 +56,11 @@
                   <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top2"]}}</h3>
                   <ul class="d-flex list-unstyled mt-auto">
                     <li class="me-auto">
-                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                      <img src="static/img/web_icon.png" width="32" height="32" class="rounded-circle border border-white">
                     </li>
                   </ul>
                 </div>
-                <div class="card-body card-desc">
+                <div class="card-body card-desc text-center">
                   {{data["top2_desc"]}}
                 </div>
               </div>
@@ -104,11 +73,11 @@
                   <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{data["top3"]}}</h3>
                   <ul class="d-flex list-unstyled mt-auto">
                     <li class="me-auto">
-                      <img src="static/img/web_icon.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                      <img src="static/img/web_icon.png" width="32" height="32" class="rounded-circle border border-white">
                     </li>
                   </ul>
                 </div>  
-                <div class="card-body card-desc">
+                <div class="card-body card-desc text-center">
                   {{data["top3_desc"]}}
                 </div>
               </div>
@@ -135,251 +104,15 @@
         It aims to make this mindless state, something more "mindful".
       </p>
     </div>
-
+    {% include "partial_footer.html"%}
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="static/scripts/home.js"></script>
 
-    <div class="modal fade" id="profile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="border-none modal-header">
-            <h1 class="modal-title fs-5" id="profile-title">Profile</h1>
-          </div>
-          <div class="border-none modal-body">
-            <div class="profile-tab">
-              <div class="user-icon">
-                <img
-                  src="static/img/user.png"
-                  alt="user"
-                  width="100"
-                  height="100"
-                />
-              </div>
-              <div
-                class="d-flex flex-column flex-wrap flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center"
-              >
-                <div class="list-group">
-                  <a
-                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
-                    aria-current="true"
-                  >
-                    <div class="d-flex gap-2 w-100 justify-content-between">
-                      <div>
-                        <h6 class="mb-0">Nickname</h6>
-                        <p class="mb-0 opacity-75">{{session["nickname"]}}</p>
-                      </div>
-                    </div>
-                  </a>
-                  <a
-                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
-                    aria-current="true"
-                  >
-                    <div class="d-flex gap-2 w-100 justify-content-between">
-                      <div>
-                        <h6 class="mb-0">Recovery mail</h6>
-                        <p class="mb-0 opacity-75">{{session["recovery"]}}</p>
-                      </div>
-                    </div>
-                  </a>
-                  <a
-                    href="/logout"
-                    class="list-group-item list-group-item-action d-flex gap-3 py-3"
-                    aria-current="true"
-                  >
-                    <div class="d-flex gap-2 w-100 justify-content-between">
-                      <div>
-                        <h6 class="mb-0">Log-out</h6>
-                        <p class="mb-0 opacity-75">
-                          Log-out from this session.
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="border-none modal-footer">
-            <button type="button" class="btn dismiss" data-bs-dismiss="modal">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="offcanvas offcanvas-start offcanvas-menu" data-bs-backdrop="static" tabindex="-1" id="sidebar">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title">bored.ai - Menu</h5>
-        <button type="button" class="btn dismiss" data-bs-dismiss="offcanvas">
-          Close
-        </button>
-      </div>
-      <div class="menu-content offcanvas-body">
-        <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
-          <div class="link-lists list-group">
-            <a href="/dynamo" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-comments"></i> Talk away boredom
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Talk to bored.ai, whenever and wherever and about whatever
-                    you want.
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a href="/seeker" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-lines-leaning"></i> Learn something
-                    new
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Explore various ideas, theories or things you might find
-                    interesting.
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a href="/scholar" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-magnifying-glass"></i> Dive into anything
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    If you're wanting to discuss something you find interesting
-                    or would like to know better.
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a href="/challenger" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-puzzle-piece"></i> Solve challenges
-                    and puzzles
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Brainstorm over engaging puzzles and difficult challenges.
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a href="/shaman" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-leaf"></i> Relax and unwind
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Take some time off and enjoy moments of calm and relaxation.
-                  </p>
-                </div>
-              </div>
-            </a>
-
-            <a href="/ace" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-tasks"></i> Organize yourself
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Create a plan, declutter your space, and manage your time
-                    effectively.
-                  </p>
-                </div>
-              </div>
-            </a>
-
-            <a href="/generalist" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-paint-brush"></i> Discover hobbies
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Explore new activities and find your passion in various
-                    hobbies.
-                  </p>
-                </div>
-              </div>
-            </a>
-
-            <a href="/wanderer" class="link-tab list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0 highlight">
-                    <i class="fa-solid fa-map-marker-alt"></i> Explore new POIs
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                    Discover new points of interest and expand your horizons.
-                  </p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    {% include "partial_profile.html"%}
+    {% include "partial_menu.html"%}
     {% if data["first_visit"]: %}
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
-        <div class="toast-header">
-          <img src="static/img/web_icon.png" class="rounded me-2" alt="ai" width="32" height="32">
-          <strong class="me-auto">bored.ai</strong>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-          <h2 class="fw-bold mb-0">Welcome</h2>
-    
-          <ul class="d-grid gap-4 my-5 list-unstyled small">
-            <li class="d-flex gap-4">
-              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
-                <i class="fa-solid fa-bars fs-1"></i>
-              </span>
-              <div>
-                <h5 class="mb-0">Get Started</h5>
-                Click on the menu icon for quick links to various tools.
-              </div>
-            </li>
-            <li class="d-flex gap-4">
-              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
-                <i class="fa-solid fa-user-clock fs-2"></i>
-              </span>
-              <div>
-                <h5 class="mb-0">No limits</h5>
-                Usage has no limits, but this may depend on how frequent
-                you're using bored.ai
-              </div>
-            </li>
-            <li class="d-flex gap-4">
-              <span class="m-icon bi text-body-secondary flex-shrink-0 d-flex">
-                <i class="fa-solid fa-wand-magic-sparkles fs-2"></i>
-              </span>
-              <div>
-                <h5 class="mb-0">For you</h5>
-                Your experience on bored.ai has been curated as per your interests, learning from every interaction.
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    {% include "partial_toast.html"%}
     {% endif %}
   </body>
-  <script>
-    window.onload = () => {
-    const toast = document.getElementById('liveToast')
-    const toast_bs = bootstrap.Toast.getOrCreateInstance(toast)
-    toast_bs.show()}
-  </script>
 </html>

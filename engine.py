@@ -69,3 +69,11 @@ class engine_client:
         else:
             print("[ERROR] engine_client > build_tags(): No associated survey response found.")
             return None
+    
+    def opted_users_p(self):
+        opted_users = self.client["credentials"]["opted_users"]
+        users = self.client["credentials"]["users"]
+        return int((opted_users.count_documents({}) / users.count_documents({})) * 100)
+    
+    def is_opted(self,nickname): 
+        return True if self.client["credentials"]["opted_users"].find_one({"nickname":nickname}) else False

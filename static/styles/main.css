@@ -149,3 +149,12 @@ border-radius: 0.25rem;
 .link-tab {
     border: 1px solid var(--secondary-color);
 }
+
+.profile-content {
+    background-color: var(--primary-color);
+}
+
+.user-icon {
+    border: 3px solid black;
+    border-radius: 50%;
+}

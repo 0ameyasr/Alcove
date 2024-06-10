@@ -21,7 +21,6 @@ class prompt_corpus:
             shaman = for those who want to relax and unwind (for those who are stressed or neutral)
             ace = for those who want to be productive and organize themselves (for those who are neutral)
             generalist = for those wanting to discover new hobbies and interests 
-            scholar = for those who read a lot and want to learn things more comprehensively
             dynamo = for those who are confused or just want to talk or don't really know what to do
             wanderer = for those willing to explore new POIs to travel to or explore
             Based on the sentiments extracted, take all factors in consideration and return the recommended page  
@@ -39,7 +38,6 @@ class prompt_corpus:
             shaman = for those who want to relax and unwind (for those who are stressed or neutral)
             ace = for those who want to be productive and organize themselves (for those who are neutral)
             generalist = for those wanting to discover new hobbies and interests 
-            scholar = for those who read a lot and want to learn things more comprehensively
             dynamo = for those who are confused or just want to talk or don't really know what to do
             wanderer = for those willing to explore new POIs to travel to or explore  
 
@@ -113,9 +111,8 @@ class prompt_corpus:
                 3.	Relax and unwind
                 4.	Organize yourself
                 5.	Discover hobbies
-                6.	Dive into anything
-                7.	Talk away boredom
-                8.	Explore new POIs
+                6.	Talk away boredom
+                7.	Explore new POIs
 
                 If the user could use something along the lines of the above activities, respond as follows, for example:
                 "You can open the menu on the top-left corner of your screen and click on the 'Discover hobbies' pane"
@@ -136,6 +133,9 @@ class prompt_corpus:
                 6. Being as helpful as you can.
                 7. Listing things they ask you to do, but briefly separated in commas or unordered lists (5 points maximum)
                 8. Giving links to pages where they might find relevant information.
+
+                For links, use Wikipedia for information, Google Images for images, and YouTube for videos,
+                Spotify for music.
                 
                 Don't write very verbose responses, just restrict your responses to a single paragraph.
                 If you want to link the user to another website relevant to the conversation, return the link to them, 
@@ -180,11 +180,11 @@ class prompt_corpus:
             {history}
 
             Using this history, ask exactly one relevant question as an icebreaker for a new conversation.
+            The icebreaker should contain an opportunity to start of from where the User left, and should 
+            suggest something related to what was previously discussed.
 
-            examples,
-            How has your day been so far? Felt tired recently?
-            Would you like to talk more about cats, or should we talk about another topic?
-            I remember you weren't keeping well the last time we talked. Are you better now?
-            How has work been? Did you get the promotion?
+            Some example formats:
+            We talked about [highlights] when we last met. Do you want to continue the conversation?
+
             [ONLY RETURN THE RELEVANT ICEBREAKER]
         """

@@ -1,0 +1,51 @@
+<div class="modal fade" id="profile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content profile-content">
+      <div class="border-none modal-header">
+        <h1 class="modal-title fs-5" id="profile-title">Profile</h1>
+      </div>
+      <div class="border-none modal-body">
+        <div class="profile-tab">
+          <div class="user-icon">
+            <img src="static/img/user.png" alt="user" width="100" height="100"/>
+          </div>
+          <div class="d-flex flex-column flex-wrap flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
+            <div class="list-group">
+              <a class="list-group-item list-group-item-action d-flex gap-3 py-3 link-tab" aria-current="true">
+                <div class="d-flex gap-2 w-100 justify-content-between">
+                  <div>
+                    <h6 class="mb-0">Nickname</h6>
+                    <p class="mb-0 opacity-75">{{session["nickname"]}}</p>
+                  </div>
+                </div>
+              </a>
+              <a class="list-group-item list-group-item-action d-flex gap-3 py-3 link-tab" aria-current="true">
+                <div class="d-flex gap-2 w-100 justify-content-between">
+                  <div>
+                    <h6 class="mb-0">Recovery mail</h6>
+                    <p class="mb-0 opacity-75">{{session["recovery"]}}</p>
+                  </div>
+                </div>
+              </a>
+              <a href="/logout" class="list-group-item list-group-item-action d-flex gap-3 py-3 link-tab" aria-current="true">
+                <div class="d-flex gap-2 w-100 justify-content-between">
+                  <div>
+                    <h6 class="mb-0">Log-out</h6>
+                    <p class="mb-0 opacity-75">
+                      Log-out from this session.
+                    </p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="border-none modal-footer">
+        <button type="button" class="btn dismiss" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

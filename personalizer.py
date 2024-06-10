@@ -15,6 +15,7 @@ def get_dynamo_history(nickname):
     mongo = MongoClient(config["mongodb"]["uri"])
     chats = mongo["credentials"]["chats"]
     user = chats.find_one({"nickname":nickname})
+    
     if user:
         history = str(user["history"])
         history = history.replace("\\n","").replace("\\","").strip()

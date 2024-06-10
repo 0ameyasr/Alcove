@@ -1,0 +1,19 @@
+<header class="p-3 mb-3">
+    <div class="container-fluid">
+      <div class="d-flex flex-wrap align-items-center justify-content-between">
+        <button class="btn toggle-sidebar fc-dark" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
+          <i class="fa-solid fa-bars fs-5" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Open Menu"></i>
+        </button>
+        <a href="/" class="d-flex align-items-center mb-lg-0 text-dark text-decoration-none" draggable="false">
+          <span class="shiny">
+            <img src="static/img/web_icon.png" alt="user" width="32" height="32"/>
+          </span>
+        </a>
+        <div class="order-lg-3">
+          <a data-bs-toggle="modal" data-bs-target="#profile" class="d-block">
+            <img src="static/img/user.png" alt="user" width="32" height="32" title={{session["nickname"]}} class="profile-icon rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom"/>
+          </a>
+        </div>
+      </div>
+    </div>
+</header>
