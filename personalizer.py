@@ -1,5 +1,7 @@
 from pymongo import MongoClient
+import urllib.parse
 import configparser
+import requests
 
 def build_history(conversation_history,latest_message:str,user_message:str):
     trace='role: "model"'
@@ -22,3 +24,23 @@ def get_dynamo_history(nickname):
         return history
     else:
         return ""
+
+def get_clean_history(nickname):
+    history = get_dynamo_history(nickname)
+    count_chats = history.count("[CHAT]")
+    duplex_pairs = history.split("~")
+
+    if count_chats > 30:
+        duplex_pairs = duplex_pairs[29:]
+        config = configparser.ConfigParser()
+        config.read("secrets.cfg")
+        mongo = MongoClient(config["mongodb"]["uri"])
+        chats = mongo["credentials"]["chats"]
+        updated_history = ''.join(duplex_pairs)
+        chats.update_one({"nickname":nickname},{"$set":{"history":updated_history}})
+        return updated_history
+    else:
+        return history
+    
+def get_seeker_articles(nickname):
+    print("")

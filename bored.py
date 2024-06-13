@@ -1,5 +1,6 @@
 from flask import Flask, render_template,redirect,request,session,make_response,url_for,jsonify
 from flask_pymongo import PyMongo
+from gridfs import GridFS
 from authlib.integrations.flask_client import OAuth
 import dynaweb,engine,gemini,prompts,personalizer
 from datetime import datetime
@@ -18,6 +19,7 @@ app.config["SECRET_KEY"] = config['captcha']['secret_key']
 app.config["SITE_KEY"] = config['captcha']['site_key']
 mongo = PyMongo(app)
 oauth = OAuth(app)
+
 home_engine = engine.engine_client(app.config["MONGO_URI"])
 dynamic_web = dynaweb.curate_web()
 data = {}
@@ -228,7 +230,7 @@ def dynamo():
         session["is_opted"] = home_engine.is_opted(session["nickname"])
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
         if opted_in_user:
-            history = personalizer.get_dynamo_history(session["nickname"])
+            history = personalizer.get_clean_history(session["nickname"])
             if not history or history == "":
                 icebreaker = dynamic_web.get_dynamo_icebreaker()
                 session["icebreaker"] = icebreaker
@@ -265,6 +267,21 @@ def chat():
     except Exception as e:
         print(e)
         return render_template("dynamo.html",talk=session["icebreaker"],error=True)
+    
+@app.route("/seeker")
+def seeker():
+    user = mongo.db.seeker.find_one({"nickname":session["nickname"]})
+    if not user or not user["survey"]:
+        mongo.db.seeker.insert_one({"nickname":session["nickname"],"survey":"False"})
+        session["askTopics"] = True
+    return render_template("seeker.html")
+
+@app.route("/seeker/intro",methods=["POST"])
+def seeker_intro():
+    topics = list(dict(request.form).keys())
+    session["askTopics"] = False
+    mongo.db.seeker.update_one({"nickname":session["nickname"],"survey":"False"},{"$set":{"survey":"True","topics":topics}})
+    return redirect("/seeker")
 
 @app.route("/personalize")
 def doPersonalize():
