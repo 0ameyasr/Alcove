@@ -33,3 +33,13 @@
 .topic-content {
     background-color: var(--primary-color);
 }
+
+.seeker-intro {
+    height: 60vh;
+    background-color: var(--font-color);
+    border-radius: 0.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}

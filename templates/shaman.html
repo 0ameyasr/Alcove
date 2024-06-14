@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bored.ai</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link rel="icon" href="static/img/web_icon.png" />
+    <link rel="stylesheet" href="static/styles/main.css" />
+    <link rel="stylesheet" href="static/styles/home.css" />
+    <link rel="stylesheet" href="static/styles/shaman.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+  </head>
+
+  <body>
+    {% include "partial_header.html"%}
+    <div class="window container d-flex flex-col">
+        <h1 class="h1">Talk it out</h1>
+        <hr>
+        <div class="container">
+            <div class="accordion accordion-flush border rounded-3">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                      Suggested Topics
+                    </button>
+                  </h2>
+                  <div id="flush-collapseOne" class="accordion-collapse collapse">
+                    <div class="accordion-body">{{session["sugges"]}}</div>
+                  </div>
+                </div>
+              </div>
+        </div>
+        <br>
+        {% if error: %}
+          <div class="alert alert-danger" role="alert" id="alertBar">
+            Maybe it's time to switch to a new topic, or an internal error has occured. You can restart your conversation.
+          </div>
+        {% endif %}
+        <div id="chatWindow" class="chat-window container-fluid">
+          {{talk | safe}}
+        </div>
+        <div class="action-bar container">          
+          <div class="search-bar input-group">
+            <form id="chat" action="/chat" method="POST">
+              <div class="chat-element input-group">
+                <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage" required></textarea>
+                <button class="p-lg continue" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
+              </div>    
+            </form>
+          </div>
+          <div class="item-bar">
+            <div><a class="link-icon" href="/shaman" data-bs-toggle="tooltip" data-bs-placement="left" title="Restart chat"><i class="fa-solid fa-arrows-rotate fs-5"></i></a></div>
+            <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#personalizeModal"><i class="fa-solid fa-wand-sparkles fs-5" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Personalize"></i></a></div>
+            <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#infoModal" ><i class="fa-solid fa-circle-info fs-5" data-bs-toggle="tooltip" data-bs-placement="right" title="About Shaman"></i></a></div>
+          </div>
+        </div>
+    </div>
+    {% include "partial_profile.html"%}
+    {% include "partial_menu.html"%}
+    {% include "partial_footer.html"%}
+    <div class="modal fade" id="infoModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header border-none">
+              <h1 class="modal-title fs-5">Shaman</h1>
+            </div>
+            <div class="modal-body">
+              Similar to Dynamo, Shaman is your chat companion on bored.ai, but it 
+              comes with a few twists. It's for times where you're not feeling 
+              yourself, or you want to clear your head and say things you wouldn't
+              share with anyone. It doesn't judge and it's all ears.
+              <br><br>
+              Here are some ways you can engage in conversations with it:
+              <ul>
+                <li>Talk about things that have been troubling you lately.</li>
+                <li>Get advice on how you can cope with your problems and improve your mood.</li>
+                <li>Help understand what you're going through and how you can help yourself.</li>
+                <li>Just be yourself, because there are no barriers. (*)</li>
+              </ul>
+              (*) Despite the relaxed topic filtering, please make sure you do not 
+              engage in disrespectful or harmful conversations.
+              <br><br>
+              <b>Recommendation:</b> To retain inter-conversational history and allow
+              Shaman to understand you better, we recommend you turn "Personalization"
+              on.
+            </div>
+            <div class="modal-footer border-none">
+              <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="modal fade" data-bs-backdrop="static" id="personalizeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            {% if not session["is_opted"]:%}
+            <div class="modal-header border-none">
+              <h3 class="modal-title fs-5" id="exampleModalToggleLabel">About Personalization</h3>
+            </div>
+            <div class="modal-body">
+              By using Personalization, you are allowing bored.ai to analyse your chats, 
+              conversations and extract highlights, sentiments from past experiences.
+              If you proceed, Dynamo will begin to keep track of the previous few conversations
+              and curate it's responses accordingly.
+              <br><br>
+              More than <b>{{session["opted_users%"]}}%</b> of our users have opted-in for Personalization.
+  
+              <br><br>
+              <h3>How it works</h3>
+              When Personalization is on, bored.ai analyses your past messages and conversations
+              to improve the responses provided by Dynamo. Here is how it works:
+              <ol>
+                <li>Your history is being stored on our cloud, and undergoes constant analysis</li>
+                <li>Your data and responses are analyzed to ensure the conversations remain relatable</li>
+              </ol>
+              <br>
+              <h3>Benefits of Personalization</h3>
+              <ol>
+                <li>Dynamo remembers your interests and things that you talk about.</li>
+                <li>You can resume new conversations on the context of where you left before.</li>
+                <li>Responses are more accurate and fitting to your style</li>
+              </ol>
+              <br>
+              If you're not using Personalization, Dynamo will not retain inter-conversational text 
+              and your chat history. Each conversation would be treated uniquely.
+            </div>
+            <div class="modal-footer border-none">
+              <form action="/personalize" method="POST"><button class="btn continue" type="submit">Proceed</button></form>
+              <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
+            </div>
+            {% endif %}
+            {% if session["is_opted"]:%}
+            <div class="modal-header border-none">
+              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">About Personalization</h1>
+            </div>
+            <div class="modal-body">
+              You are already using Personalization. If you would like to stop this, please press the 
+              "Opt-Out" button. 
+              <br><br>
+              <h3>What's going on</h3>
+              <ol>
+                <li>Your history is being stored on our cloud, and is undergoing constant analysis</li>
+                <li>Your data and responses are being analysed to ensure that conversations remain relatable</li>
+              </ol>
+            </div>
+            <div class="modal-footer border-none">
+              <form action="/depersonalize" method="POST"><button class="btn continue" type="submit">Opt-Out</button></form>
+              <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRQat7KEhk+l/6rjoQ1Vd+tSp8PfuHT5ewJ2hVZih" crossorigin="anonymous"></script>
+    <script src="static/scripts/home.js"></script>
+  </body>
+</html>

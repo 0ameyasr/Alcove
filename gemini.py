@@ -13,15 +13,15 @@ model =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
     },
     {
         "category": "HARM_CATEGORY_HATE_SPEECH",
-        "threshold": "BLOCK_NONE",
+        "threshold": "HIGH",
     },
     {
         "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-        "threshold": "BLOCK_NONE",
+        "threshold": "HIGH",
     },
     {
         "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-        "threshold": "BLOCK_NONE",
+        "threshold": "MEDIUM",
     },
 ])
 dynamo = model.start_chat(history=[])

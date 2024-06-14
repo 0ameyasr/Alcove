@@ -6,6 +6,11 @@ class curate_web:
         pass 
 
     def get_class_description(self,user_class:str) -> str:
+        cleanString = ""
+        for char in user_class:
+            if char.isalpha():
+                cleanString += char
+        user_class = cleanString.lower()
         descriptions = {
             "shaman": "Restless, tired, or stressed? Try unwinding and relaxing to let go of your worries and find peace.",
             "ace": "Keep up your productivity and organize yourself to maintain your momentum. Constantly plan and find ways to improve.",
@@ -16,6 +21,9 @@ class curate_web:
             "wanderer": "Embark on a journey of discovery and adventure, whether it is exploring the world or your inner self."
         }
         return descriptions[user_class.lower()]
+    
+    def no_history_response(self,opted):
+        return "Once you start interacting with bored.ai, results will be reflected. Get started!" if opted else "You are not using Personalization (Turn it on). Once you Opt-In, results will be reflected."
     
     def get_tag_tooltip(self,user_class:str) -> str:
         tooltips = {
@@ -125,3 +133,57 @@ class curate_web:
         "What’s something that made you smile today?"]
         return random.choice(icebreakers)
     
+    def get_shaman_icebreaker(self):
+        icebreakers = [
+            "What's something you're currently excited about in your life?",
+            "If you could travel anywhere in the world right now, where would you go and why?",
+            "What's a hobby or activity you enjoy that most people don't know about?",
+            "What's one book or movie that has significantly impacted you?",
+            "What's a recent accomplishment that you're proud of?",
+            "What's one thing you do to relax after a long day?",
+            "If you could instantly learn any skill or talent, what would it be?",
+            "What's a positive habit you've developed recently?",
+            "What's one piece of advice you would give to your younger self?",
+            "What's something small that brings you joy on a regular basis?",
+            "If you had to describe yourself in three words, what would they be?",
+            "What's one thing you're looking forward to in the next few months?",
+            "What's a quote or mantra you find particularly inspiring?",
+            "What's one thing you wish people understood about you?",
+            "What's been on your mind a lot lately?",
+            "Is there something you're currently finding challenging or difficult?",
+            "What's one thing that's been stressing you out recently?",
+            "How have you been feeling about your current work or school situation?",
+            "What's one thing you wish you could change about your daily routine?",
+            "Have you noticed any changes in your sleep patterns lately?",
+            "What's one thing that feels overwhelming for you right now?",
+            "Is there something you're currently worried about?",
+            "How do you usually cope when you're feeling down or stressed?",
+            "Have you been able to find time for yourself recently?",
+            "What's one thing that has been bothering you that you'd like to share?",
+            "Have you experienced any significant changes in your mood lately?",
+            "What's one thing you're struggling with that you'd like some support on?",
+            "Is there something you're avoiding that you'd like to address?",
+            "How have your relationships been affecting you recently?",
+            "What's one fear or concern that's been on your mind?",
+            "How have you been managing your time and responsibilities lately?",
+            "What's one thing you feel uncertain about right now?",
+            "Is there something you wish you could talk about more openly?",
+            "How do you feel about the balance between your personal and professional life?",
+            "How have you been feeling lately?",
+            "Is there something on your mind that's been bothering you?",
+            "What do you do when you're feeling overwhelmed?",
+            "Who do you usually turn to for support when you're having a tough time?",
+            "Have you experienced any changes in your sleep or appetite recently?",
+            "What's one thing that's been stressing you out recently?",
+            "Are there any changes or decisions in your life that you're currently struggling with?",
+            "How do you usually cope with stressful situations?",
+            "Is there something you wish you could talk about more openly?",
+            "What's one thing that could make your day a little better right now?",
+            "How do you usually take care of yourself when you're feeling down?",
+            "Is there something you feel proud of handling well recently?",
+            "What's been your biggest challenge this week?",
+            "How do you feel about the balance between your work and personal life?",
+            "Are there any relationships in your life that you're currently concerned about?",
+            "How do you usually unwind after a tough day?"
+        ]
+        return random.choice(icebreakers)

@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import urllib.parse
 import configparser
 import requests
+import random
 
 def build_history(conversation_history,latest_message:str,user_message:str):
     trace='role: "model"'
@@ -41,6 +42,12 @@ def get_clean_history(nickname):
         return updated_history
     else:
         return history
-    
-def get_seeker_articles(nickname):
-    print("")
+
+def get_random_topics(nickname):
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+
+    mongo = MongoClient(config["mongodb"]["uri"])
+    seeker = mongo["credentials"]["seeker"]
+    user = seeker.find_one({"nickname":nickname})
+    return random.sample(user["topics"],k=3 if len(user["topics"]) >=3 else 1) if user else None

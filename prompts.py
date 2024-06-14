@@ -188,3 +188,17 @@ class prompt_corpus:
 
             [ONLY RETURN THE RELEVANT ICEBREAKER]
         """
+    
+    def check_user(self):
+        return f"""
+            Ask a question, acting like a therapist.
+            [ONLY RETURN THE QUESTION]
+        """
+
+    def get_dynamo_suggested_topic(self,history):
+        return f"""
+            Here is some relevant conversation history:
+            {history}
+            Give the user a tip based on this.
+            [ONLY RETURN THE TIP. NOTHING ELSE]
+        """

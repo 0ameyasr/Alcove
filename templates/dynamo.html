@@ -19,13 +19,30 @@
   <body>
     {% include "partial_header.html"%}
 
-    <div class="window container-fluid d-flex flex-col">
+    <div class="window container d-flex flex-col">
+      <h1 class="h1">Talk away your boredom</h1>
+        <hr>
+        <div class="container">
+            <div class="accordion accordion-flush border rounded-3">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                      <i class="fa-solid fa-hand-sparkles fs-6"></i>&nbsp; Tip from Dynamo
+                    </button>
+                  </h2>
+                  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">{{session["tip"]}}</div>
+                  </div>
+                </div>
+              </div>
+        </div>
+        <br>
       {% if error: %}
         <div class="alert alert-danger" role="alert" id="alertBar">
           Maybe it's time to switch to a new topic, or an internal error has occured. You can restart your conversation.
         </div>
       {% endif %}
-      <div id="chatWindow" class="chat-window container-fluid">
+      <div id="chatWindow" class="chat-window container-fluid text-center">
         {{talk | safe}}
       </div>
       <div class="action-bar container">          
@@ -108,7 +125,7 @@
             and your chat history. Each conversation would be treated uniquely.
           </div>
           <div class="modal-footer border-none">
-            <a class="btn continue" href="/personalize">Proceed</a>
+            <form action="/personalize" method="POST"><button class="btn continue" type="submit">Proceed</button></form>
             <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
           </div>
           {% endif %}
@@ -127,7 +144,7 @@
             </ol>
           </div>
           <div class="modal-footer border-none">
-            <a class="btn continue dismiss" href="/depersonalize">Opt-Out</a>
+            <form action="/depersonalize" method="POST"><button class="btn continue" type="submit">Opt-Out</button></form>
             <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
           </div>
           {% endif %}
