@@ -6,7 +6,8 @@ config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
 gemini.configure(api_key=config['gemini']['api_key'])
-model =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
+
+modelDynamo =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
     {
         "category": "HARM_CATEGORY_HARASSMENT",
         "threshold": "BLOCK_NONE",
@@ -24,7 +25,27 @@ model =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
         "threshold": "MEDIUM",
     },
 ])
-dynamo = model.start_chat(history=[])
+dynamo = modelDynamo.start_chat(history=[])
+
+modelShaman =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "HIGH",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "HIGH",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE",
+    },
+])
+shaman = modelShaman.start_chat(history=[])
 
 def fit_prompt(prompt):
     gemini.configure(api_key=config['gemini']['api_key'])
@@ -33,8 +54,15 @@ def fit_prompt(prompt):
     return response.text
 
 def config_dynamo(icebreaker,nickname,history):
-    resp = dynamo.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history))
+    resp = dynamo.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="dynamo"))
     return resp
 
+def config_shaman(icebreaker,nickname,history):
+    resp = shaman.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="shaman"))
+    return resp
+    
 def chat_dynamo(message):
     return dynamo.send_message(message),dynamo.history[-1]
+
+def chat_shaman(message):
+    return shaman.send_message(message),shaman.history[-1]

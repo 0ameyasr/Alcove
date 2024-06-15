@@ -17,7 +17,7 @@ $(document).ready(function () {
         var msg = $("#userMessage").val();
         $.ajax({
             type: "POST",
-            url: "/chat",
+            url: "/chat_shaman",
             data: {message: msg},
             dataType: "json",
             success: function (response) {

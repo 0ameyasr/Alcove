@@ -4,9 +4,9 @@ import configparser
 import requests
 import random
 
-def build_history(conversation_history,latest_message:str,user_message:str):
+def build_history(conversation_history,latest_message:str,user_message:str,model="Dynamo"):
     trace='role: "model"'
-    latest_message = "Dynamo: "+latest_message.replace("text: ","").replace("parts {","").replace("}","").replace(trace,"").strip() + "~"
+    latest_message = "{model}: "+latest_message.replace("text: ","").replace("parts {","").replace("}","").replace(trace,"").strip() + "~"
     user_message = "User: "+user_message
 
     return conversation_history +"\n"+user_message+"\n"+latest_message
@@ -25,9 +25,24 @@ def get_dynamo_history(nickname):
         return history
     else:
         return ""
+    
+def get_shaman_history(nickname):
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
 
-def get_clean_history(nickname):
-    history = get_dynamo_history(nickname)
+    mongo = MongoClient(config["mongodb"]["uri"])
+    chats = mongo["credentials"]["shaman"]
+    user = chats.find_one({"nickname":nickname})
+    
+    if user:
+        history = str(user["history"])
+        history = history.replace("\\n","").replace("\\","").strip()
+        return history
+    else:
+        return ""
+
+def get_clean_history(nickname,mode="dynamo"):
+    history = get_dynamo_history(nickname) if mode=="dynamo" else get_shaman_history(nickname)
     count_chats = history.count("[CHAT]")
     duplex_pairs = history.split("~")
 
@@ -36,7 +51,7 @@ def get_clean_history(nickname):
         config = configparser.ConfigParser()
         config.read("secrets.cfg")
         mongo = MongoClient(config["mongodb"]["uri"])
-        chats = mongo["credentials"]["chats"]
+        chats = mongo["credentials"]["chats"] if mode=="dynamo" else mongo["credentials"]["shaman"]
         updated_history = ''.join(duplex_pairs)
         chats.update_one({"nickname":nickname},{"$set":{"history":updated_history}})
         return updated_history

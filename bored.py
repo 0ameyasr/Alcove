@@ -211,14 +211,14 @@ def dynamo():
         session["is_opted"] = home_engine.is_opted(session["nickname"])
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
         if opted_in_user:
-            history = personalizer.get_clean_history(session["nickname"])
+            history = personalizer.get_clean_history(session["nickname"],mode="dynamo")
             if not history or history == "":
                 icebreaker = dynamic_web.get_dynamo_icebreaker()
                 session["icebreaker"] = icebreaker
                 session["tip"] = dynamic_web.no_history_response(opted=True)
             else:
                 icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
-                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus([]).get_dynamo_suggested_topic(history))
+                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus([]).get_tip(history))
                 session["icebreaker"] = icebreaker    
             gemini.config_dynamo(session["icebreaker"],user,history)
         else:
@@ -245,12 +245,12 @@ def chat():
             previous_history = user_in_chats["history"]
             if previous_history == "" or previous_history[-1] == "~":
                 previous_history += "\n[CHAT] "+session["icebreaker"]
-            current_history = personalizer.build_history(previous_history,str(latest_message),user_message)
+            current_history = personalizer.build_history(previous_history,str(latest_message),user_message,model="Dynamo")
             updated_history = mongo.db.chats.update_one({"nickname":session["nickname"]},{"$set":{"nickname":session["nickname"],"history":current_history}})
-        return render_template("dynamo.html",talk=markdown.markdown(response.text),error=False)
+        return jsonify(talk=markdown.markdown(response.text), error=False)
     except Exception as e:
         print(e)
-        return render_template("dynamo.html",talk=session["icebreaker"],error=True)
+        return jsonify(talk=markdown.markdown(response.text), error=False)
     
 @app.route("/seeker")
 def seeker():
@@ -267,10 +267,53 @@ def seeker():
 
 @app.route("/shaman")
 def shaman():
-    if not session:
+    try:
+        user = session["nickname"]
+        session["opted_users%"] = home_engine.opted_users_p()
+        session["is_opted"] = home_engine.is_opted(session["nickname"])
+        opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
+        if opted_in_user:
+            history = personalizer.get_clean_history(session["nickname"],mode="shaman")
+            print(history)
+            if not history or history == "":
+                icebreaker = dynamic_web.get_shaman_icebreaker()
+                session["icebreaker"] = icebreaker
+                session["tip"] = dynamic_web.no_history_response(opted=True)
+            else:
+                icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
+                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus([]).get_tip(history))
+                session["icebreaker"] = icebreaker    
+            gemini.config_shaman(session["icebreaker"],user,history)
+        else:
+            icebreaker = dynamic_web.get_shaman_icebreaker()
+            session["icebreaker"] = icebreaker
+            session["tip"] = dynamic_web.no_history_response(opted=False)
+            gemini.config_shaman(session["nickname"],user,None)
+        return render_template("shaman.html",talk=session["icebreaker"],data=data,error=False)
+    except KeyError:
         return redirect("/")
-    session["shaman_icebreaker"] = dynamic_web.get_shaman_icebreaker()
-    return render_template("shaman.html",talk=session["shaman_icebreaker"])
+
+@app.route("/chat_shaman",methods=["POST"])
+def chat_shaman():
+    try:
+        message = request.form["message"]
+        response, latest_message = gemini.chat_shaman(message)
+        user_message = message
+        opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
+        if opted_in_user:
+            user_in_chats = mongo.db.shaman.find_one({"nickname":session["nickname"]})
+            if not user_in_chats:
+                mongo.db.shaman.insert_one({"nickname":session["nickname"],"history":""})
+            user_in_chats = mongo.db.shaman.find_one({"nickname":session["nickname"]})
+            previous_history = user_in_chats["history"]
+            if previous_history == "" or previous_history[-1] == "~":
+                previous_history += "\n[CHAT] "+session["icebreaker"]
+            current_history = personalizer.build_history(previous_history,str(latest_message),user_message,model="Dynamo")
+            updated_history = mongo.db.shaman.update_one({"nickname":session["nickname"]},{"$set":{"nickname":session["nickname"],"history":current_history}})
+        return jsonify(talk=markdown.markdown(response.text), error=False)
+    except Exception as e:
+        print(e)
+        return jsonify(talk=markdown.markdown(response.text), error=False)
 
 @app.route("/seeker/intro",methods=["POST"])
 def seeker_intro():
@@ -284,12 +327,12 @@ def doPersonalize():
     existing_user = mongo.db.opted_users.find_one({"nickname":session["nickname"]})
     if not existing_user:
         mongo.db.opted_users.insert_one({"nickname":session["nickname"]})
-        return redirect("/dynamo")
+        return redirect(request.referrer)
     else:
-        return redirect("/dynamo")
+        return redirect(request.referrer)
 
 @app.route("/depersonalize",methods=["POST"])
 def dontPersonalize():
     mongo.db.opted_users.delete_one({"nickname":session["nickname"]})
     mongo.db.chats.delete_one({"nickname":session["nickname"]})
-    return redirect("/dynamo")
+    return redirect(request.referrer)

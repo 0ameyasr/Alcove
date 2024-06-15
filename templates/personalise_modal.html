@@ -1,0 +1,61 @@
+<div class="modal fade" data-bs-backdrop="static" id="personalizeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        {% if not session["is_opted"]:%}
+        <div class="modal-header border-none">
+          <h3 class="modal-title fs-5" id="exampleModalToggleLabel">About Personalization</h3>
+        </div>
+        <div class="modal-body">
+          By using Personalization, you are allowing bored.ai to analyse your chats, 
+          conversations and extract highlights, sentiments from past experiences.
+          If you proceed, bored.ai will begin to keep track of the previous few conversations
+          and curate it's responses accordingly.
+          <br><br>
+          More than <b>{{session["opted_users%"]}}%</b> of our users have opted-in for Personalization.
+
+          <br><br>
+          <h3>How it works</h3>
+          When Personalization is on, bored.ai analyses your past messages and conversations
+          to improve the responses provided by bored.ai; Here is how it works:
+          <ol>
+            <li>Your history is being stored on our cloud, and undergoes constant analysis</li>
+            <li>Your data and responses are analyzed to ensure the conversations remain relatable</li>
+          </ol>
+          <br>
+          <h3>Benefits of Personalization</h3>
+          <ol>
+            <li>Chat companions remember your interests and things that you talk about.</li>
+            <li>You can resume new conversations on the context of where you left before.</li>
+            <li>Responses are more accurate and fitting to your style</li>
+          </ol>
+          <br>
+          If you're not using Personalization, chats will not retain inter-conversational text 
+          and your history. Each conversation would be treated uniquely.
+        </div>
+        <div class="modal-footer border-none">
+          <form action="/personalize" method="POST"><button class="btn continue" type="submit">Proceed</button></form>
+          <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
+        </div>
+        {% endif %}
+        {% if session["is_opted"]:%}
+        <div class="modal-header border-none">
+          <h1 class="modal-title fs-5" id="exampleModalToggleLabel">About Personalization</h1>
+        </div>
+        <div class="modal-body">
+          You are already using Personalization. If you would like to stop this, please press the 
+          "Opt-Out" button. 
+          <br><br>
+          <h3>What's going on</h3>
+          <ol>
+            <li>Your history is being stored on our cloud, and is undergoing constant analysis</li>
+            <li>Your data and responses are being analysed to ensure that conversations remain relatable</li>
+          </ol>
+        </div>
+        <div class="modal-footer border-none">
+          <form action="/depersonalize" method="POST"><button class="btn continue" type="submit">Opt-Out</button></form>
+          <button class="btn dismiss" data-bs-target="#personalizeModal" data-bs-toggle="modal">Close</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+</div>
