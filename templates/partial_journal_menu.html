@@ -1,0 +1,27 @@
+<div class="modal fade" id="newJournalModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content profile-content">
+        <div class="border-none modal-header">
+          <h1 class="modal-title fs-5" id="profile-title">New Blank Journal</h1>
+        </div>
+        <form action="/blank" method="POST" >
+            <div class="border-none modal-body">
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Journal Title</label>
+                    <input name="title" type="text" class="fc-dark form-control" placeholder="Enter a title" required>
+                    <small><b>Dated:</b> {{session["today"]}}</small>
+                </div>
+            </div>
+            <div class="border-none modal-footer">
+                <button type="submit" class="btn continue">
+                    Create
+                </button>
+                <button type="button" class="btn dismiss" data-bs-toggle="modal">
+                    Close
+                </button>
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+  

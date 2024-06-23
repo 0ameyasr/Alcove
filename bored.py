@@ -9,6 +9,7 @@ import google.generativeai as gemini_model
 from werkzeug.exceptions import NotFound,MethodNotAllowed,RequestTimeout,BadRequestKeyError,InternalServerError
 import google.api_core.exceptions as geminiExceptions
 import markdown
+import os,binascii
 
 app = Flask(__name__)
 config = configparser.ConfigParser()
@@ -108,7 +109,7 @@ def register():
     else:
         mongo.db.users.insert_one(user_creds)
         return render_template("response.html",code=250)
-    
+
 @app.route("/login",methods=["POST"])
 def login():
     nickname = request.form.get('nickname')
@@ -336,3 +337,31 @@ def dontPersonalize():
     mongo.db.opted_users.delete_one({"nickname":session["nickname"]})
     mongo.db.chats.delete_one({"nickname":session["nickname"]})
     return redirect(request.referrer)
+
+@app.route("/journal")
+def journal():
+    session["today"] = dynamic_web.today()
+    existing_journals = mongo.db.journals.find({"nickname":session["nickname"]},{"_id":False})
+    session["list_journals"] = list(existing_journals)
+    session["journals"] = True if session["list_journals"] != [] else False
+    print(session["list_journals"])
+    return render_template("journal.html")
+
+@app.route("/blank",methods=["POST"])
+def blank_journal():
+    token = dynamic_web.token16b()
+    title = request.form["title"]
+    date = session["today"]
+    mongo.db.journals.insert_one({"nickname":session["nickname"],"token":token,"title":title, "date":session["today"], "entry":""})
+    return redirect(url_for("get_journal",token=token))
+
+@app.route("/entry/<token>")
+def get_journal(token,methods=["GET"]):
+    journal = mongo.db.journals.find_one({"nickname":session["nickname"],"token":token})
+    journal_data = {
+        "title":journal["title"],
+        "date":journal["date"],
+        "entry":journal["entry"]
+    }
+    return render_template("blank.html",journal=journal_data)
+

@@ -8,21 +8,6 @@ body {
     overflow-x: hidden;
 }
 
-.profile-icon {
-    border: 3px solid black;
-}
-.profile-icon:hover {
-    cursor: pointer;
-}
-
-.profile-tab {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-}
 
 .toolbar {
     display: flex;

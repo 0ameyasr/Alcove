@@ -20,48 +20,58 @@
   <body>
     {% include "partial_header.html"%}
     
-    <div class="album py-5 suggestion-tab">
-      <div class="container">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-          <div class="col">
-            <div class="card shadow-sm">
-              <img class="bd-placeholder-img card-img-top" src="static/img/journal.jpg">
-              <div class="card-body">
-                <p class="card-text">
-                  <h5><b>Maintain a journal</b></h5>
-                  Get started on journalling your thoughts and looking inwards. Sometimes,
-                  it's best to reflect to find clarity and peace.
-                </p>
-              </div>
+    <div class="container">
+      <h1 class="h1">Tools for you</h1>
+      <hr>
+      <div class="album py-5 suggestion-tab">
+        <div class="container">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="col">
+              <a href="/journal" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Go">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" src="static/img/journal.jpg">
+                  <div class="card-body">
+                    <p class="card-text">
+                      <h5><b><u>Maintain a journal</u></b></h5>
+                      Get started on journalling your thoughts and looking inwards. Sometimes,
+                      it's best to reflect to find clarity and peace.
+                    </p>
+                  </div>
+                </div>
+              </a>
             </div>
-          </div>
-          <div class="col">
-            <div class="card shadow-sm">
-              <img class="bd-placeholder-img card-img-top" src="static/img/tour.jpg">
-              <div class="card-body">
-                <p class="card-text">
-                  <h5><b>Guided Imagery</b></h5>
-                  If you can't go outside, you can try a guided imagery session. While it's
-                  not real, try to lose yourself in its atmosphere.
-                </p>
-              </div>
+            <div class="col">
+              <a href="/tour" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Go"> 
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" src="static/img/tour.jpg">
+                  <div class="card-body">
+                    <p class="card-text">
+                      <h5><b><u>Guided Imagery</u></b></h5>
+                      If you can't go outside, you can try a guided imagery session. While it's
+                      not real, try to lose yourself in its atmosphere.
+                    </p>
+                  </div>
+                </div>
+              </a>
             </div>
-          </div>
-          <div class="col">
-            <div class="card shadow-sm">
-              <img class="bd-placeholder-img card-img-top" src="static/img/exercises.jpg">
-              <div class="card-body">
-                <p class="card-text">
-                  <h5><b>Mindfulness Exercises</b></h5>
-                  Engage in various mindfulness exercises that can help alleviate stress,
-                  anxiety and help you relax. Explore more.
-                </p>
-              </div>
+            <div class="col">
+              <a href="/exercises" class="div-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Go">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" src="static/img/exercises.jpg">
+                  <div class="card-body">
+                    <p class="card-text">
+                      <h5><b><u>Mindfulness Exercises</u></b></h5>
+                      Engage in various mindfulness exercises that can help alleviate stress,
+                      anxiety and help you relax. Explore more.
+                    </p>
+                  </div>
+                </div>
+              </a>
             </div>
           </div>
         </div>
-      </div>
-    </div><br>
+      </div><br>
+    </div>
 
     <div class="window container d-flex flex-col">
         <h1 class="h1">Talk it out</h1>
@@ -86,7 +96,7 @@
             Maybe it's time to switch to a new topic, or an internal error has occured. You can restart your conversation.
           </div>
         {% endif %}
-        <div id="chatWindow" class="chat-window container-fluid">
+        <div id="chatWindow" class="chat-window container-fluid text-center">
           {{talk | safe}}
         </div>
         <div class="action-bar container">          

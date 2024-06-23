@@ -7,6 +7,8 @@
     --button-color: #607274;
     --hover-button-color: rgb(96, 114, 116,0.70);
     --disabled-button-color: #c7c8cc;
+    --gray: #c7c8cc;
+    --dark-gray: #31363f;
     --shiny: gold;
     --green: #365e32;
 }
@@ -154,10 +156,39 @@ border-radius: 0.25rem;
 .profile-content {
     background-color: var(--primary-color);
 }
+.profile-icon {
+    border: 3px solid black;
+}
+.profile-icon:hover {
+    cursor: pointer;
+}
 
+.profile-tab {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
 .user-icon {
     border: 3px solid black;
     border-radius: 50%;
+}
+
+.taunt {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+}
+
+.new-journal {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .accordion {
@@ -166,4 +197,8 @@ border-radius: 0.25rem;
 }
 .accordion-button:focus {
     box-shadow: none;
+}
+
+.fs-huge {
+    font-size: 72px;
 }

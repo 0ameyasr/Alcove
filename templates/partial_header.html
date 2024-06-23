@@ -6,12 +6,12 @@
         </button>
         <a href="/" class="d-flex align-items-center mb-lg-0 text-dark text-decoration-none" draggable="false">
           <span class="shiny">
-            <img src="static/img/web_icon.png" alt="bored.ai" width="32" height="32"/>
+            <img src="static/img/web_icon.png" alt="bored.ai" width="32" height="32" draggable="false"/>
           </span>
         </a>
         <div class="order-lg-3">
           <a data-bs-toggle="modal" data-bs-target="#profile" class="d-block">
-            <img src="static/img/user.png" alt="user" width="32" height="32" title={{session["nickname"]}} class="profile-icon rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom"/>
+            <img class="user-icon" src="static/img/user.png" draggable="false" alt="user" width="32" height="32" title={{session["nickname"]}} class="profile-icon rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom"/>
           </a>
         </div>
       </div>
