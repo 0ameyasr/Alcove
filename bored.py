@@ -356,9 +356,11 @@ def blank_journal():
 
 @app.route("/entry/<token>")
 def get_journal(token):
-    journal_data = personalizer.get_journal_data(token)
-    print(f"RETRIEVED: {journal_data}")
-    return render_template("blank.html",journal=journal_data)
+    if not mongo.db.journals.find_one({"token":token}):
+        return redirect("/")
+    else:
+        journal_data = personalizer.get_journal_data(token)
+        return render_template("blank.html",journal=journal_data)
 
 @app.route("/saves/<token>",methods=["POST"])
 def save_journal(token):
@@ -371,3 +373,7 @@ def save_journal(token):
 def delete_journal(token):
     mongo.db.journals.delete_one({"token":token})
     return redirect("/journal")
+
+@app.route("/prompt",methods=["POST"])
+def get_prompt():
+    return jsonify(prompt=f'{personalizer.get_journal_prompt()}',error="False")

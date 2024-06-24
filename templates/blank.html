@@ -28,7 +28,7 @@
       <form id="save" action="/saves/{{journal["token"]}}" method="POST">
         <div id="token" style="display: none;">{{journal["token"]}}</div>
         <div class="action-bar">
-          <span class="home-logo"><a class="text-dark text-decoration-none" href="/home"><img src="/static/img/web_icon.png" width="30" height="30" draggable="false"/></a></span>
+          <span class="home-logo"><a class="text-dark text-decoration-none" href="/journal" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Go Back"><img src="/static/img/web_icon.png" width="30" height="30" draggable="false"/></a></span>
           <div id="status">
               {{status | safe}}
             {% if not status: %}
@@ -36,7 +36,7 @@
             {% endif %}
           </div>
           <div>
-            <button type="button" class="btn btn-sm btn-help" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Prompt"><i class="fa-solid fa-hand-sparkles"></i></button>
+            <button id="triggerPrompt" type="button" class="btn btn-sm btn-help" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Prompt"><i class="fa-solid fa-hand-sparkles"></i></button>
             <button type="submit" class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDangerModal"><i class="fa-solid fa-trash" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"></i></button>
           </div>
@@ -52,6 +52,7 @@
           {% endif %}
         </div>
         <audio controls id="pingAudio" src="/static/audio/ping.mp3" hidden></audio>
+        <audio controls id="hintAudio" src="/static/audio/hint.wav" hidden></audio>
       </form>
     </div>
     <br>

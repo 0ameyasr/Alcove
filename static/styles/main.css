@@ -211,6 +211,9 @@ border-radius: 0.25rem;
     background-color: rebeccapurple;
     color: var(--primary-color);
 }
-.btn-help:focus-visible{
+.btn-help:focus-visible {
+    background-color: rebeccapurple;
+}
+.btn-help:active {
     background-color: rebeccapurple;
 }

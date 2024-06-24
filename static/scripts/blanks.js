@@ -21,4 +21,18 @@ $(document).ready(function () {
             }
         });
     })
+
+    $("#triggerPrompt").on("click",(event)=> {
+        event.preventDefault();
+        $.ajax({
+            type:"POST",
+            url:"/prompt",
+            dataType:"json",
+            success: function (response) {
+                document.getElementById('hintAudio').play();
+                $('#status').html(response.prompt);
+            }
+        });
+    })
 });
+

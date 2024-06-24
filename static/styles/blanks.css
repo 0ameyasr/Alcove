@@ -46,6 +46,7 @@ body {
     padding: 20px;
     position: relative;
     overflow: hidden;
+    background-color: rgba(157, 170, 191,0.8);
 }
 
 .page::before {
