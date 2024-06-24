@@ -196,3 +196,7 @@ class curate_web:
     def today(self):
         today = datetime.now()
         return str(today.strftime("%A"))+", "+str(today.strftime("%d"))+" "+str(today.strftime("%B"))+" "+str(today.strftime("%Y"))
+    
+    def now(self):
+        today = datetime.now()
+        return str(today.strftime("%H:%M"))

@@ -202,3 +202,15 @@ border-radius: 0.25rem;
 .fs-huge {
     font-size: 72px;
 }
+
+.btn-help {
+    background-color: rebeccapurple;
+    color: var(--primary-color);
+}
+.btn-help:hover {
+    background-color: rebeccapurple;
+    color: var(--primary-color);
+}
+.btn-help:focus-visible{
+    background-color: rebeccapurple;
+}

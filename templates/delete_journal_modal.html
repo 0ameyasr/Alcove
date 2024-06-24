@@ -1,0 +1,39 @@
+<div class="modal fade" id="deleteDangerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content profile-content">
+        <div class="border-none modal-header">
+          <h1 class="modal-title fs-5 fw-bold" id="profile-title">Delete Journal</h1>
+        </div>
+        <form action="/delete/{{journal["token"]}}" method="POST" >
+            <div class="border-none modal-body">
+                <div class="mb-3">
+                    <label for="title" class="form-label">To confirm, <b>enter the title</b> of the journal</label>
+                    <input id="confirmDelete" name="title" type="text" class="fc-dark form-control" placeholder="{{journal["title"]}}" required>
+                    <small>This action <b>cannot be undone.</b></small>
+                </div>
+            </div>
+            <div class="border-none modal-footer">
+                <button type="submit" class="btn continue" disabled>
+                    Delete
+                </button>
+                <button type="button" class="btn dismiss" data-bs-toggle="modal">
+                    Cancel
+                </button>
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+<script>
+    const confirmDeleteInput = document.getElementById('confirmDelete');
+        const deleteButton = document.querySelector('.btn.continue');
+        const journalTitle = "{{journal['title']}}";
+
+        confirmDeleteInput.addEventListener('input', function () {
+            if (confirmDeleteInput.value === journalTitle) {
+                deleteButton.removeAttribute('disabled');
+            } else {
+                deleteButton.setAttribute('disabled', 'true');
+            }
+    });
+</script>

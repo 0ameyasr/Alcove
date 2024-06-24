@@ -1,4 +1,4 @@
-from flask import Flask, render_template,redirect,request,session,make_response,url_for,jsonify
+from flask import Flask, render_template,redirect,request,session,make_response,url_for,jsonify,flash,Response
 from flask_pymongo import PyMongo
 from gridfs import GridFS
 from authlib.integrations.flask_client import OAuth
@@ -275,7 +275,6 @@ def shaman():
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
         if opted_in_user:
             history = personalizer.get_clean_history(session["nickname"],mode="shaman")
-            print(history)
             if not history or history == "":
                 icebreaker = dynamic_web.get_shaman_icebreaker()
                 session["icebreaker"] = icebreaker
@@ -356,12 +355,19 @@ def blank_journal():
     return redirect(url_for("get_journal",token=token))
 
 @app.route("/entry/<token>")
-def get_journal(token,methods=["GET"]):
-    journal = mongo.db.journals.find_one({"nickname":session["nickname"],"token":token})
-    journal_data = {
-        "title":journal["title"],
-        "date":journal["date"],
-        "entry":journal["entry"]
-    }
+def get_journal(token):
+    journal_data = personalizer.get_journal_data(token)
+    print(f"RETRIEVED: {journal_data}")
     return render_template("blank.html",journal=journal_data)
 
+@app.route("/saves/<token>",methods=["POST"])
+def save_journal(token):
+    message = request.form["jtext"]
+    mongo.db.journals.update_one({"token":token},{"$set":{"entry":message}})
+    now = dynamic_web.now()
+    return jsonify(status=f'({now}) Changes have been saved!',error=False)
+
+@app.route("/delete/<token>",methods=["POST"])
+def delete_journal(token):
+    mongo.db.journals.delete_one({"token":token})
+    return redirect("/journal")

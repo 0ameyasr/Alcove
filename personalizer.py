@@ -66,3 +66,19 @@ def get_random_topics(nickname):
     seeker = mongo["credentials"]["seeker"]
     user = seeker.find_one({"nickname":nickname})
     return random.sample(user["topics"],k=3 if len(user["topics"]) >=3 else 1) if user else None
+
+def get_journal_data(token):
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+
+    mongo = MongoClient(config["mongodb"]["uri"])
+    journals = mongo["credentials"]["journals"]
+    journal = journals.find_one({"token": token})
+    if not journal:
+        return None
+    return {
+        "token": journal["token"],
+        "title": journal["title"],
+        "date": journal["date"],
+        "entry": journal["entry"]
+    }
