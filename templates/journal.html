@@ -44,7 +44,7 @@
               <div class="card shadow-sm">
                 <img class="bd-placeholder-img card-img-top" src="static/img/journal.jpg">
                 <div class="card-body">
-                  <p class="card-text">
+                  <p class="card-text text-justify">
                     <h5><b><u>New blank journal</u></b></h5>
                     The most basic journal type. It's totally blank, so you can 
                     jot down anything you like. This is a blank canvas for 
@@ -55,39 +55,39 @@
               </div>
             </form>
           </div>
-          
+
           <div class="col">
-            <form action="/trashit" method="POST">
+            <a href="/reflection" class="div-link">
               <div class="card shadow-sm">
-                <img class="bd-placeholder-img card-img-top" src="static/img/junk_journal.jpg">
+                <img class="bd-placeholder-img card-img-top" src="static/img/reflection.jpg">
                 <div class="card-body">
-                  <p class="card-text">
-                    <h5><b><u>Trash it</u></b></h5>
-                    If you're venting up a lot of frustration or wanting to 
-                    go on a rant, trash away everything that is bugging you 
-                    in an interactive, no-memory journal.
+                  <p class="card-text text-justify">
+                    <h5><b><u>Reflection Game</u></b></h5>
+                    Acknowledge your thoughts and reflect on current and past 
+                    experiences. It may help you gain clarity of thought and 
+                    find insight into your lifestyle.
+                  </p>
+                  <button type="submit" class="btn btn-success">Go</button>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div class="col">
+            <a href="/timeline" class="div-link">
+              <div class="card shadow-sm">
+                <img class="bd-placeholder-img card-img-top" src="static/img/mood_timeline.jpg">
+                <div class="card-body">
+                  <p class="card-text text-justify">
+                    <h5><b><u>Mood Timeline</u></b></h5>
+                    Dump your thoughts and feelings in this organised journal 
+                    calendar so that you can keep track of your mental health.
+                    Gain insights into your efforts.
                   </p>
                   <button type="submit" class="btn btn-success" data-bs-toggle="modal" data-bs-target="newJournalModal">Go</button>
                 </div>
               </div>
-            </form>
-          </div>
-
-          <div class="col">
-              <form action="/exercises" method="POST">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" src="static/img/mood_timeline.jpg">
-                  <div class="card-body">
-                    <p class="card-text">
-                      <h5><b><u>Reflection Game</u></b></h5>
-                      Acknowledge your thoughts and reflect on current and past 
-                      experiences. It may help you gain clarity of thought and 
-                      find insight into your lifestyle.
-                    </p>
-                    <button type="submit" class="btn btn-success">Go</button>
-                  </div>
-                </div>
-              </form>
+            </a>
           </div>
       </div>
   </div>

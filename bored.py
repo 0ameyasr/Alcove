@@ -377,3 +377,7 @@ def delete_journal(token):
 @app.route("/prompt",methods=["POST"])
 def get_prompt():
     return jsonify(prompt=f'{personalizer.get_journal_prompt()}',error="False")
+
+@app.route("/reflection")
+def reflect():
+    return render_template("reflection.html")

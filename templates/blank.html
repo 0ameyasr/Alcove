@@ -25,6 +25,7 @@
         <h4><b>Created:</b> {{journal["date"]}}</h4>
       </div>
       <hr>
+      
       <form id="save" action="/saves/{{journal["token"]}}" method="POST">
         <div id="token" style="display: none;">{{journal["token"]}}</div>
         <div class="action-bar">
@@ -36,6 +37,7 @@
             {% endif %}
           </div>
           <div>
+            <button type="button" class="btn btn-sm btn-info"><i class="fc-light fa-solid fa-question" data-bs-toggle="tooltip" data-bs-placement="bottom" title="FAQ"></i></button>
             <button id="triggerPrompt" type="button" class="btn btn-sm btn-help" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Prompt"><i class="fa-solid fa-hand-sparkles"></i></button>
             <button type="submit" class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDangerModal"><i class="fa-solid fa-trash" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"></i></button>
