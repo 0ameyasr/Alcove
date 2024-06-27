@@ -308,3 +308,25 @@ class prompt_corpus:
             [ONLY RETURN THE TIP. NOTHING ELSE]
         """
     
+    def get_mood_prompt(self,corpus):
+        return f"""
+            Classify the following corpus into exactly one of the following tags:
+            
+            Corpus:{corpus}\n
+
+            Agitated
+            Angry
+            Anxious
+            Apprehensive
+            Calm
+            Depressed
+            Excited
+            Fearful
+            Neutral
+            Optimisitic
+            Pessimistic
+            Sad
+            Tense
+
+            [ONLY RETURN THE TAG (ONE-WORD OUTPUT)]
+        """

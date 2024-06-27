@@ -386,8 +386,57 @@ def reflect():
 def do_reflection():
     mood = request.form["mood"]
     mode = request.form["mode"]
-    questionSet = personalizer.get_question_set(mood,mode)[0].split("#")
+    question_set = personalizer.get_question_set(mood,mode)[0].split("#")
     return jsonify({
         "status":"success",
-        "questionSet":questionSet
+        "questionSet":question_set
+    })
+
+@app.route("/timeline")
+def timeline():
+    if not session:
+        return redirect("/")
+    
+    timelineData = {}
+    now = datetime.now().strftime(f"%d/%m/%Y")
+    existing_user = mongo.db.timeline.find_one({"nickname":session["nickname"]})
+    timelineData["timeline"] = []
+    timelineData["timeline_entry_done"] = False
+    if existing_user and existing_user.get("last_interacted") and existing_user.get("last_interacted") == now:
+        timelineData["timeline_entry_done"] = True
+    elif existing_user and existing_user.get("last_interacted") and existing_user.get("last_interacted") != now:
+        timelineData["timeline_entry_done"] = False
+    
+    if not existing_user:
+        mongo.db.timeline.insert_one({
+            "nickname":session["nickname"],
+            "corpus":"",
+            "history":""
         })
+
+    if existing_user and (existing_user["corpus"] != "" or existing_user["history"] != ""):
+        timelineData["timeline"] = personalizer.get_timeline(session["nickname"])
+    elif existing_user and (existing_user["corpus"] == "" or existing_user["history"] == ""):
+        timelineData["timeline"] = []
+    return render_template("timeline.html",timelineData=timelineData)
+
+@app.route("/mood_timeline_update",methods=["POST"])
+def update_mood():
+    existing_user = mongo.db.timeline.find_one({"nickname":session["nickname"]})
+    date = datetime.now().strftime(f"%d/%m/%Y")
+    corpus = request.form["corpus"]
+
+    mood_prompt = prompts.prompt_corpus([]).get_mood_prompt(corpus)
+    detected_mood = gemini.fit_prompt(mood_prompt)
+    if existing_user: 
+        mongo.db.timeline.update_one({
+            "nickname":session["nickname"]
+        },
+        {
+            "$set":{
+                "last_interacted":date,
+                "corpus": personalizer.build_corpus_history(session["nickname"],date,corpus),
+                "history": personalizer.build_timeline_history(session["nickname"],date,detected_mood)
+            }
+        })
+    return jsonify({"status":"success","flash":"Save successful! Come back again tommorrow!"})

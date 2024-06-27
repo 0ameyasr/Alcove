@@ -5,5 +5,3 @@ def journal_prompt_lib():
 
 def self_reflection_set():
     return []
-
-print(journal_prompt_lib())

@@ -118,3 +118,45 @@ def get_question_set(mood,mode):
         print("Invalid mode.")
         return None
 
+def build_corpus_history(nickname,date,corpus,mode=0):
+    if mode == 1:
+        return f"({date}):{corpus}"
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+
+    mongo = MongoClient(config["mongodb"]["uri"])
+    timelines = mongo["credentials"]["timeline"]
+    user = timelines.find_one({"nickname":nickname})
+    return user["corpus"]+f"({date}):{corpus}\n"
+   
+def build_timeline_history(nickname,date,mood,mode=0):
+    mood = mood.replace("\\n","").replace("\\","").strip()
+    if mode == 1:
+        return f"({date}):{mood}"
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+
+    mongo = MongoClient(config["mongodb"]["uri"])
+    timelines = mongo["credentials"]["timeline"]
+    user = timelines.find_one({"nickname":nickname})
+    return user["history"]+f"({date}):{mood}\n"
+
+def get_timeline(nickname):
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+    mongo = MongoClient(config["mongodb"]["uri"])
+    timelines = mongo["credentials"]["timeline"]
+    user = timelines.find_one({"nickname":nickname})
+
+    if not user:
+        return []
+    mongo = MongoClient(config["mongodb"]["uri"])
+    timelines = mongo["credentials"]["timeline"]
+    user = timelines.find_one({"nickname":nickname})
+
+    corpus = [entry[13:] for entry in user["corpus"].split("\n") if entry != '']
+    moods = [entry[13:] for entry in user["history"].split("\n") if entry != '']
+    dates = [entry[:12][1:-1] for entry in user["corpus"].split("\n") if entry != '']
+    
+    items = list(zip(dates,corpus,moods))
+    return items

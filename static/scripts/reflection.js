@@ -209,7 +209,7 @@ async function beginReflection(questionSet) {
     const info = document.getElementById("info");
     info.hidden = false;
 
-    const slot = 90000;
+    const slot = 120000;
     const q1 = questionSet[0];
     const q2 = questionSet[1];
     const q3 = questionSet[2];
