@@ -20,13 +20,21 @@
 
   <body>
     <video class="video-background" id="gameVid">
-        <source src="/static/img/reflection_game.mp4" type="video/mp4">
+        <source id="vidSrc" src="/static/img/reflection_game_morning.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
     <div id="contentHolder" class="content fade-back">
         <p id="talk" class="h1 text-center"></p>
         <p id="info" class="h3 text-center" hidden></p>
         <button id="begin" onclick="beginGame()" class="btn btn-lg fc-light btn-dark btn-outline-dark" hidden>Begin</button>
+        <p id="question" class="h3 text-center" hidden></p>
+        <div id="questionOptions" class="container" hidden>
+            <div class="d-flex gap-2 justify-content-center py-5">
+                <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="positive"><i class="fa-regular fa-face-smile"></i></button>
+                <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="neutral"><i class="fa-regular fa-face-meh"></i></button>
+                <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="negative"><i class="fa-regular fa-face-frown"></i></button>
+            </div>
+        </div>
         <div id="bar" class="container" hidden>
             <div class="progress">
               <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>

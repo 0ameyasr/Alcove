@@ -381,3 +381,13 @@ def get_prompt():
 @app.route("/reflection")
 def reflect():
     return render_template("reflection.html")
+
+@app.route("/influence_mood",methods=["POST"])
+def do_reflection():
+    mood = request.form["mood"]
+    mode = request.form["mode"]
+    questionSet = personalizer.get_question_set(mood,mode)[0].split("#")
+    return jsonify({
+        "status":"success",
+        "questionSet":questionSet
+        })

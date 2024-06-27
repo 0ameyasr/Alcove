@@ -86,3 +86,35 @@ def get_journal_data(token):
 
 def get_journal_prompt():
     return random.choice(libs.journal_prompt_lib())
+    
+def get_question_set(mood,mode):
+    if mode == "sun":
+        sets = {
+            "positive":[
+                "What do you look forward to do today?#What inspires you to work hard today?#How are you feeling about the progress you've made today?#How do you plan to keep yourself happy today?#What moments have made you smile today?"
+            ],
+            "neutral":[
+                "What is the first thought that comes to your mind?#How are you navigating through your tasks today?#What has been occupying your thoughts today?#How would you describe your energy levels today?#What has been your focus during the day?"
+            ],
+            "negative": [
+                "What has been troubling you?#What challenges have you faced today?#How have you been coping with stress or difficulties today?#Who or what has been a source of frustration today?#How do you plan to improve your day?"
+            ]
+        }
+        return sets[mood]
+    elif mode == "moon":
+        sets = {
+            "positive":[
+                "What was good about your day today?#Why was it good and how did it make you feel?#Who or what made your day special today?#What inspired you today?#How did you make your day better?"
+            ],
+            "neutral":[
+                "How was your day today?#What stands out about your day as it comes to a close?#How are you feeling as the day winds down?#What are your reflections on the day's events?#What are you looking forward to tomorrow?"
+            ],
+            "negative": [
+                "What was bad about your day today?#What disappointed you today?#How did today fall short of your expectations?#What events or interactions left you feeling down today?#What would you like to change about today if you could?"
+            ]
+        }
+        return sets[mood]
+    else:
+        print("Invalid mode.")
+        return None
+

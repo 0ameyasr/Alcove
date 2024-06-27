@@ -31,7 +31,7 @@ body {
     background-color: rgba(0,0,0,0.99);
 }
 
-#talk {
+#talk, #question {
     color: var(--primary-color);
 }
 

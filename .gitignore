@@ -165,4 +165,5 @@ secrets.cfg
 bored-ai.pptx
 client_secret.json
 creds.py
-reflection_game.mp4
+*.mp4
+data

@@ -43,22 +43,22 @@ window.onload = function () {
     }
 
 
-    // typewrite("bored.ai","talk",0,fontColor);
-    // typewrite("Reflection Game","talk",3000,fontColor);
-    // setTimeout(()=>{
-    //     talk.hidden = true;
-    //     info.hidden = false;
-    //     infoDisplay("To make this exercise as helpful as possible, be open to acknowledging your thoughts without judgement.");
-    // },6000);
-    // setTimeout(()=>{infoDisplay("This will only work as long as you are aware.");},9000);
-    // setTimeout(()=>{infoDisplay("You may speak to yourself or acknowledge your thoughts.");},14000);
-    // setTimeout(()=>{infoDisplay("'Knowing yourself is the beginning of all wisdom.' - Aristotle")},19000);
-    // setTimeout(()=>{infoDisplay("Arrange yourself, and focus.")},25000);
+    typewrite("bored.ai","talk",0,fontColor);
+    typewrite("Reflection Game","talk",3000,fontColor);
+    setTimeout(()=>{
+        talk.hidden = true;
+        info.hidden = false;
+        infoDisplay("To make this exercise as helpful as possible, be open to acknowledging your thoughts without judgement.");
+    },6000);
+    setTimeout(()=>{infoDisplay("This will only work as long as you are aware.");},9000);
+    setTimeout(()=>{infoDisplay("You may speak to yourself or acknowledge your thoughts.");},14000);
+    setTimeout(()=>{infoDisplay("'Knowing yourself is the beginning of all wisdom.' - Aristotle")},19000);
+    setTimeout(()=>{infoDisplay("Arrange yourself, and focus.")},25000);
     setTimeout(()=>{
         infoDisplay("When you are ready, press 'Begin'")
         setInterval(()=>{},500);
         begin.hidden = false;
-    },1000);
+    },30000);
 }
 
 function infoDisplay(message) {
@@ -67,6 +67,7 @@ function infoDisplay(message) {
     info.classList.add("fade-in");
     info.innerText = message;
 }
+
 
 function updateProgressBar(duration,persist=False) {
     const progressBar = document.getElementById('progressBar');
@@ -93,10 +94,13 @@ function updateProgressBar(duration,persist=False) {
 
 async function game() {
     const info = document.getElementById("info");
+    const moodGrab = document.getElementById("question");
+    const moodOptions = document.getElementById("questionOptions");
+
     info.hidden = false;
   
     infoDisplay("");
-    
+
     await delay(1000);
     infoDisplay("Welcome.");
   
@@ -151,14 +155,26 @@ async function game() {
     await delay(500);
     updateProgressBar(8000, false);
 
-    await delay(10000);
-    infoDisplay("Feeling better?");
+    await delay(15000);
+    infoDisplay("Make yourself comfortable.");
+
+    await delay(5000);
+    infoDisplay("Let's Begin.");
+
+    await delay(3000);
+    info.hidden = true;
+
+    await delay(500);
+    moodGrab.hidden = false;
+    moodGrab.innerText="How are you feeling right now?"
+    moodOptions.hidden = false;
 }
-  
+
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-  
+
+
 function beginGame()
 {
     const content = document.getElementById("contentHolder");
@@ -168,12 +184,93 @@ function beginGame()
     const bar = document.getElementById("bar");
 
     content.style.background = 'transparent';
+    const now = new Date();
+    const currentHour = now.getHours();
 
     const video = document.getElementById("gameVid");
+    const source = document.getElementById("vidSrc");
+    if (currentHour >= 18) {
+        source.src = "/static/img/reflection_game.mp4";
+        video.load();
+        video.loop = true;
+        video.playsinline = true;
+        video.play();
+    }
     video.loop = true;
+    video.playsinline = true;
     video.play();
     info.hidden = true;
     begin.hidden = true;
     talk.hidden = true;
     game();
 }
+
+async function beginReflection(questionSet) {
+    const info = document.getElementById("info");
+    info.hidden = false;
+
+    const slot = 90000;
+    const q1 = questionSet[0];
+    const q2 = questionSet[1];
+    const q3 = questionSet[2];
+    const q4 = questionSet[3];
+    const q5 = questionSet[4];
+    infoDisplay(q1)
+
+    await delay(500);
+    infoDisplay(q1);
+    updateProgressBar(slot,false);
+
+    await delay(slot+1000);
+    infoDisplay(q2);
+    updateProgressBar(slot,false);
+
+    await delay(slot+1000);
+    infoDisplay(q3);
+    updateProgressBar(slot,false);
+
+    await delay(slot+1000);
+    infoDisplay(q4);
+    updateProgressBar(slot,false);
+
+    await delay(slot+1000);
+    infoDisplay(q5);
+    updateProgressBar(slot,false);
+
+    await delay(slot+5000);
+    infoDisplay("Now, collect your thoughts.");
+
+    await delay(3000);
+    infoDisplay("Observe the scene.");
+
+    await delay(5000);
+    infoDisplay("Leave whenever you want.");
+
+    await delay(5000);
+    info.hidden = true;
+}
+
+$(document).ready(function() {
+    $('.mood-option').click(function() {
+        let moodValue = $(this).val();
+        const now = new Date();
+        const currentHour = now.getHours();    
+        let mode = "sun";
+        if (currentHour >= 18) {
+            mode = "moon";
+        }
+        $.ajax({
+            type: "POST",
+            url: "/influence_mood",
+            data: { mood: moodValue, mode: mode},
+            success: function(response) {
+                document.getElementById('question').hidden = true;
+                document.getElementById('questionOptions').hidden = true;
+                beginReflection(response.questionSet)
+            },
+            error: function(error) {
+                console.error("Error: ", error);
+            }
+        });
+    });
+});

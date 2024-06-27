@@ -276,8 +276,7 @@ class prompt_corpus:
                     [Say OK, or give a thumbs up if you understand]
                 """
             return base_prompt
-
-    
+ 
     def get_relevant_icebreaker(self,nickname,history):
         return f"""
             Here is some additional history and context about the user named {nickname} in the past 1-3 conversations:
@@ -308,3 +307,4 @@ class prompt_corpus:
             Do not include phrases like "The user".
             [ONLY RETURN THE TIP. NOTHING ELSE]
         """
+    
