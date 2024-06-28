@@ -219,3 +219,7 @@ border-radius: 0.25rem;
 .btn-help:active {
     background-color: rebeccapurple;
 }
+
+.fc-secondary {
+    color: var(--secondary-color);
+}

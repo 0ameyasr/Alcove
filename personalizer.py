@@ -159,4 +159,4 @@ def get_timeline(nickname):
     dates = [entry[:12][1:-1] for entry in user["corpus"].split("\n") if entry != '']
     
     items = list(zip(dates,corpus,moods))
-    return items
+    return items[::-1]

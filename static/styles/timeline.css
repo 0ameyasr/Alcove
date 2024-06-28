@@ -12,7 +12,7 @@
 .half{
     height: 100vh;
     background-color: var(--gray);
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
@@ -32,8 +32,15 @@
 
 .timeline-card {
     width: 100%;
+    border: 1px solid var(--secondary-color);
 }
 
 .statistics-content {
-    gap: 15px;
+    gap: 30px;
+    border-left: 3px solid var(--secondary-color);
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+    border-top-left-radius: 25%;
+    border-bottom-left-radius: 25%;
 }

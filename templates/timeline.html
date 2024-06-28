@@ -27,13 +27,23 @@
                         <h5>How are you feeling today?</h5>
                         <div class="input-group">
                             <form id="moodForm" class="mood-form" method="POST" action="/mood_timeline_update">
-                                <textarea id="noteArea" class="form-control mood-update" name="corpus" aria-label="With textarea" required></textarea><br>
+                                {% if timelineData["timeline_entry_done"]: %}
+                                    <textarea id="noteArea" class="form-control mood-update" name="corpus" aria-label="With textarea" disabled></textarea><br>
+                                {% endif %}
+                                {% if not timelineData["timeline_entry_done"]: %}
+                                    <textarea id="noteArea" class="form-control mood-update" name="corpus" aria-label="With textarea" required></textarea><br>
+                                {% endif %}
                                 <div class="d-flex justify-content-center">
                                     {% if timelineData["timeline_entry_done"]: %}
-                                        <button id="postNote" class="btn btn-lg btn-success" type="submit" disabled>Submit</button>
+                                        <button id="postNote" class="btn btn-lg btn-success" type="submit" disabled>
+                                            Submit
+                                        </button>
                                     {% endif %}
                                     {% if not timelineData["timeline_entry_done"]: %}
-                                        <button id="postNote" class="btn btn-lg btn-success" type="submit">Submit</button>
+                                        <button id="postNote" class="btn btn-lg btn-success" type="submit">
+                                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                            <span role="status">Submit</span>
+                                        </button>
                                     {% endif %}
                                 </div><br>
                             </form>
@@ -52,7 +62,7 @@
                                 Remember, you can only submit a note once a day.
                             {% endif %}
                             {% if timelineData["timeline_entry_done"]: %}
-                                Since you've already submitted a note, come back tommorrow.
+                                Since you've already submitted a note, come back tomorrow.
                             {% endif %}
                         </p>
                     </div>
@@ -75,11 +85,11 @@
                         {% if timelineData["timeline"] != []:%}
                             {% for item in timelineData["timeline"]:%}
                             <div class="card timeline-card">
-                                <div class="card-header">
-                                  {{item[0]}}
+                                <div class="card-header border-none">
+                                    <i class="fa-regular fa-calendar-check"></i> {{item[0]}}
                                 </div>
                                 <div class="card-body">
-                                  <h5 class="card-title">{{item[2]}}</h5>
+                                  <h5 class="card-title fc-secondary">{{item[2]}}</h5>
                                   <p class="card-text"> {{item[1]}}</p>
                                 </div>
                               </div> 
