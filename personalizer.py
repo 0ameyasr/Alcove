@@ -85,7 +85,7 @@ def get_journal_data(token):
     }
 
 def get_journal_prompt():
-    return random.choice(libs.journal_prompt_lib())
+    return libs.journal_prompt_lib()
     
 def get_question_set(mood,mode):
     if mode == "sun":

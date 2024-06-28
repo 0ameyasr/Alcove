@@ -376,7 +376,8 @@ def delete_journal(token):
 
 @app.route("/prompt",methods=["POST"])
 def get_prompt():
-    return jsonify(prompt=f'{personalizer.get_journal_prompt()}',error="False")
+    jprompt = personalizer.get_journal_prompt()
+    return jsonify(prompt=f'{jprompt}',error="False")
 
 @app.route("/reflection")
 def reflect():
@@ -440,3 +441,11 @@ def update_mood():
             }
         })
     return jsonify({"status":"success","flash":"Save successful! Come back again tommorrow!"})
+
+@app.route("/zen")
+def zen():
+    return render_template("zen.html")
+
+@app.route("/choose_zen",methods=["POST"])
+def choose_zen():
+    return jsonify({"status":"success","choice":request.form["zenChoice"]})

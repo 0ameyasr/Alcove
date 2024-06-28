@@ -30,6 +30,7 @@ $(document).ready(function () {
             dataType:"json",
             success: function (response) {
                 document.getElementById('hintAudio').play();
+                console.log(response.prompt);
                 $('#status').html(response.prompt);
             }
         });

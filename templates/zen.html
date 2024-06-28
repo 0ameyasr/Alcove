@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bored.ai - Zen</title>
+    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Rokkitt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="icon" href="/static/img/web_icon.png">
+    <link rel="stylesheet" href="/static/styles/main.css">
+    <link rel="stylesheet" href="/static/styles/zen.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  </head>
+
+  <body>
+    <audio controls id="taiko" src="/static/audio/taiko.mp3" hidden></audio>
+    <video class="video-background" id="gameVid">
+        <source id="vidSrc" src="/static/img/zen.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div id="contentHolder" class="content fade-back">
+        <p id="talk" class="h1 text-center"></p>
+        <p id="info" class="h3 text-center" hidden></p>
+        <p id="susokuKanDetails" class="container text-center" hidden>
+            Sosoku-Kan is a fundamental Zazen practice where the practitioner focuses on counting their breaths. 
+            It is considered particularly helpful for beginners and is a standard practice in Zen meditation. 
+            <br><br>
+            To begin, sit upright either on a chair or on the floor in a lotus or half-lotus position. 
+            Ensure your back is straight to allow for natural breathing. Place your hands in the cosmic mudra 
+            position, with your right hand resting on your left hand, palms up, and thumbs lightly touching 
+            to form an oval shape. Also, ensure that your eyes remain half-open, gazing downward towards the middle-bottom
+            of the screen.
+            <br><br>
+            Start by taking a few deep breaths to settle into your posture. Then, breathe naturally through your nose, 
+            and begin counting each exhalation from one to ten. When you reach ten, start again at one. 
+            If you lose count or become distracted, gently bring your attention back to the breath and start over at one. 
+            The aim is to cultivate mindfulness and concentration by focusing on breathing and counting. 
+            Correct practice can help calm the mind and develop deeper awareness.
+            <br><br>
+            Don't worry, you will be guided throughout the session.
+        </p>
+        
+        <p id="shikantazaDetails" class="container text-center" hidden>
+            Shikantaza, often translated as "just sitting," is a form of meditation that involves open awareness without a specific focus. 
+            It requires no particular object of concentration and is considered the purest form of Zazen.
+            <br><br>
+            To begin, sit upright either on a chair or on the floor in a lotus or half-lotus position. 
+            Ensure your back is straight to maintain alertness and allow natural breathing. Your hands should be placed 
+            in the cosmic mudra position, with the right hand resting on the left hand, palms up, and thumbs lightly touching. 
+            You must ensure that your eyes remain half-open, with a soft gaze directed downward towards the middle-bottom
+            of the screen.
+            <br><br>
+            In Shikantaza, you are simply required to sit with open awareness. There is no need to focus on anything in particular. 
+            Allow thoughts, feelings, and sensations to arise and pass through your mind without attachment or judgment. 
+            The goal is to remain fully present and aware of each moment as it comes and goes, cultivating a state of pure being. 
+            This practice helps to develop a deep, non-dual awareness of reality, fostering insight and inner peace.
+            <br><br>
+            Don't worry, you will be guided throughout the session.
+        </p>
+
+        <button id="begin" onclick="beginGame()" class="btn btn-lg fc-light btn-dark btn-outline-dark" hidden>Begin</button>
+        <div class="container text-center" id="choices" hidden>
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="choice-card card shadow-sm">
+                        <div class="card-body">
+                            <h5><b>Susoku-Kan</b></h5>
+                            <p class="card-text">
+                                Focus on your breath by counting each exhalation to develop mindfulness and concentration.
+                            </p>
+                            <button class="btn btn-sm btn-success btn-choice" value="susokuKan">Choose</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="choice-card card shadow-sm">
+                        <div class="card-body">
+                            <h5><b>Shikantaza</b></h5>
+                            <p class="card-text">
+                                Sit with open awareness, observing everything without attachment or judgment, cultivating pure presence.
+                            </p>
+                            <button class="btn btn-sm btn-success btn-choice" value="shikantaza">Choose</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!--button id="begin" onclick="beginGame()" class="btn btn-lg fc-light btn-dark btn-outline-dark" hidden>Begin</button-->
+        <div id="bar" class="container" hidden>
+            <div class="progress">
+              <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="/static/scripts/zen.js"></script>
+  </body>
+</html>
