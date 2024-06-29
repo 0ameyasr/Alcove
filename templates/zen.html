@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>bored.ai - Zen</title>
+    <title>bored.ai - Zazen</title>
     
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -27,44 +27,37 @@
     <div id="contentHolder" class="content fade-back">
         <p id="talk" class="h1 text-center"></p>
         <p id="info" class="h3 text-center" hidden></p>
+        <div id="dot" hidden>
+            <p id="dotMode" class="fs-6"></p>
+        </div>
+        <div id="focusDot" hidden></div>
         <p id="susokuKanDetails" class="container text-center" hidden>
             Sosoku-Kan is a fundamental Zazen practice where the practitioner focuses on counting their breaths. 
             It is considered particularly helpful for beginners and is a standard practice in Zen meditation. 
-            <br><br>
-            To begin, sit upright either on a chair or on the floor in a lotus or half-lotus position. 
-            Ensure your back is straight to allow for natural breathing. Place your hands in the cosmic mudra 
-            position, with your right hand resting on your left hand, palms up, and thumbs lightly touching 
-            to form an oval shape. Also, ensure that your eyes remain half-open, gazing downward towards the middle-bottom
-            of the screen.
             <br><br>
             Start by taking a few deep breaths to settle into your posture. Then, breathe naturally through your nose, 
             and begin counting each exhalation from one to ten. When you reach ten, start again at one. 
             If you lose count or become distracted, gently bring your attention back to the breath and start over at one. 
             The aim is to cultivate mindfulness and concentration by focusing on breathing and counting. 
             Correct practice can help calm the mind and develop deeper awareness.
-            <br><br>
-            Don't worry, you will be guided throughout the session.
         </p>
         
         <p id="shikantazaDetails" class="container text-center" hidden>
             Shikantaza, often translated as "just sitting," is a form of meditation that involves open awareness without a specific focus. 
             It requires no particular object of concentration and is considered the purest form of Zazen.
             <br><br>
-            To begin, sit upright either on a chair or on the floor in a lotus or half-lotus position. 
-            Ensure your back is straight to maintain alertness and allow natural breathing. Your hands should be placed 
-            in the cosmic mudra position, with the right hand resting on the left hand, palms up, and thumbs lightly touching. 
-            You must ensure that your eyes remain half-open, with a soft gaze directed downward towards the middle-bottom
-            of the screen.
-            <br><br>
             In Shikantaza, you are simply required to sit with open awareness. There is no need to focus on anything in particular. 
             Allow thoughts, feelings, and sensations to arise and pass through your mind without attachment or judgment. 
             The goal is to remain fully present and aware of each moment as it comes and goes, cultivating a state of pure being. 
             This practice helps to develop a deep, non-dual awareness of reality, fostering insight and inner peace.
-            <br><br>
-            Don't worry, you will be guided throughout the session.
         </p>
+        
+        <img id="postures" src="/static/img/postures.jpg" hidden>
+        
+        <button id="beginSusokuKan" onclick="beginSusokuKan()" class="btn btn-lg fc-light btn-dark btn-outline-dark" hidden>Begin</button>
+        <button id="beginShikantaza" onclick="beginShikantaza()" class="btn btn-lg fc-light btn-dark btn-outline-dark" hidden>Begin</button>
+        
 
-        <button id="begin" onclick="beginGame()" class="btn btn-lg fc-light btn-dark btn-outline-dark" hidden>Begin</button>
         <div class="container text-center" id="choices" hidden>
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 col-lg-4 mb-4">

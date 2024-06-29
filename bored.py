@@ -444,8 +444,12 @@ def update_mood():
 
 @app.route("/zen")
 def zen():
+    if not session:
+        return redirect("/")
     return render_template("zen.html")
 
 @app.route("/choose_zen",methods=["POST"])
 def choose_zen():
+    if not session:
+        return redirect("/")
     return jsonify({"status":"success","choice":request.form["zenChoice"]})

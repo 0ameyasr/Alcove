@@ -67,7 +67,6 @@ function infoDisplay(message) {
     info.innerText = message;
 }
 
-
 function updateProgressBar(duration,persist=False) {
     const progressBar = document.getElementById('progressBar');
     const bar = document.getElementById("bar");
@@ -97,13 +96,14 @@ function delay(ms) {
 }
 
 
-function beginGame()
+async function beginSusokuKan()
 {
     const content = document.getElementById("contentHolder");
     const talk = document.getElementById("talk");
     const info = document.getElementById("info");
-    const begin = document.getElementById("begin");
+    const begin = document.getElementById("beginSusokuKan");
     const bar = document.getElementById("bar");
+    const details = document.getElementById("susokuKanDetails");
 
     content.style.background = 'transparent';
 
@@ -115,45 +115,147 @@ function beginGame()
     info.hidden = true;
     begin.hidden = true;
     talk.hidden = true;
-    console.log("Zen Time")
+    details.hidden = true;
+
+    await delay(3000);
+    info.hidden = false;
+    infoDisplay("Before we begin, please ensure you have proper posture.");
+
+    await delay(5000);
+    infoDisplay("Make sure the screen is at comfortable eye level.");
+
+    await delay(5000);
+    infoDisplay("Focus your eyes on the dot. Close them half-way.");
+
+    await delay(5000);
+    infoDisplay("Inhale as the dot grows, and slowly exhale as it shrinks.");
+
+    await delay(5000);
+    infoDisplay("Count each exhalation from one to ten, and repeat.");
+
+    await delay(5000);
+    infoDisplay("You may close the window after you are satisfied.")
+
+    await delay(3000);
+    infoDisplay("");
+    const dot = document.getElementById('dot');
+    dot.classList.add("fade-in");
+    const dotMode = document.getElementById('dotMode');
+    dot.hidden = false;
+
+    function breatheIn() {
+        dot.style.animation = 'breathe-in 4s linear';
+        dotMode.innerText = 'IN';
+        setTimeout(breatheOut, 4000);
+    }
+
+    function breatheOut() {
+        dot.style.animation = 'breathe-out 6s linear';
+        dotMode.innerText = 'OUT';
+        setTimeout(breatheIn, 6000);
+    }
+
+    breatheIn();
+}
+
+async function beginShikantaza()
+{
+    const content = document.getElementById("contentHolder");
+    const talk = document.getElementById("talk");
+    const info = document.getElementById("info");
+    const begin = document.getElementById("beginShikantaza");
+    const bar = document.getElementById("bar");
+    const details = document.getElementById("shikantazaDetails")
+    const focusDot = document.getElementById("focusDot")
+
+    content.style.background = 'transparent';
+
+    const video = document.getElementById("gameVid");
+    const source = document.getElementById("vidSrc");
+    video.loop = true;
+    video.playsinline = true;
+    video.play();
+    info.hidden = true;
+    begin.hidden = true;
+    talk.hidden = true;
+    details.hidden = true;
+
+    await delay(5000);
+    info.hidden = false;
+    infoDisplay("Before we begin, ensure you have proper posture.");
+
+    await delay(5000);
+    infoDisplay("Close your eyes half-way, and focus on the center of the screen.");
+
+    await delay(5000);
+    infoDisplay("Do not focus on anything, let your mind wander.");
+
+    await delay(5000);
+    infoDisplay("Acknowledge your thoughts without judgement, and breathe normally.");
+
+    await delay(5000);
+    infoDisplay("Do not engage in your thoughts. Just let them pass by.");
+
+    await delay(5000);
+    infoDisplay("Lose yourself in a meditative trance.");
+
+    await delay(5000);
+    infoDisplay("When you are satisfied, you may close this window.");
+    info.hidden = true;
+    focusDot.classList.add("fade-in");
+    focusDot.hidden = false;
 }
 
 async function susokuKan() {
     const details = document.getElementById("susokuKanDetails");
-    const proceed = document.getElementById("begin");
+    const proceed = document.getElementById("beginSusokuKan");
+    const postures = document.getElementById("postures");
 
     document.getElementById("taiko").play();
     infoDisplay("Susoku-Kan");
     
     await delay(5000);
-    infoDisplay("");
+    infoDisplay("Recommended Postures");
+    postures.classList.add("fade-in");
+    await delay(500);
+    postures.hidden = false;
+
+    await delay(5000);
+    infoDisplay("")
+    postures.hidden = true
     
     details.classList.add("fade-in");
-    await delay(500);
+    await delay(2000);
     details.hidden = false;
 
-    await delay(15000);
+    await delay(1000);
     proceed.classList.add("fade-in");
     proceed.hidden = false;
-    details.hidden = true
-
 }
 
 async function shikantaza() {
     const details = document.getElementById("shikantazaDetails");
-    const proceed = document.getElementById("begin");
+    const proceed = document.getElementById("beginShikantaza");
+    const postures = document.getElementById("postures");
 
     document.getElementById("taiko").play();
     infoDisplay("Shikantaza");
 
     await delay(5000);
-    infoDisplay("");
-    
-    details.classList.add("fade-in");
+    infoDisplay("Recommended Postures");
+    postures.classList.add("fade-in");
     await delay(500);
+    postures.hidden = false;
+
+    await delay(5000);
+    infoDisplay("")
+    postures.hidden = true
+
+    details.classList.add("fade-in");
+    await delay(2000);
     details.hidden = false;
-    
-    await delay(15000);
+
+    await delay(1000);
     proceed.classList.add("fade-in");
     proceed.hidden = false;
 }
