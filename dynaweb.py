@@ -1,5 +1,5 @@
 import random
-import engine
+import libs
 from datetime import datetime
 
 class curate_web:
@@ -200,3 +200,6 @@ class curate_web:
     def now(self):
         today = datetime.now()
         return str(today.strftime("%H:%M"))
+    
+    def get_radar_questions(self):
+        return libs.get_radar_question_set()

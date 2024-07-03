@@ -42,23 +42,6 @@ def get_shaman_history(nickname):
     else:
         return ""
 
-def get_clean_history(nickname,mode="dynamo"):
-    history = get_dynamo_history(nickname) if mode=="dynamo" else get_shaman_history(nickname)
-    count_chats = history.count("[CHAT]")
-    duplex_pairs = history.split("~")
-
-    if count_chats > 30:
-        duplex_pairs = duplex_pairs[29:]
-        config = configparser.ConfigParser()
-        config.read("secrets.cfg")
-        mongo = MongoClient(config["mongodb"]["uri"])
-        chats = mongo["credentials"]["chats"] if mode=="dynamo" else mongo["credentials"]["shaman"]
-        updated_history = ''.join(duplex_pairs)
-        chats.update_one({"nickname":nickname},{"$set":{"history":updated_history}})
-        return updated_history
-    else:
-        return history
-
 def get_random_topics(nickname):
     config = configparser.ConfigParser()
     config.read("secrets.cfg")

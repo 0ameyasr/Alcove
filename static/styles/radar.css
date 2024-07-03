@@ -1,0 +1,44 @@
+@import url(main.css);
+
+.main {
+    min-height: 70vh;
+    height: auto;
+    overflow: auto;
+}
+
+.response-pane {
+    width: 60vw;
+    height: 20vh;
+    border-radius: 0.50rem;
+    padding: 10px;
+}
+
+
+@keyframes fadeIn {
+    0%{
+        opacity: 0;
+    }
+    50%{
+        opacity: 0.5;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+
+
+.fade-in {
+    animation: fadeIn linear 2s;
+}
+
+.interact {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.radar-form {
+    gap: 10px;
+}

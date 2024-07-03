@@ -223,3 +223,7 @@ border-radius: 0.25rem;
 .fc-secondary {
     color: var(--secondary-color);
 }
+
+.resize-none {
+    resize: none;
+}

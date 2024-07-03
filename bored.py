@@ -212,7 +212,7 @@ def dynamo():
         session["is_opted"] = home_engine.is_opted(session["nickname"])
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
         if opted_in_user:
-            history = personalizer.get_clean_history(session["nickname"],mode="dynamo")
+            history = personalizer.get_dynamo_history(session["nickname"])
             if not history or history == "":
                 icebreaker = dynamic_web.get_dynamo_icebreaker()
                 session["icebreaker"] = icebreaker
@@ -274,7 +274,7 @@ def shaman():
         session["is_opted"] = home_engine.is_opted(session["nickname"])
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
         if opted_in_user:
-            history = personalizer.get_clean_history(session["nickname"],mode="shaman")
+            history = personalizer.get_shaman_history(session["nickname"])
             if not history or history == "":
                 icebreaker = dynamic_web.get_shaman_icebreaker()
                 session["icebreaker"] = icebreaker
@@ -453,3 +453,19 @@ def choose_zen():
     if not session:
         return redirect("/")
     return jsonify({"status":"success","choice":request.form["zenChoice"]})
+
+@app.route("/radar")
+def radar():
+    if not session:
+        return redirect("/")
+    session["question"] = gemini.radar_config() 
+    print(f"in radar: {session['question']}")
+    return render_template("radar.html",question=session["question"])
+
+@app.route("/radar_response",methods=["POST"])
+def radar_response():
+    user_response = request.form["response"]
+    print(f"in radar_response; user sends {user_response}")
+    gemini_response = gemini.chat_radar(user_response)
+    print(f"gemini says {gemini_response.text}")
+    return jsonify(question=gemini_response.text,success=True)

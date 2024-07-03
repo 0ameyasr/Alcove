@@ -1,0 +1,214 @@
+<div id="PSQI" class="mt-5" hidden>
+    <h2>Sleep Quality Questionnaire</h2>
+    <form id="questionnaireForm">
+      <!-- Question 1 -->
+      <div class="mb-3">
+        <label class="form-label">1. During the past month or earlier, how would you rate your sleep quality overall?</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="sleepQuality" id="sleepQuality1" value="0" required>
+          <label class="form-check-label" for="sleepQuality1">Very Good</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="sleepQuality" id="sleepQuality2" value="1">
+          <label class="form-check-label" for="sleepQuality2">Fairly Good</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="sleepQuality" id="sleepQuality3" value="2">
+          <label class="form-check-label" for="sleepQuality3">Fairly Bad</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="sleepQuality" id="sleepQuality4" value="3">
+          <label class="form-check-label" for="sleepQuality4">Very Bad</label>
+        </div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="mb-3">
+        <label class="form-label">2. During the past month, how long (in minutes) has it usually taken you to fall asleep each night?</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="fallAsleepTime" id="fallAsleepTime1" value="0" required>
+          <label class="form-check-label" for="fallAsleepTime1"><= 15 minutes</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="fallAsleepTime" id="fallAsleepTime2" value="1">
+          <label class="form-check-label" for="fallAsleepTime2">15-30 minutes</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="fallAsleepTime" id="fallAsleepTime3" value="2">
+          <label class="form-check-label" for="fallAsleepTime3">31-60 minutes</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="fallAsleepTime" id="fallAsleepTime4" value="3">
+          <label class="form-check-label" for="fallAsleepTime4">>60 minutes</label>
+        </div>
+      </div>
+
+      <!-- Question 3 -->
+      <div class="mb-3">
+        <label class="form-label">3. During the past month, how often have you had trouble sleeping because you could not get to sleep within 30 minutes?</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="troubleSleeping30Min" id="troubleSleeping30Min1" value="0" required>
+          <label class="form-check-label" for="troubleSleeping30Min1">Not during the past month</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="troubleSleeping30Min" id="troubleSleeping30Min2" value="1">
+          <label class="form-check-label" for="troubleSleeping30Min2">Less than once a week</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="troubleSleeping30Min" id="troubleSleeping30Min3" value="2">
+          <label class="form-check-label" for="troubleSleeping30Min3">Once or twice a week</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="troubleSleeping30Min" id="troubleSleeping30Min4" value="3">
+          <label class="form-check-label" for="troubleSleeping30Min4">Three or more times a week</label>
+        </div>
+      </div>
+
+      <!-- Question 4 -->
+      <div class="mb-3">
+        <label class="form-label">4. During the past month, how many hours of actual sleep did you get at night? (This may be different than the number of hours you spend in bed)</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hoursOfSleep" id="hoursOfSleep1" value="0" required>
+          <label class="form-check-label" for="hoursOfSleep1">> 7 hours</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hoursOfSleep" id="hoursOfSleep2" value="1">
+          <label class="form-check-label" for="hoursOfSleep2">6-7 hours</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hoursOfSleep" id="hoursOfSleep3" value="2">
+          <label class="form-check-label" for="hoursOfSleep3">5-6 hours</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hoursOfSleep" id="hoursOfSleep4" value="3">
+          <label class="form-check-label" for="hoursOfSleep4">< 5 hours</label>
+        </div>
+      </div>
+
+      <!-- Questions 5 and 6 -->
+      <div class="mb-3">
+        <label class="form-label">5. During the past month, when have you usually gotten up in the morning?</label>
+        <input type="time" class="form-control" id="wakeUpTime" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">6. During the past month, when have you usually gone to bed at night?</label>
+        <input type="time" class="form-control" id="bedTime" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Number of hours slept:</label>
+        <input type="number" class="form-control" id="hoursSlept" required>
+      </div>
+
+      <!-- Question 7 -->
+      <div class="mb-3">
+        <label class="form-label">7. During the past month, how often have you had trouble sleeping because you:</label>
+        <div class="row">
+          <div class="col-md-6">
+            <label class="form-label">a) ...could not get to sleep within 30 minutes</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="troubleSleepingA" id="troubleSleepingA1" value="0" required>
+              <label class="form-check-label" for="troubleSleepingA1">Not during the past month</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="troubleSleepingA" id="troubleSleepingA2" value="1">
+              <label class="form-check-label" for="troubleSleepingA2">Less than once a week</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="troubleSleepingA" id="troubleSleepingA3" value="2">
+              <label class="form-check-label" for="troubleSleepingA3">Once or twice a week</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="troubleSleepingA" id="troubleSleepingA4" value="3">
+              <label class="form-check-label" for="troubleSleepingA4">Three or more times a week</label>
+            </div>
+          </div>
+          <!-- Repeat similar blocks for each sub-question (b to j) -->
+          <div class="col-md-6">
+            <label class="form-label">b) ...wake up in the middle of the night or early morning</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="troubleSleepingB" id="troubleSleepingB1" value="0" required>
+              <label class="form-check-label" for="troubleSleepingB1">Not during the past month</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="troubleSleepingB" id="troubleSleepingB2" value="1">
+              <label class="form-check-label" for="troubleSleepingB2">Less than once a week</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="troubleSleepingB" id="troubleSleepingB3" value="2">
+              <label class="form-check-label" for="troubleSleepingB3">Once or twice a week</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="troubleSleepingB" id="troubleSleepingB4" value="3">
+              <label class="form-check-label" for="troubleSleepingB4">Three or more times a week</label>
+            </div>
+          </div>
+          <!-- Add similar blocks for questions c to j -->
+        </div>
+      </div>
+
+      <!-- Question 8 -->
+      <div class="mb-3">
+        <label class="form-label">8. During the past month, how often have you taken medicine to help you sleep?</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="sleepMedicine" id="sleepMedicine1" value="0" required>
+          <label class="form-check-label" for="sleepMedicine1">Not during the past month</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="sleepMedicine" id="sleepMedicine2" value="1">
+          <label class="form-check-label" for="sleepMedicine2">Less than once a week</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="sleepMedicine" id="sleepMedicine3" value="2">
+          <label class="form-check-label" for="sleepMedicine3">Once or twice a week</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="sleepMedicine" id="sleepMedicine4" value="3">
+          <label class="form-check-label" for="sleepMedicine4">Three or more times a week</label>
+        </div>
+      </div>
+
+      <!-- Question 9 -->
+      <div class="mb-3">
+        <label class="form-label">9. During the past month, how often have you had trouble staying awake while going about your day?</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="troubleStayingAwake" id="troubleStayingAwake1" value="0" required>
+          <label class="form-check-label" for="troubleStayingAwake1">Not during the past month</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="troubleStayingAwake" id="troubleStayingAwake2" value="1">
+          <label class="form-check-label" for="troubleStayingAwake2">Less than once a week</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="troubleStayingAwake" id="troubleStayingAwake3" value="2">
+          <label class="form-check-label" for="troubleStayingAwake3">Once or twice a week</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="troubleStayingAwake" id="troubleStayingAwake4" value="3">
+          <label class="form-check-label" for="troubleStayingAwake4">Three or more times a week</label>
+        </div>
+      </div>
+
+      <!-- Question 10 -->
+      <div class="mb-3">
+        <label class="form-label">10. During the past month, how much of a problem has it been for you to keep up enough enthusiasm to get things done?</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="enthusiasm" id="enthusiasm1" value="0" required>
+          <label class="form-check-label" for="enthusiasm1">Not during the past month</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="enthusiasm" id="enthusiasm2" value="1">
+          <label class="form-check-label" for="enthusiasm2">Less than once a week</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="enthusiasm" id="enthusiasm3" value="2">
+          <label class="form-check-label" for="enthusiasm3">Once or twice a week</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="enthusiasm" id="enthusiasm4" value="3">
+          <label class="form-check-label" for="enthusiasm4">Three or more times a week</label>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn btn-lg btn-success">Submit</button>
+    </form>
+  </div>

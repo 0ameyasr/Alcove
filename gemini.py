@@ -47,6 +47,26 @@ modelShaman =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_setting
 ])
 shaman = modelShaman.start_chat(history=[])
 
+modelRadar =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE",
+    },
+])
+radar = modelRadar.start_chat(history=[])
+
 def fit_prompt(prompt):
     gemini.configure(api_key=config['gemini']['api_key'])
     model =gemini.GenerativeModel(model_name="gemini-1.5-flash")
@@ -66,3 +86,21 @@ def chat_dynamo(message):
 
 def chat_shaman(message):
     return shaman.send_message(message),shaman.history[-1]
+
+def radar_config():
+    response = radar.send_message(prompts.prompt_corpus([]).get_radar_prompt())
+    return response.text
+
+def chat_radar(message):
+    return radar.send_message(message)
+
+# if __name__ == "__main__":
+#     resp = radar.send_message(prompts.prompt_corpus([]).get_radar_prompt())
+#     print(resp.text.strip())
+#     while "END" not in resp:
+#         msg = input("Message: ")
+#         resp = radar.send_message(msg)
+#         if "$" in resp.text:
+#             print(resp.text)
+#             break
+#         print(resp.text.strip())
