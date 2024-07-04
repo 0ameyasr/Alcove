@@ -458,14 +458,27 @@ def choose_zen():
 def radar():
     if not session:
         return redirect("/")
-    session["question"] = gemini.radar_config() 
-    print(f"in radar: {session['question']}")
+    session["question"] = gemini.radar_config()
     return render_template("radar.html",question=session["question"])
 
 @app.route("/radar_response",methods=["POST"])
 def radar_response():
     user_response = request.form["response"]
-    print(f"in radar_response; user sends {user_response}")
-    gemini_response = gemini.chat_radar(user_response)
-    print(f"gemini says {gemini_response.text}")
-    return jsonify(question=gemini_response.text,success=True)
+    gemini_response = gemini.chat_radar(user_response).text
+    response = gemini_response.strip()
+    status,score = 1,0
+    verdict = ""
+    if "[" in response or "]" in response:
+        status = 0
+        score = [int(_) for _ in response[1:-1].split(',')]
+        response = "END"
+        status = 0
+        verdict = gemini.make_radar_verdict(score)
+        print(f"You Scored: {score} Verdict:{verdict}")
+    return jsonify(question=response,status=status,score=score,verdict=verdict,success=True)
+
+@app.route("/get_radar_analysis",methods=["POST"])
+def get_radar_analysis():
+    scores = personalizer.get_scores(request.json)
+    analysis = gemini.fit_prompt(prompts.prompt_corpus([]).get_analysis_prompt(scores))
+    return jsonify(success=True,title=scores["title"],scores=scores,analysis=analysis,safeword="Analysis")

@@ -42,3 +42,29 @@
 .radar-form {
     gap: 10px;
 }
+
+.progress-item {
+    margin-bottom: 20px;
+}
+
+.progress-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    text-align: center;
+}
+
+.progress {
+    height: 30px;
+    width: 100%;
+    background-color: transparent;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    border: 1px solid black;
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.6s ease;
+}

@@ -23,6 +23,38 @@
     <p id="nickname" hidden>{{session["nickname"]}}</p>
     <audio controls id="pingAudio" src="static/audio/ping.mp3" style="display:none;"></audio>
     <div class="main container-fluid d-flex flex-wrap justify-content-center align-items-center">
+      <div id="analysisContainer" class="container mt-4 interact fade-in" hidden>
+        <h4 id="title" class="text-center">Analysis Progress</h4>
+        
+        <div class="progress-item">
+            <span class="progress-label">Sleep Abnormalities</span>
+            <div class="progress">
+                <div id="progressSleep" class="progress-bar bg-success fade-in" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+        
+        <div class="progress-item">
+            <span class="progress-label">Indication of Depression</span>
+            <div class="progress">
+                <div id="progressDepression" class="progress-bar bg-info fade-in" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+        
+        <div class="progress-item">
+            <span class="progress-label">Indication of Anxiety</span>
+            <div class="progress">
+                <div id="progressAnxiety" class="progress-bar bg-warning fade-in" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+        
+        <div class="progress-item">
+            <span class="progress-label">Indication of troubled Mental Health</span>
+            <div class="progress">
+                <div id="progressOverall" class="progress-bar bg-primary fade-in" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+      </div>
+           
       <p id="disclaimer" class="fs-6 text-center" hidden> 
         <b>DISCLAIMER</b><br><br>
         This tool is designed to provide users with insights into their mental landscape and promote self-awareness.
@@ -42,6 +74,7 @@
         strongly encourage you to seek advice from a qualified healthcare provider.
       </p>
       <button id="proceed" type="button" class="btn btn-lg btn-success" hidden>Ok</button>
+      <p id="score"></p>
       <div id="interactPane" class="interact text-center" hidden>
         <h6 id="question">{{question | safe}}</h6>
         <div class="form-floating mt-3">
@@ -52,6 +85,7 @@
           <div class="mt-2 text-muted" id="wordCount">Remaining words: 200</div>
         </div>
       </div>
+      <p id="analysis" class="fs-6 container text-center" hidden></p>
       <p id="talk" class="h1 text-center"></p>
       <p id="info" class="h3 text-center"></p>
     </div>

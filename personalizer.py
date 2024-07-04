@@ -143,3 +143,35 @@ def get_timeline(nickname):
     
     items = list(zip(dates,corpus,moods))
     return items[::-1]
+
+def get_scores(scores):
+    sleepIndex = scores['sleepIndex']
+    depressionIndex = scores['depressionIndex']
+    anxietyIndex = scores['anxietyIndex'] 
+    overallMentalHealth = scores['overallMentalHealth'] 
+    abnormalcyIndex = scores['abnormalcyIndex']
+
+    pSleep = int((sleepIndex / 21) * 100)
+    pDepression = int((depressionIndex / 63) * 100)
+    pAnxiety = int((anxietyIndex / 21) * 100)
+    pOverall = int((overallMentalHealth / 27) * 100)
+    pRisk = int((overallMentalHealth / 11) * 100)
+    riskFactor = scores['verdict']
+
+    title = {
+        "NONE": "All Good",
+        "MILD": "Mild Indication of troubled Mental Health",
+        "MOD": "Moderate Indication of troubled Mental Health",
+        "SEV": "Severe Indication of troubled Mental Health"
+    }
+
+    userScores = {
+        "pSleep": pSleep,
+        "pDepression": pDepression,
+        "pOverall": pOverall,
+        "pAnxiety": pAnxiety,
+        "pRisk": pRisk,
+        "verdict":riskFactor,
+        "title": title[riskFactor]
+    }
+    return userScores

@@ -1,11 +1,14 @@
 import google.generativeai as gemini
 import configparser
+import numpy
+import tensorflow
 import prompts
 import personalizer
 config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
 gemini.configure(api_key=config['gemini']['api_key'])
+model = tensorflow.keras.saving.load_model("model/RADAR_F1_92")
 
 modelDynamo =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
     {
@@ -89,18 +92,24 @@ def chat_shaman(message):
 
 def radar_config():
     response = radar.send_message(prompts.prompt_corpus([]).get_radar_prompt())
-    return response.text
+    return response.text.strip()
 
 def chat_radar(message):
     return radar.send_message(message)
 
-# if __name__ == "__main__":
-#     resp = radar.send_message(prompts.prompt_corpus([]).get_radar_prompt())
-#     print(resp.text.strip())
-#     while "END" not in resp:
-#         msg = input("Message: ")
-#         resp = radar.send_message(msg)
-#         if "$" in resp.text:
-#             print(resp.text)
-#             break
-#         print(resp.text.strip())
+def manually_scale_score(score, mean, variance):
+    scaled_score = (score - mean) / numpy.sqrt(variance)
+    return scaled_score
+
+def make_radar_verdict(score):
+    mean = numpy.array([13.51438053, 10.51106195, 19.08960177, 10.33517699, 5.35066372])
+    variance = numpy.array([64.8117401, 42.55961215, 147.59042285, 43.71398382, 12.14584027])
+    score = manually_scale_score([score],mean,variance)
+    p = list(list(model.predict(score))[0])
+    risks = ["NONE","MILD","MOD","SEV"]
+    max,maxi = float("-inf"),0
+    for i in range(len(p)):
+        if p[i] > max:
+            max = p[i]
+            maxi = i
+    return risks[maxi]

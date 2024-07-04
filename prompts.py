@@ -340,7 +340,7 @@ class prompt_corpus:
             You have to return the score you assign to each user response.
 
             Questions
-            SLEEP INDEX:
+            SLEEP INDEX: (MAX 21)
             1."How would you rate your sleep quality overall?"
             2."How long (in minutes) does it usually take you to fall asleep each night?"
             3."How often have you had trouble sleeping because you could not get to sleep within 30 minutes?"
@@ -350,7 +350,8 @@ class prompt_corpus:
             7."How often do you take medication to help you sleep?"
             8."How often do you have trouble staying awake while going about your day?"
             9."How much of a problem has it been for you to keep up enough enthusiasm to get things done?"
-            DEPRESSION INDEX:
+
+            DEPRESSION INDEX: (MAX 63)
             10."How would you describe your sadness usually? How pronounced is it?"
             11."What do you think about the future? Does it encourage you or do you find it hopeless?"
             12."Do you often feel like a failure or dissapointment? How often, and how pronounced is this feeling?"
@@ -372,7 +373,8 @@ class prompt_corpus:
             28."Have you lost weight lately? If yes, then how much?"
             29."Are you often worried about your health or physical problems than usual? If yes, Have you been thinking about this too much lately?"
             30."Have you noticed any recent change in your libido or arousal?"
-            ANXIETY INDEX:
+
+            ANXIETY INDEX: (MAX 21)
             31."How often do you feel nervous, anxious or on edge?"
             32."How often have you not been able to stop or control worrying?"
             33."How often have you been worrying too much about different things?"
@@ -380,7 +382,8 @@ class prompt_corpus:
             35."How often are you so restless that it is hard for you to sit still?"
             36."How often do you become easily annoyed or irritable?"
             37."How often do you feel afraid, as if something awful might happen?"
-            OVERALL MENTAL HEALTH:
+
+            OVERALL MENTAL HEALTH: (MAX 27)
             38."How often do you have little interest or pleasure in doing things?"
             39."How often do you feel down, depressed or just hopeless?"
             40."How often do you feel tired or lacking energy?"
@@ -389,53 +392,59 @@ class prompt_corpus:
             43."How often do you have trouble concentrating on things?"
             44."How often do you act more slow or restless (and fidgety) than usual?"
             45."How difficult has your mental health made it for you to go about your life?"
-            ABNORMALCY INDEX:
+
+            ABNORMALCY INDEX: (MAX 11)
             46."How frequently do you feel out of place or lacking control?"
             47."How frequently have you been having less interest in doing things and feeling no pleasure (even in things you like)?"
             48."How frequently do you feel bad about yourself and things you own? How frequently have these thoughts occurred to you?"
             49."How frequently have you been having trouble falling asleep on nights where you would usually feel normal?"
 
             Scoring Scheme:
-            1. If response indicates:
+            Question 1. If response indicates:
                 "Very Good" = 0
                 "Fairly Good" = 1
                 "Fairly Bad" = 2
                 "Very Bad" = 3
-            2. If response indicates:
+            Question 2. If response indicates:
                 "<= 15 minutes" = 0
                 "15-30 minutes" = 1
                 "31-60 minutes" = 2
                 ">60 minutes" = 3
-            3. If response indicates:
+            Question 3. If response indicates:
                 "Not during past month" = 0
                 "Less than once a week" = 1
                 "Once or twice a week" = 2
                 "Three or more times a week" = 3
-            4. If response indicates:
+            Question 4. If response indicates:
                 ">7 hours" = 0
                 "6-7 hours" = 1
                 "5-6 hours" = 2
                 "<5 hours" = 3
-            5. Return % = (Number of hours slept) / (Total hours in bed)
+            Question 5. Return % = (Number of hours slept) / (Total hours in bed)
                If % > 85% = 0
                If % 75-84% = 1
                If % 65-74% = 2
                If % <65% = 3
-            6. If the reasons indicate that:
+            Question 6. If the reasons indicate that:
                "No trouble sleeping" = 0
                "Less than once a week" = 9
                "Once or twice a week" = 15
                "Three or more times a week" = 24
-            7 to 9. If response indicates:
+            Questions 7 to 9. If response indicates:
                 "Not during past month" = 0 for each
                 "Less than once a week" = 1 for each
                 "Once or twice a week" = 2 for each
                 "Three or more times a week" = 3 for each
-            10 to 48. If response indicates: 
+            Questions 10 to 45. If response indicates: 
                 "Low negative quality" = 0 for each
                 "Fair negative quality" = 1 for each
                 "High negative quality" = 2 for each
                 "Very negative quality" = 3 for each
+            Questions 46 to 49. If response indicates:
+                "Low Frequency (never or very occassional)" = 0
+                "Medium Frequency (once-twice a week)" = 1
+                "High Frequency (three+ times a week)" = 2
+                "Very High Frequency (everyday)" = 3 
             
             You are only to ask the questions. 
             Keep track of the score of the answer.
@@ -446,4 +455,57 @@ class prompt_corpus:
             
             In the format: $[SLEEP INDEX, DEPRESSION INDEX, ANXIETY INDEX, OVERALL MENTAL HEALTH, ABNORMALCY INDEX]
             [STRICTLY FOLLOW THESE INSTRUCTIONS. BEGIN WITH THE FIRST QUESTION.]
+        """
+    
+    def get_analysis_prompt(self,pDict):
+        return f"""
+            Here is a keyword: {pDict["verdict"]}
+            
+            Here are some scores:
+            Sleep Quality: {pDict["pSleep"]}%
+            Depression Indication: {pDict["pDepression"]}%
+            Anxiety Indication: {pDict["pAnxiety"]}%
+            Overall Mental Health Factor: {pDict["pOverall"]}%
+            Mood Abnormalcy: {pDict["pRisk"]}%
+
+            What the keyword means:
+            NONE: 
+               Little to no indication of bad mental health
+               Describe that the user is safe, and shows no signs of bad mental health
+               Describe that they have normal parameters
+               Encourage them to keep taking care of their mental health
+               Appreciate the fact that their lifestyle has kept their mental health in check
+
+            MILD:
+                Mild indication of bad mental health
+                Highlight the issue with the highest percentage score (=indicative feature)
+                Highlight that while most parameters are normal, they should beware of the most indicative feature
+                Ask them to consult medical help if they feel that the indicative feature is troubling them
+                Encourage them to keep taking care of their mental health
+                Remind them to take care on tackling problems related to the indicative feature
+                Give little advice
+
+            MOD:
+                Moderate to borderline indication of unwell mental health
+                Highlight that they need to take care of their mental health on priority
+                Also ask them to consult professional help
+                Highlight their indicative features
+                Give them advice and be assertive on them taking professional help
+                Encourage them to take care of their mental health
+
+            SEV: 
+                Severe indication of mental health problems, help may be considered
+                Highlight their indicative features
+                Be direct in telling them to take professional help
+                Do not be hard, but encourage them to seek help
+                Give them advice
+                Be sympathetic
+            
+            Now, only return an analysis of their mental landscape based on the scores provided.
+            Be comprehensive, and divide your response in three paragraphs.
+            Interpretation -- interpret their scores (DO NOT MENTION % or Features)
+            Advice -- Advice, if any on the scores
+            What to do next -- What they should do next.
+            Do not label the paragraphs.
+            [ONLY RETURN THE PARAGRAPHS AS A RESPONSE]
         """

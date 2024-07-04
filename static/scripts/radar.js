@@ -94,11 +94,54 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 });
 
+function analyze(score,verdict) {
+    const riskIndication = verdict
+    const scores = score
+    const sleepIndex = score[0]
+    const depressionIndex = score[1]
+    const anxietyIndex = score[2]
+    const overallMentalHealth = score[3]
+    const abnormalcyIndex = score[4]
+    const analysis = document.getElementById('analysis')
+
+    const data = {
+        "verdict": verdict,
+        "sleepIndex":sleepIndex,
+        "depressionIndex":depressionIndex,
+        "anxietyIndex":anxietyIndex,
+        "overallMentalHealth":overallMentalHealth,
+        "abnormalcyIndex":abnormalcyIndex
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/get_radar_analysis",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        dataType: "json",
+        success: function (response) {
+            analysis.classList.add("fade-in");
+            analysis.hidden = false;
+            analysis.innerText = response.analysis;
+            document.getElementById('title').innerText = response.title;
+            document.getElementById('analysisContainer').hidden = false;
+
+        },
+        error: function (error) {
+            alert("Error occurred: " + error.responseText);
+        }
+    });
+
+    document.getElementById('progressSleep').style.width = sleepIndex*2 + '%';
+    document.getElementById('progressDepression').style.width = depressionIndex*2 + '%';
+    document.getElementById('progressAnxiety').style.width = anxietyIndex*2 + '%';
+    document.getElementById('progressOverall').style.width = overallMentalHealth*2 + '%';
+}
+
 $('#radarForm').submit(function (e) {
     e.preventDefault();
     const resp = $('#radarResponse').val();
     const wordCountDisplay = document.getElementById("wordCount");
-    console.log(resp);
     $.ajax({
         type: "POST",
         url: "/radar_response",
@@ -107,6 +150,11 @@ $('#radarForm').submit(function (e) {
         success: function (response) {
             document.getElementById("pingAudio").play();
             $('#radarResponse').val('');
+            if (response.status == 0) {
+                document.getElementById('interactPane').hidden = true;
+                console.log(response)
+                analyze(response.score,response.verdict)
+            }
             document.getElementById("question").innerText = response.question;
             wordCountDisplay.textContent = `Remaining words: 200`;
             wordCountDisplay.classList.add('text-muted');
