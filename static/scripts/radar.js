@@ -91,18 +91,43 @@ document.addEventListener("DOMContentLoaded", function() {
         wordCountDisplay.classList.remove('text-danger');
         wordCountDisplay.classList.add('text-muted');
     }
-});
+    });
+
+    const questionElement = document.getElementById("question");
+    const progressBar = document.getElementById("progressBar");
+    let changeCount = 0;
+
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === "childList") {
+                changeCount++;
+                updateProgressBar();
+            }
+        });
+    });
+
+    observer.observe(questionElement, { childList: true });
+
+    function updateProgressBar() {
+        if (changeCount <= 49) {
+            const progressPercentage = (changeCount / 49) * 100;
+            progressBar.style.width = progressPercentage + "%";
+            progressBar.setAttribute("aria-valuenow", changeCount);
+        }
+    }
 });
 
-function analyze(score,verdict) {
-    const riskIndication = verdict
-    const scores = score
-    const sleepIndex = score[0]
-    const depressionIndex = score[1]
-    const anxietyIndex = score[2]
-    const overallMentalHealth = score[3]
-    const abnormalcyIndex = score[4]
-    const analysis = document.getElementById('analysis')
+function analyze(score,verdict,concerns) {
+    const riskIndication = verdict;
+    const scores = score;
+    const sleepIndex = score[0];
+    const depressionIndex = score[1];
+    const anxietyIndex = score[2];
+    const overallMentalHealth = score[3];
+    const abnormalcyIndex = score[4];
+    const analysis = document.getElementById('analysis');
+    const concernsDiv = document.getElementById('concernsDiv');
+    const concernsPar = document.getElementById('concerns');
 
     const data = {
         "verdict": verdict,
@@ -125,7 +150,10 @@ function analyze(score,verdict) {
             analysis.innerText = response.analysis;
             document.getElementById('title').innerText = response.title;
             document.getElementById('analysisContainer').hidden = false;
-
+            concernsDiv.classList.add('fade-in');
+            concernsPar.innerText = concerns;
+            concernsDiv.hidden = false;
+            createDoughnutChart([sleepIndex, depressionIndex, anxietyIndex, abnormalcyIndex]);
         },
         error: function (error) {
             alert("Error occurred: " + error.responseText);
@@ -136,6 +164,36 @@ function analyze(score,verdict) {
     document.getElementById('progressDepression').style.width = depressionIndex*2 + '%';
     document.getElementById('progressAnxiety').style.width = anxietyIndex*2 + '%';
     document.getElementById('progressOverall').style.width = overallMentalHealth*2 + '%';
+}
+
+function createDoughnutChart(data) {
+    const ctx = document.getElementById('combinedDoughnutChart').getContext('2d');
+    if (window.myDoughnutChart) {
+        window.myDoughnutChart.data.datasets[0].data = data;
+        window.myDoughnutChart.update();
+    } else {
+        window.myDoughnutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sleep', 'Depression', 'Anxiety', 'Mood Abnormality'],
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#007bff'],
+                    hoverBackgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#007bff']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
 }
 
 $('#radarForm').submit(function (e) {
@@ -152,8 +210,7 @@ $('#radarForm').submit(function (e) {
             $('#radarResponse').val('');
             if (response.status == 0) {
                 document.getElementById('interactPane').hidden = true;
-                console.log(response)
-                analyze(response.score,response.verdict)
+                analyze(response.score,response.verdict,response.concerns)
             }
             document.getElementById("question").innerText = response.question;
             wordCountDisplay.textContent = `Remaining words: 200`;

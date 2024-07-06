@@ -7,9 +7,8 @@ import libs
 
 def build_history(conversation_history,latest_message:str,user_message:str,model="Dynamo"):
     trace='role: "model"'
-    latest_message = "{model}: "+latest_message.replace("text: ","").replace("parts {","").replace("}","").replace(trace,"").strip() + "~"
+    latest_message = f"{model}: "+latest_message.replace("text: ","").replace("parts {","").replace("}","").replace(trace,"").strip() + "~"
     user_message = "User: "+user_message
-
     return conversation_history +"\n"+user_message+"\n"+latest_message
 
 def get_dynamo_history(nickname):

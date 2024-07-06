@@ -468,14 +468,16 @@ def radar_response():
     response = gemini_response.strip()
     status,score = 1,0
     verdict = ""
+    concerns= ""
     if "[" in response or "]" in response:
         status = 0
         score = [int(_) for _ in response[1:-1].split(',')]
         response = "END"
         status = 0
         verdict = gemini.make_radar_verdict(score)
-        print(f"You Scored: {score} Verdict:{verdict}")
-    return jsonify(question=response,status=status,score=score,verdict=verdict,success=True)
+        history = gemini.get_clean_radar_history()
+        concerns = gemini.get_radar_concerns(history)
+    return jsonify(question=response,status=status,score=score,concerns=str(concerns),verdict=verdict,success=True)
 
 @app.route("/get_radar_analysis",methods=["POST"])
 def get_radar_analysis():

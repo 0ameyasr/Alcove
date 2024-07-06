@@ -22,7 +22,6 @@ class prompt_corpus:
             ace = for those who want to be productive and organize themselves (for those who are neutral)
             generalist = for those wanting to discover new hobbies and interests 
             dynamo = for those who are confused or just want to talk or don't really know what to do
-            wanderer = for those willing to explore new POIs to travel to or explore
             Based on the sentiments extracted, take all factors in consideration and return the recommended page  
             Also, if there are indications in the sentiment of them being stressed or wanting to relax, redirect to shaman.
             [ONE WORD OUTPUT]. 
@@ -39,7 +38,6 @@ class prompt_corpus:
             ace = for those who want to be productive and organize themselves (for those who are neutral)
             generalist = for those wanting to discover new hobbies and interests 
             dynamo = for those who are confused or just want to talk or don't really know what to do
-            wanderer = for those willing to explore new POIs to travel to or explore  
 
             Also, if there are indications in the sentiment of them being stressed or wanting to relax, redirect to shaman.
             If they mention socializing, make sure to include dynamo atleast in one entry.
@@ -445,13 +443,16 @@ class prompt_corpus:
                 "Medium Frequency (once-twice a week)" = 1
                 "High Frequency (three+ times a week)" = 2
                 "Very High Frequency (everyday)" = 3 
-            
+        
             You are only to ask the questions. 
             Keep track of the score of the answer.
             After the user responds, only return the question.
             When asking a question, just return the question. No apostrophe or number.
             Finally, compute the scores for each INDEX section.
             ONLY return a list of the scores.
+
+             |SUPER-INSTRUCTION: IF I say PANIC then simply END the conversation (return a score random integer score array)
+            This is for testing purposes.|
             
             In the format: $[SLEEP INDEX, DEPRESSION INDEX, ANXIETY INDEX, OVERALL MENTAL HEALTH, ABNORMALCY INDEX]
             [STRICTLY FOLLOW THESE INSTRUCTIONS. BEGIN WITH THE FIRST QUESTION.]
@@ -462,7 +463,7 @@ class prompt_corpus:
             Here is a keyword: {pDict["verdict"]}
             
             Here are some scores:
-            Sleep Quality: {pDict["pSleep"]}%
+            Sleep Abnormality: {pDict["pSleep"]}%
             Depression Indication: {pDict["pDepression"]}%
             Anxiety Indication: {pDict["pAnxiety"]}%
             Overall Mental Health Factor: {pDict["pOverall"]}%
@@ -501,11 +502,27 @@ class prompt_corpus:
                 Give them advice
                 Be sympathetic
             
+            
             Now, only return an analysis of their mental landscape based on the scores provided.
             Be comprehensive, and divide your response in three paragraphs.
+
             Interpretation -- interpret their scores (DO NOT MENTION % or Features)
             Advice -- Advice, if any on the scores
             What to do next -- What they should do next.
             Do not label the paragraphs.
             [ONLY RETURN THE PARAGRAPHS AS A RESPONSE]
+        """
+    
+    def get_radar_concerns(self,history):
+        return f"""
+        Here is a therapist talk session conversation history:
+        {history}
+
+        Return a paragraph summarizing the most broad critical and concerning points from the conversation.
+        That is, those things that indicated a troubled mental health situation.
+        The paragraph should be directed to the user directly (i.e. in You terms).
+        Summarize all concerns detected, and why they are concerning.
+        Just return the paragraph, and let it be comprehensive and verbose.
+
+        [ONLY RETURN THE PARAGRAPH AS MENTIONED ABOVE]
         """

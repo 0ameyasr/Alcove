@@ -101,6 +101,10 @@ def manually_scale_score(score, mean, variance):
     scaled_score = (score - mean) / numpy.sqrt(variance)
     return scaled_score
 
+def get_clean_radar_history():
+    history = str(radar.history)
+    return str([s.replace('\n','').replace('\"','').replace("text:","").replace("}role: model","").replace("}role: user","").replace("]","").replace("\\n","").strip() for s in history.split(', parts {')[1:]])
+
 def make_radar_verdict(score):
     mean = numpy.array([13.51438053, 10.51106195, 19.08960177, 10.33517699, 5.35066372])
     variance = numpy.array([64.8117401, 42.55961215, 147.59042285, 43.71398382, 12.14584027])
@@ -113,3 +117,6 @@ def make_radar_verdict(score):
             max = p[i]
             maxi = i
     return risks[maxi]
+
+def get_radar_concerns(history):
+    return fit_prompt(prompts.prompt_corpus().get_radar_concerns(history))
