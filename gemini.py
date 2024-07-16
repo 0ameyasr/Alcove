@@ -70,6 +70,26 @@ modelRadar =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings
 ])
 radar = modelRadar.start_chat(history=[])
 
+modelAce =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "HIGH",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "HIGH",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "MEDIUM",
+    },
+])
+ace = modelAce.start_chat(history=[])
+
 def fit_prompt(prompt):
     gemini.configure(api_key=config['gemini']['api_key'])
     model =gemini.GenerativeModel(model_name="gemini-1.5-flash")
@@ -82,6 +102,11 @@ def config_dynamo(icebreaker,nickname,history):
 
 def config_shaman(icebreaker,nickname,history):
     resp = shaman.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="shaman"))
+    return resp
+
+def config_ace(nickname):
+    print("Ace talk")
+    resp = ace.send_message(prompts.prompt_corpus([]).get_chat_config("How can I help you?",nickname,history="",mode="ace"))
     return resp
     
 def chat_dynamo(message):
@@ -120,3 +145,6 @@ def make_radar_verdict(score):
 
 def get_radar_concerns(history):
     return fit_prompt(prompts.prompt_corpus().get_radar_concerns(history))
+
+def chat_ace(message):
+    return ace.send_message(message)

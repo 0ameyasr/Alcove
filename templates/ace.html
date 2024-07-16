@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bored.ai - Ace</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link rel="icon" href="static/img/web_icon.png" />
+    <link rel="stylesheet" href="static/styles/main.css" />
+    <link rel="stylesheet" href="static/styles/home.css" />
+    <link rel="stylesheet" href="static/styles/ace.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  </head>
+
+  <body>
+    {% include "partial_header.html"%}
+    <audio controls id="pingAudio" src="static/audio/ping.mp3" style="display:none;"></audio>
+    <div class="container">
+        <h1 class="h1">{{session["today"]}}</h1>
+        <hr>         
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-7 col-sm-12">
+                    <div class="main-body">
+                        <div class="album py-5">
+                            <div class="container">
+                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-3">
+                                    <div class="col">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                <p class="fs-5">Pomodoro</p>
+                                                <div class="button-group">
+                                                    <a type="button" class="btn btn-sm btn-success" href="/pomodoro">Go</a>
+                                                    <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#pomodoroModal">Details</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                <p class="fs-5">Outline</p>
+                                                <div class="button-group">
+                                                    <a type="button" class="btn btn-sm btn-success" href="/outline">Go</a>
+                                                    <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#outlineModal">Details</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                <p class="fs-5">Progress</p>
+                                                <div class="button-group">
+                                                    <a type="button" class="btn btn-sm btn-success" href="/progress">Go</a>
+                                                    <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#progressModal">Details</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="chatWindow" class="chat-window container-fluid text-center">
+                            {{talk | safe}}
+                        </div>
+                        <div class="action-bar container">          
+                            <div class="search-bar input-group">
+                                <form id="chat" action="/chat_ace" method="POST">
+                                <div class="chat-element input-group">
+                                    <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage" required></textarea>
+                                    <button class="p-lg continue" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
+                                </div>    
+                                </form>
+                            </div>
+                            <div class="item-bar">
+                                <div><a class="link-icon" href="/ace" data-bs-toggle="tooltip" data-bs-placement="left" title="Restart chat"><i class="fa-solid fa-arrows-rotate fs-5"></i></a></div>
+                                <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#personalizeModal"><i class="fa-solid fa-wand-sparkles fs-5" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Personalize"></i></a></div>
+                                <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#infoModal" ><i class="fa-solid fa-circle-info fs-5" data-bs-toggle="tooltip" data-bs-placement="right" title="About Ace"></i></a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-5 col-sm-12">
+                    <div class="sidebar">
+                        <div class="sidebar-content">
+                            <div class="card">
+                                <h5 class="card-header">Tip of the Day</h5>
+                                <div class="card-body">
+                                <h5 class="card-title">Special title treatment</h5>
+                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h5 class="card-header">Featured</h5>
+                                <div class="card-body">
+                                <h5 class="card-title">Special title treatment</h5>
+                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="pomodoroModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-none">
+                    <h1 class="modal-title fs-5">Pomodoro Timers</h1>
+                </div>
+                <div class="modal-body">
+                    Customize your pomodoros for 25 or 50 minutes. This technique enhances focus and productivity by breaking work into manageable intervals.
+                </div>
+                <div class="modal-footer border-none">
+                    <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="outlineModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-none">
+                    <h1 class="modal-title fs-5">Week Outline</h1>
+                </div>
+                <div class="modal-body">
+                    Set a week outline and goals for the entire week or for each day. Choose how you want to track your progress and stay organized.
+                </div>
+                <div class="modal-footer border-none">
+                    <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="progressModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-none">
+                    <h1 class="modal-title fs-5">Progress Charts</h1>
+                </div>
+                <div class="modal-body">
+                    Create your own progress charts to target specific goals. Customize the chart styles to fit your preferences and track your achievements effectively.
+                </div>
+                <div class="modal-footer border-none">
+                    <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "personalise_modal.html"%}
+    {% include "partial_profile.html"%}
+    {% include "partial_menu.html"%}
+    {% include "partial_footer.html"%}
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="static/scripts/home.js"></script>
+    <script src="static/scripts/ace.js"></script>
+  </body>
+</html>

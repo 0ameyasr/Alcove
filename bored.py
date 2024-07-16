@@ -484,3 +484,32 @@ def get_radar_analysis():
     scores = personalizer.get_scores(request.json)
     analysis = gemini.fit_prompt(prompts.prompt_corpus([]).get_analysis_prompt(scores))
     return jsonify(success=True,title=scores["title"],scores=scores,analysis=analysis,safeword="Analysis")
+
+@app.route("/ace")
+def ace():
+    session["today"] = dynamic_web.today()
+    icebreaker = "How can I help you?"
+    user = session["nickname"]
+    gemini.config_ace(user)
+    return render_template("ace.html",talk=icebreaker)
+
+@app.route("/chat_ace",methods=["POST"])
+def chat_ace():
+    try:
+        message = request.form["message"]
+        response = gemini.chat_ace(message)
+        return jsonify(talk=markdown.markdown(response.text), error=False)
+    except Exception as e:
+        return jsonify(talk=markdown.markdown(response.text), error=False)
+
+@app.route("/pomodoro")
+def pomodoro():
+    return render_template("pomodoro.html")
+
+@app.route("/outline")
+def outline():
+    return render_template("outline.html")
+
+@app.route("/progress")
+def progress():
+    return render_template("progress.html")

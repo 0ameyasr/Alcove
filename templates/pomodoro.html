@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bored.ai - Pomodoro Timer</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link rel="icon" href="static/img/web_icon.png" />
+    <link rel="stylesheet" href="static/styles/main.css" />
+    <link rel="stylesheet" href="static/styles/ace.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+
+  <body>
+    <header class="p-3">
+        <div class="container-fluid">
+          <div class="d-flex flex-wrap align-items-center justify-content-center">
+            <a href="/ace" class="d-flex align-items-center link-body-emphasis text-decoration-none">
+              <img class="bi me-2" src="static/img/web_icon.png" width="32" height="32" />
+            </a>
+          </div>
+        </div>
+    </header>    
+    <audio controls id="start" src="/static/audio/start.mp3" hidden></audio>  
+    <audio controls id="alarm" src="/static/audio/alarm.mp3" hidden></audio>  
+    <div class="container">
+      <div class="card mb-3">
+        <img src="static/img/pomodoro.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">The Pomodoro Technique</h5>
+          <p class="card-text">
+            The Pomodoro Technique is a time management method that breaks work into intervals, 
+            typically 25 minutes long, separated by short breaks. These work periods are called 
+            "pomodoros". After completing four pomodoros, you take a longer break. This structured 
+            approach helps improve focus, reduce procrastination, and increase productivity by 
+            preventing mental fatigue. While the classic technique uses 25-minute work intervals,
+            some people find variations like 50-minute work periods with longer breaks to be more effective.
+            <br><br>
+            <b>How to use this Pomodoro Timer:</b>
+            To ensure that our users can use the timer flexibly, we pose no constraint on the number of
+            pomodoros you want to utilise. Feel free to use this timer as much as you want, for any number 
+            of sessions. The usual way to go about this is working for <i>four</i> pomodoros, and
+            taking a short break after each. Once you have completed 4 pomodoros, you may restart the cycle
+            again or stop working.
+            <ol>
+              <li>
+                Choose a configuration:
+                <ul>
+                  <li>25 minute pomodoros (work), 5 minute break after each
+                  <li>50 minute pomodoros (work), 10 minute break after each
+                </ul>
+              </li>
+              <li>Start the pomodoro, and begin to work.</li>
+              <li>After the timer ends, your break will start automatically.</li>
+              <li>You can restart the pomodoro if whenever you want using the restart button.</li>
+            <ol>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="main container">
+      <div class="timer-container">
+          <div class="top-buttons">
+            <div class="btn-group" role="group" aria-label="Timer duration">
+                <input type="radio" class="btn-check" name="timerDuration" id="btn25" autocomplete="off" checked>
+                <label class="btn btn-outline-danger" for="btn25">25 min</label>
+        
+                <input type="radio" class="btn-check" name="timerDuration" id="btn50" autocomplete="off">
+                <label class="btn btn-outline-danger" for="btn50">50 min</label>
+            </div>
+          </div>
+          <div class="display-section">
+              <h2 id="timerDisplay">25:00</h2>
+          </div>
+          <div class="button-section">
+            <button type="button" class="btn btn-lg btn-danger" id="startBtn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Start">
+              <i class="fa-solid fa-play"></i>
+            </button>
+            <button type="button" class="btn btn-lg btn-danger" id="breakBtn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Take a break">
+              <i class="fa-solid fa-mug-saucer"></i>
+            </button>
+            <button type="button" class="btn btn-lg btn-danger" id="resetBtn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart">
+              <i class="fa-solid fa-arrow-rotate-left"></i>
+            </button>
+          </div>
+      </div>
+    </div>
+    <br>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="static/scripts/home.js"></script>
+    <script src="static/scripts/pomodoro.js"></script>
+  </body>
+</html>
