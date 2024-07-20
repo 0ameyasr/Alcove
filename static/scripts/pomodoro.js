@@ -1,4 +1,4 @@
-let timer;
+let worker;
 let timeLeft = 25 * 60;
 let isRunning = false;
 let duration = 25;
@@ -32,25 +32,40 @@ function startTimer() {
         btn25.disabled = true;
         btn50.disabled = true;
         startAudio.play();
-        timer = setInterval(() => {
-            if (timeLeft > 0) {
-                timeLeft--;
-                updateDisplay();
-            } else {
-                clearInterval(timer);
-                isRunning = false;
-                startBtn.disabled = false;
-                breakBtn.disabled = false;
-                btn25.disabled = false;
-                btn50.disabled = false;
-                alarmAudio.play();
-                if (isBreak) {
-                    resetTimer();
-                } else {
-                    startBreak();
-                }
+
+        if (typeof(Worker) !== "undefined") {
+            if (typeof(worker) == "undefined") {
+                worker = new Worker("static/scripts/pomodoroWorker.js");
             }
-        }, 1000);
+            worker.postMessage({
+                action: 'start',
+                duration: timeLeft,
+                isBreak: isBreak
+            });
+            worker.onmessage = function(e) {
+                timeLeft = e.data.timeLeft;
+                updateDisplay();
+                if (timeLeft === 0) {
+                    timerEnded();
+                }
+            };
+        } else {
+            console.log("Web Workers are not supported in your browser.");
+        }
+    }
+}
+
+function timerEnded() {
+    isRunning = false;
+    startBtn.disabled = false;
+    breakBtn.disabled = false;
+    btn25.disabled = false;
+    btn50.disabled = false;
+    alarmAudio.play();
+    if (isBreak) {
+        resetTimer();
+    } else {
+        startBreak();
     }
 }
 
@@ -65,7 +80,9 @@ function startBreak() {
 }
 
 function resetTimer() {
-    clearInterval(timer);
+    if (worker) {
+        worker.postMessage({action: 'stop'});
+    }
     isRunning = false;
     isBreak = false;
     timeLeft = duration * 60;
@@ -100,10 +117,12 @@ btn50.addEventListener('change', function() {
     }
 });
 
+
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl)
 })
+
 
 updateDisplay();
 breakBtn.disabled = true;

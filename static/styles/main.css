@@ -233,3 +233,13 @@ border-radius: 0.25rem;
     flex-direction: row;
     gap: 3px;
 }
+
+.text-link {
+    color: var(--black);
+    text-decoration: underline;
+}
+.text-link:hover{
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}

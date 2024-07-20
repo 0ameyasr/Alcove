@@ -203,3 +203,9 @@ class curate_web:
     
     def get_radar_questions(self):
         return libs.get_radar_question_set()
+
+    def get_instruction_status(self,response):
+        if int(response) != 0:
+            return False
+        else:
+            return True

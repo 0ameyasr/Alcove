@@ -37,7 +37,7 @@
             {% endif %}
           </div>
           <div>
-            <button type="button" class="btn btn-sm btn-info"><i class="fc-light fa-solid fa-question" data-bs-toggle="tooltip" data-bs-placement="bottom" title="FAQ"></i></button>
+            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#FAQ"><i class="fc-light fa-solid fa-question" data-bs-toggle="tooltip" data-bs-placement="bottom" title="FAQ"></i></button>
             <button id="triggerPrompt" type="button" class="btn btn-sm btn-help" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Prompt"><i class="fa-solid fa-hand-sparkles"></i></button>
             <button type="submit" class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDangerModal"><i class="fa-solid fa-trash" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"></i></button>
@@ -59,6 +59,72 @@
     </div>
     <br>
     {% include "delete_journal_modal.html" %}
+    <div class="modal fade" data-bs-backdrop="static" id="FAQ" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-none">
+            <h3 class="modal-title fs-5" id="exampleModalToggleLabel">Journaling FAQ</h3>
+          </div>
+          <div class="modal-body">
+            <b>What is Journaling?</b><br>
+            <p>Journaling is the practice of writing down your thoughts, feelings, and experiences to increase your awareness and understanding 
+            of the present moment. It combines the principles of mindfulness—being present and fully engaged—with the reflective process 
+            of journaling.</p>
+            <br>
+            <b>What are the benefits of journaling?</b>
+            <ul>
+              <li>Reduces Stress: Helps in managing and reducing stress by providing an outlet for expressing thoughts and emotions.</li>
+              <li>Enhances Self-Awareness: Promotes greater self-awareness and understanding of one's thoughts and behaviors.</li>
+              <li>Improves Emotional Regulation: Assists in identifying and managing emotions more effectively.</li>
+              <li>Boosts Mental Clarity: Aids in organizing thoughts and clearing mental clutter.</li>
+              <li>Encourages Gratitude: Fosters a sense of gratitude and positivity by reflecting on positive experiences and accomplishments.</li>
+            </ul>
+            <br>
+            <b>What should I write in a mindfulness journal?</b>
+            <ul>
+              <li>Daily Reflections: Write about your day, focusing on your thoughts, feelings, and experiences.</li>
+              <li>Gratitude Entries: List things you are grateful for.</li>
+              <li>Emotional Check-Ins: Note your current emotional state and explore why you feel that way.</li>
+              <li>Mindfulness Practices: Document mindfulness exercises or meditations you have tried.</li>
+              <li>Goals and Intentions: Write about your goals, aspirations, and intentions for personal growth.</li>
+            </ul>
+            <br>
+            <b>How often should I journal for mindfulness?</b><br>
+            <p>Consistency is key. While it's beneficial to journal daily, even a few times a week can be effective. Find a routine that works for you and stick to it.</p>
+            <br>
+            <b>Can I use prompts for mindfulness journaling?</b><br>
+            <p>Yes, prompts can be very helpful, especially if you're new to journaling or feeling stuck. You can click on the purple button placed in the toolbar
+            for generating prompts that can guide you.</p>
+            <br>
+            <b>What if I miss a day or don't know what to write?</b><br>
+            <p>It's okay to miss a day. The goal is consistency over time, not perfection. If you're unsure what to write, start with a simple reflection on how you're feeling or a list of things you're grateful for.
+            Or if you are feeling bad or pessimistic, just vent over anything that troubles you.</p>
+            <br>
+            
+            <b>Are there any specific techniques for better journaling?</b>
+            <ul>
+              <li>Free Writing: Write continuously for a set period without worrying about grammar or structure.</li>
+              <li>Bullet Journaling: Use bullet points to organize thoughts and reflections concisely.</li>
+              <li>Reflective Questions: Answer specific questions to explore your thoughts and feelings deeply.</li>
+            </ul>
+
+            <b>How can I make mindfulness journaling a habit?</b>
+            <ul>
+              <li>Set a specific time: Dedicate a specific time each day for journaling, such as first thing in the morning or before bed.</li>
+              <li>Create a comfortable space: Find a quiet and comfortable place where you can write without distractions.</li>
+              <li>Use prompts: Keep a list of prompts handy to help you get started when you're unsure what to write.</li>
+              <li>Be patient: Building a habit takes time. Be patient with yourself and keep at it.</li>
+            </ul>
+
+            <br>
+            <p>Journaling is a personal practice, and there is no right or wrong way to do it. The most important thing is to find a method that works for you and helps you stay present and connected with your thoughts and emotions.</p>
+          </div>
+          <div class="modal-footer border-none">
+            <button class="btn dismiss" data-bs-target="#FAQ" data-bs-toggle="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>

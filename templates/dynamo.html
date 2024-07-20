@@ -42,6 +42,9 @@
           Maybe it's time to switch to a new topic, or an internal error has occured. You can restart your conversation.
         </div>
       {% endif %}
+      {% if session["mask"]:%}
+      <small><i class="fa-solid fa-circle-info"></i>&nbsp;<b>Note:</b> Dynamo is using a mask. <a class="text-link" data-bs-toggle="modal" data-bs-target="#maskInfo">Info</a> </small>
+      {% endif %}
       <div id="chatWindow" class="chat-window container-fluid text-center">
         {{talk | safe}}
       </div>
@@ -52,12 +55,188 @@
               <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage" required></textarea>
               <button class="p-lg continue" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
             </div>    
-          </form>
+          </form> 
         </div>
         <div class="item-bar">
           <div><a class="link-icon" href="/dynamo" data-bs-toggle="tooltip" data-bs-placement="left" title="Restart chat"><i class="fa-solid fa-arrows-rotate fs-5"></i></a></div>
           <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#personalizeModal"><i class="fa-solid fa-wand-sparkles fs-5" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Personalize"></i></a></div>
           <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#infoModal" ><i class="fa-solid fa-circle-info fs-5" data-bs-toggle="tooltip" data-bs-placement="right" title="About Dynamo"></i></a></div>
+        </div>
+      </div>
+      <div class="container mt-3">
+        <div class="accordion" id="badgeAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      <i class="fa-solid fa-gem"></i>&nbsp;Previous topics from our conversation
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#badgeAccordion">
+                    <div class="accordion-body">
+                        {% if topics %}
+                            <div class="badge-container">
+                                {% for topic in topics %}
+                                    <span class="badge text-bg-warning">{{ topic }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <br><br>
+    <div class="container">
+      <h1 class="h1"><i class="fa-solid fa-masks-theater"></i>&nbsp;Choose a Mask</h1>
+      <hr>
+      <section class="pt-5 pb-5">
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+              <div id="carouselIndicators" class="carousel slide carousel-fade" data-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <div class="row">
+                      <div class="col-lg-4 col-12">
+                          <div class="card h-100">
+                              <div class="card-body">
+                                  <h5 class="card-title">Bored</h5>
+                                  <p class="card-text text-justify">
+                                      Share your boredom with Dynamo! Dynamo's responses will be 
+                                      low effort, and reflect genuine boredom. Best if you're 
+                                      willing to take part in uninteresting conversations.
+                                  </p>
+                              </div>
+                              <div class="card-footer">
+                                  <small class="text-body-secondary">
+                                    <form action="/create_mask/bored" method="POST">
+                                      <button class="btn btn-sm btn-success" type="submit">Apply</button>
+                                    </form>
+                                  </small>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-lg-4 col-12">
+                          <div class="card h-100">
+                              <div class="card-body">
+                                  <h5 class="card-title">Formal</h5>
+                                  <p class="card-text text-justify">
+                                      Dynamo's responses are formal and cut to the chase. Typically more 
+                                      verbose. Recommended if you seek to practice formal conversation and
+                                      want to practice your communication skills.
+                                  </p>
+                              </div>
+                              <div class="card-footer">
+                                  <small class="text-body-secondary">
+                                    <form action="/create_mask/formal" method="POST">
+                                      <button class="btn btn-sm btn-success">Apply</button></small>
+                                    </form>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-lg-4 col-12">
+                          <div class="card h-100">
+                              <div class="card-body">
+                                  <h5 class="card-title">Sarcastic</h5>
+                                  <p class="card-text">
+                                      Dynamo's responses are sarcastic, but are generally respectful. Good for
+                                      users who like a tinge of sarcasm in their day to day conversation. Beware,
+                                      it can often deviate from your expectations.
+                                  </p>
+                              </div>
+                              <div class="card-footer">
+                                <form action="/create_mask/sarcastic" method="POST">
+                                  <small class="text-body-secondary"><button class="btn btn-sm btn-success">Apply</button></small>
+                                </form>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="carousel-item">
+                    <div class="row">
+                      <div class="col-lg-4 col-12">
+                        <div class="card h-100">
+                          <div class="card-body">
+                            <h5 class="card-title">Nerdy</h5>
+                            <p class="card-text text-justify">
+                                Dynamo's responses are nerdy. Expect random facts and 
+                                sudden bursts of information filling your conversation. 
+                                Best for those who crave infotainment. Responses are 
+                                a bit more verbose.
+                            </p>
+                          </div>
+                          <div class="card-footer">
+                            <form action="/create_mask/nerdy" method="POST">
+                            <small class="text-body-secondary"><button class="btn btn-sm btn-success">Apply</button></small>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-12">
+                        <div class="card h-100">
+                          <div class="card-body">
+                            <h5 class="card-title">Coach</h5>
+                            <p class="card-text text-justify">
+                                Dynamo acts like a coach, giving you suggestions and 
+                                advice based on your conversation. Use it if you like
+                                to share your goals and improve yourself.
+                            </p>
+                          </div>
+                          <div class="card-footer">
+                            <form action="/create_mask/coach" method="POST">
+                            <small class="text-body-secondary"><button class="btn btn-sm btn-success">Apply</button></small>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-12">
+                        <div class="card h-100">
+                          <div class="card-body">
+                            <h5 class="card-title">Poetic</h5>
+                            <p class="card-text">
+                              Dynamo's responses rhyme. They're poetic at times, and 
+                              are often expressed as free verses. Those who appreciate
+                              a twist of words may like it! Not recommended if you 
+                              want direct conversation.
+                            </p>
+                          </div>
+                          <div class="card-footer">
+                            <form action="/create_mask/bored" method="POST">
+                            <small class="text-body-secondary"><button class="btn btn-sm btn-success">Apply</button></small>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators" data-bs-slide="prev" style="display:none;">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators" data-bs-slide="next" style="display:none;">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <span> Not convincing? <a class="text-link" data-bs-toggle="modal" data-bs-target="#maskModal">Create a custom mask instead</a>.</span>
+        </div>
+      </section>
+      <div class="container">
+        <div class="col-6 text-right">
+          <a class="btn btn-dark mb-3 mr-1" href="#carouselIndicators" role="button" data-bs-slide="prev">
+              <i class="fa fa-arrow-left"></i>
+          </a>
+          <a class="btn btn-dark mb-3 " href="#carouselIndicators" role="button" data-bs-slide="next">
+              <i class="fa fa-arrow-right"></i>
+          </a>
         </div>
       </div>
     </div>
@@ -85,6 +264,65 @@
           </div>
           <div class="modal-footer border-none">
             <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="maskModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header border-none">
+            <h1 class="modal-title fs-5">Create a Mask</h1>
+          </div>
+          <form action="/create_mask" method="POST" >
+            <div class="border-none modal-body">
+                <div class="mb-3">
+                    <label for="mask" class="form-label">How do you want Dynamo to respond?</label>
+                    <textarea name="mask" id="maskArea" placeholder="Write your instructions.." required></textarea>
+                </div>
+            </div>
+            <div class="border-none modal-footer">
+                <button type="submit" class="btn continue">
+                    Apply
+                </button>
+                <button type="button" class="btn dismiss" data-bs-toggle="modal">
+                    Close
+                </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="maskInfo" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header border-none">
+            <h1 class="modal-title fs-5">You gave Dynamo a mask</h1>
+          </div>
+          <div class="border-none modal-body">
+            {% if not session["is_default_mask"]:%}
+            Dynamo has been requested:
+            <p class="fs-6 fst-italic">
+              "{{session["default_mask"]}}"
+            </p>
+            {% endif %}
+            {% if session["is_default_mask"]%}
+            <p class="fs-6 fst-italic">
+              You're using the default '{{session["default_mask"]}}' mask.
+            </p>
+            {% endif %}
+            If you would like Dynamo to stop using a mask, Click on the
+            'Remove' button.
+          </div>
+          <div class="border-none modal-footer">
+            <form action="/clear_mask" method="POST">
+              <button type="submit" class="btn continue">
+                Remove
+              </button>
+            </form>
+            <button type="button" class="btn dismiss" data-bs-toggle="modal">
+              Close
+            </button>
           </div>
         </div>
       </div>

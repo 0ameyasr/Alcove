@@ -123,3 +123,28 @@ a {
 .p-lg:hover {
     background-color:var(--hover-button-color);
 }
+
+
+.badge-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+.accordion-header {
+    background-color: transparent;
+}
+.accordion-body {
+    background-color: transparent;
+}
+
+#maskArea {
+    resize: none;
+    height: 350px;
+    width: 100%
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    display: none;
+}

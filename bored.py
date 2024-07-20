@@ -210,24 +210,34 @@ def dynamo():
         user = session["nickname"]
         session["opted_users%"] = home_engine.opted_users_p()
         session["is_opted"] = home_engine.is_opted(session["nickname"])
+        session["mask"] = None if not session["mask"] else session["mask"]
+        session["default_mask"] = None if not session["default_mask"] else session["default_mask"]
+        print(f"MASK: {session['mask']}")
+        print(f"IS DEFAULT: {session['is_default_mask']}")
+        print(f"DEFAULT: {session['default_mask']}")
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
+        topics_list = None
         if opted_in_user:
             history = personalizer.get_dynamo_history(session["nickname"])
+            topics_list = gemini.fit_prompt(prompts.prompt_corpus([]).get_dynamo_highlights(history)).split('#')
             if not history or history == "":
                 icebreaker = dynamic_web.get_dynamo_icebreaker()
                 session["icebreaker"] = icebreaker
                 session["tip"] = dynamic_web.no_history_response(opted=True)
             else:
-                icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
+                if not session["mask"]:
+                    icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
+                else:
+                    icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history,instructions=session["mask"]))
                 session["tip"] = gemini.fit_prompt(prompts.prompt_corpus([]).get_tip(history))
                 session["icebreaker"] = icebreaker    
-            gemini.config_dynamo(session["icebreaker"],user,history)
+            gemini.config_dynamo(session["icebreaker"],user,history,instructions=session["mask"])
         else:
             icebreaker = dynamic_web.get_dynamo_icebreaker()
             session["icebreaker"] = icebreaker
             session["tip"] = dynamic_web.no_history_response(opted=False)
-            gemini.config_dynamo(session["nickname"],user,None)
-        return render_template("dynamo.html",talk=session["icebreaker"],data=data,error=False)
+            gemini.config_dynamo(session["nickname"],user,history=None)
+        return render_template("dynamo.html",talk=session["icebreaker"],data=data,topics=topics_list,error=False)
     except KeyError:
         return redirect("/")
 
@@ -252,6 +262,38 @@ def chat():
     except Exception as e:
         print(e)
         return jsonify(talk=markdown.markdown(response.text), error=False)
+    
+@app.route("/create_mask/<token>",methods=["POST"])
+def create_mask(token):
+    if not token or token == "":
+        instructions = request.form.get("mask")
+    else:
+        instructions = prompts.prompt_corpus([]).get_default_mask(token)
+        session["default_mask"] = token
+        session["is_default_mask"] = True
+
+    status = False
+    try:
+        status = gemini.fit_prompt(prompts.prompt_corpus([]).get_dynamo_mask(instructions))
+    except:
+        status = False
+    
+    if status:
+        session["mask"] = instructions
+        existing_user = mongo.db.credentials.find_one({"nickname":session["nickname"]})
+        
+        return redirect("/dynamo")
+    else:
+        session["mask"] = None
+        return "ERROR"
+
+
+@app.route("/clear_mask",methods=["POST"])
+def clear_mask():
+    session["mask"] = None
+    session["default_mask"] = None
+    session["is_default_mask"] = False
+    return redirect("/dynamo")
     
 @app.route("/seeker")
 def seeker():

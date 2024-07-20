@@ -96,8 +96,8 @@ def fit_prompt(prompt):
     response = model.generate_content(prompt)
     return response.text
 
-def config_dynamo(icebreaker,nickname,history):
-    resp = dynamo.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="dynamo"))
+def config_dynamo(icebreaker,nickname,history,instructions):
+    resp = dynamo.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="dynamo",mask=instructions))
     return resp
 
 def config_shaman(icebreaker,nickname,history):
