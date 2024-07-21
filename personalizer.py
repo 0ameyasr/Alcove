@@ -174,3 +174,17 @@ def get_scores(scores):
         "title": title[riskFactor]
     }
     return userScores
+
+def get_mask_details(nickname):
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+    mongo = MongoClient(config["mongodb"]["uri"])
+    masks = mongo["credentials"]["masks"]
+    user = masks.find_one({"nickname":nickname})
+    if user:
+        mask = user["mask"]
+        default_mask = user["default_mask"]
+        is_default = False if not default_mask else True
+        return mask,is_default
+    else:
+        return None,False

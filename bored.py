@@ -210,11 +210,11 @@ def dynamo():
         user = session["nickname"]
         session["opted_users%"] = home_engine.opted_users_p()
         session["is_opted"] = home_engine.is_opted(session["nickname"])
-        session["mask"] = None if not session["mask"] else session["mask"]
-        session["default_mask"] = None if not session["default_mask"] else session["default_mask"]
+
+        session["mask"],session["is_default_mask"] = personalizer.get_mask_details(session["nickname"])
         print(f"MASK: {session['mask']}")
         print(f"IS DEFAULT: {session['is_default_mask']}")
-        print(f"DEFAULT: {session['default_mask']}")
+        
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
         topics_list = None
         if opted_in_user:
@@ -236,7 +236,7 @@ def dynamo():
             icebreaker = dynamic_web.get_dynamo_icebreaker()
             session["icebreaker"] = icebreaker
             session["tip"] = dynamic_web.no_history_response(opted=False)
-            gemini.config_dynamo(session["nickname"],user,history=None)
+            gemini.config_dynamo(session["nickname"],user,history=None,instructions=session["mask"])
         return render_template("dynamo.html",talk=session["icebreaker"],data=data,topics=topics_list,error=False)
     except KeyError:
         return redirect("/")
@@ -263,36 +263,49 @@ def chat():
         print(e)
         return jsonify(talk=markdown.markdown(response.text), error=False)
     
-@app.route("/create_mask/<token>",methods=["POST"])
-def create_mask(token):
-    if not token or token == "":
-        instructions = request.form.get("mask")
-    else:
-        instructions = prompts.prompt_corpus([]).get_default_mask(token)
-        session["default_mask"] = token
-        session["is_default_mask"] = True
 
+@app.route("/create_mask",methods=["POST"])
+def create_mask():
+    instructions = request.form.get("mask")
     status = False
     try:
-        status = gemini.fit_prompt(prompts.prompt_corpus([]).get_dynamo_mask(instructions))
+        status = dynamic_web.get_instruction_status(gemini.fit_prompt(prompts.prompt_corpus([]).get_dynamo_mask(instructions)))
     except:
         status = False
     
     if status:
         session["mask"] = instructions
-        existing_user = mongo.db.credentials.find_one({"nickname":session["nickname"]})
-        
+        session["is_default_mask"] = False
+        session["default_mask"] = None
+        existing_user = mongo.db.masks.find_one({"nickname":session["nickname"]})
+        if existing_user:
+            mongo.db.masks.update_one({"nickname":session["nickname"]},{"$set":{"default_mask":None,"mask":instructions}})
+        else:
+            mongo.db.masks.insert_one({"nickname":session["nickname"],"default_mask":None,"mask":instructions})
         return redirect("/dynamo")
     else:
-        session["mask"] = None
-        return "ERROR"
+        return render_template("response.html",code=500)
 
+
+@app.route("/create_mask/<token>",methods=["POST"])
+def default_mask(token):
+    instructions = prompts.prompt_corpus([]).get_default_mask(token)
+    session["default_mask"] = token
+    session["is_default_mask"] = True
+    session["mask"] = instructions
+    existing_user = mongo.db.masks.find_one({"nickname":session["nickname"]})
+    if existing_user:
+        mongo.db.masks.update_one({"nickname":session["nickname"]},{"$set":{"default_mask":token,"mask":instructions}})
+    else:
+        mongo.db.masks.insert_one({"nickname":session["nickname"],"default_mask":token,"mask":instructions})
+    return redirect("/dynamo")
 
 @app.route("/clear_mask",methods=["POST"])
 def clear_mask():
     session["mask"] = None
     session["default_mask"] = None
     session["is_default_mask"] = False
+    mongo.db.masks.delete_one({"nickname":session["nickname"]})
     return redirect("/dynamo")
     
 @app.route("/seeker")
