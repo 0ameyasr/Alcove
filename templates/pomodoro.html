@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
   </head>
 
 
@@ -65,6 +68,25 @@
         </div>
       </div>
     </div>
+    <div class="container mt-5 p-4 border rounded-3 bg-light shadow-sm">
+      <h4>Ace - Quick Access</h4>
+      <div class="row">
+          <div class="col-12">
+              <form class="d-flex mb-3" role="search" id="quickChat" action="/chat_ace" method="POST">
+                <textarea id="userMessageQuick" class="search-bar" placeholder="Enter a topic or query" aria-label="Search" required></textarea>
+                <button class="btn btn-success btn-sm" type="submit" id="askButton">
+                  Ask
+                </button>
+              </form>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-12">
+                <span id="spinner" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display: none;"></span>
+                <p id="aceResponseQuick" class="text-muted"></p>
+          </div>
+      </div>
+    </div>  
     <div class="main container">
       <div class="timer-container">
           <div class="top-buttons">

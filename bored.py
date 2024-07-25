@@ -8,7 +8,7 @@ import configparser
 import google.generativeai as gemini_model
 from werkzeug.exceptions import NotFound,MethodNotAllowed,RequestTimeout,BadRequestKeyError,InternalServerError
 import google.api_core.exceptions as geminiExceptions
-import markdown
+import markdown,markdown2
 import os,binascii
 
 app = Flask(__name__)
@@ -258,10 +258,10 @@ def chat():
                 previous_history += "\n[CHAT] "+session["icebreaker"]
             current_history = personalizer.build_history(previous_history,str(latest_message),user_message,model="Dynamo")
             updated_history = mongo.db.chats.update_one({"nickname":session["nickname"]},{"$set":{"nickname":session["nickname"],"history":current_history}})
-        return jsonify(talk=markdown.markdown(response.text), error=False)
+        return jsonify(talk=markdown2.markdown(response.text), error=False)
     except Exception as e:
         print(e)
-        return jsonify(talk=markdown.markdown(response.text), error=False)
+        return jsonify(talk=markdown2.markdown(response.text), error=False)
     
 
 @app.route("/create_mask",methods=["POST"])
@@ -289,16 +289,19 @@ def create_mask():
 
 @app.route("/create_mask/<token>",methods=["POST"])
 def default_mask(token):
-    instructions = prompts.prompt_corpus([]).get_default_mask(token)
-    session["default_mask"] = token
-    session["is_default_mask"] = True
-    session["mask"] = instructions
-    existing_user = mongo.db.masks.find_one({"nickname":session["nickname"]})
-    if existing_user:
-        mongo.db.masks.update_one({"nickname":session["nickname"]},{"$set":{"default_mask":token,"mask":instructions}})
-    else:
-        mongo.db.masks.insert_one({"nickname":session["nickname"],"default_mask":token,"mask":instructions})
-    return redirect("/dynamo")
+    try:
+        instructions = prompts.prompt_corpus([]).get_default_mask(token)
+        session["default_mask"] = token
+        session["is_default_mask"] = True
+        session["mask"] = instructions
+        existing_user = mongo.db.masks.find_one({"nickname":session["nickname"]})
+        if existing_user:
+            mongo.db.masks.update_one({"nickname":session["nickname"]},{"$set":{"default_mask":token,"mask":instructions}})
+        else:
+            mongo.db.masks.insert_one({"nickname":session["nickname"],"default_mask":token,"mask":instructions})
+        return redirect("/dynamo")
+    except:
+        return render_template("response.html",code=500)
 
 @app.route("/clear_mask",methods=["POST"])
 def clear_mask():
@@ -365,10 +368,10 @@ def chat_shaman():
                 previous_history += "\n[CHAT] "+session["icebreaker"]
             current_history = personalizer.build_history(previous_history,str(latest_message),user_message,model="Dynamo")
             updated_history = mongo.db.shaman.update_one({"nickname":session["nickname"]},{"$set":{"nickname":session["nickname"],"history":current_history}})
-        return jsonify(talk=markdown.markdown(response.text), error=False)
+        return jsonify(talk=markdown2.markdown(response.text), error=False)
     except Exception as e:
         print(e)
-        return jsonify(talk=markdown.markdown(response.text), error=False)
+        return jsonify(talk=markdown2.markdown(response.text), error=False)
 
 @app.route("/seeker/intro",methods=["POST"])
 def seeker_intro():
@@ -553,9 +556,10 @@ def chat_ace():
     try:
         message = request.form["message"]
         response = gemini.chat_ace(message)
-        return jsonify(talk=markdown.markdown(response.text), error=False)
+        html_content = markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+        return jsonify(talk=html_content, error=False)
     except Exception as e:
-        return jsonify(talk=markdown.markdown(response.text), error=False)
+        return jsonify(talk=str(e), error=True)
 
 @app.route("/pomodoro")
 def pomodoro():
@@ -563,6 +567,7 @@ def pomodoro():
 
 @app.route("/outline")
 def outline():
+    session["num_plans"] = 0
     return render_template("outline.html")
 
 @app.route("/progress")

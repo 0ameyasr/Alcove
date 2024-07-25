@@ -67,14 +67,17 @@
                             </div>
                         </div>
                         <div id="chatWindow" class="chat-window container-fluid text-center">
-                            {{talk | safe}}
+                            <div id="loading" class="spinner-grow text-light" role="status" hidden><span class="fs-5 visually-hidden">Loading...</span></div>
+                            <p id="aceResponse" class="container">
+                                {{talk | safe}}
+                            </p>
                         </div>
                         <div class="action-bar container">          
                             <div class="search-bar input-group">
                                 <form id="chat" action="/chat_ace" method="POST">
                                 <div class="chat-element input-group">
                                     <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage" required></textarea>
-                                    <button class="p-lg continue" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
+                                    <button class="p-lg continue" id="sendMessage" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
                                 </div>    
                                 </form>
                             </div>

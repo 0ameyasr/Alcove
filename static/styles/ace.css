@@ -1,4 +1,6 @@
 @import url(main.css);
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
 
 body {
     background-color: #f7f7f7;
@@ -70,8 +72,7 @@ body {
     border-radius: 0.25rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     color: var(--primary-color);
     text-wrap: wrap;
     overflow-y: auto;
@@ -189,4 +190,13 @@ a {
     display: flex;
     flex-direction: column;
     gap: 5px;
+}
+
+#userMessageQuick {
+    min-height: 100px;
+    max-height: 450px;
+}
+
+#aceResponse {
+    text-align: justify;
 }

@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", function() {
 $(document).ready(function () {
     $("#chat").on("submit", (event) =>  {
         event.preventDefault();
+        $('#sendMessage').prop("disabled",true);
+        $('#shamanResponse').html('');
+        $('#loading').prop("hidden",false);
         var msg = $("#userMessage").val();
         $.ajax({
             type: "POST",
@@ -22,8 +25,12 @@ $(document).ready(function () {
             dataType: "json",
             success: function (response) {
                 document.getElementById('pingAudio').play();
-                $("#chatWindow").html(response.talk);
+                $("#shamanResponse").html(response.talk);
                 $("#userMessage").val('');
+            },
+            complete: function () {
+                $('#sendMessage').prop("disabled",false);
+                $('#loading').prop("hidden",true);
             }
         });
     })

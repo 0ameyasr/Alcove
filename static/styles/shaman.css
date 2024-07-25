@@ -12,8 +12,7 @@
     border-radius: 0.25rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     color: var(--primary-color);
     text-wrap: wrap;
     overflow-y: auto;
@@ -125,4 +124,8 @@ a {
 
 .suggestion-tab {
     background-color: var(--primary-color);
+}
+
+#shamanResponse {
+    text-align: justify;
 }

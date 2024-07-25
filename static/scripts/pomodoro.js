@@ -126,3 +126,30 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 updateDisplay();
 breakBtn.disabled = true;
+
+$(document).ready(function () {
+    $("#quickChat").on("submit", function (event) {
+        event.preventDefault();
+        var msg = $("#userMessageQuick").val();
+        $("#userMessageQuick").prop("disabled", true);
+        $("#askButton").prop("disabled", true);
+        $("#aceResponseQuick").html('');
+        $("#spinner").show();
+        $.ajax({
+            type: "POST",
+            url: "/chat_ace",
+            data: { message: msg },
+            dataType: "json",
+            success: function (response) {
+                $("#aceResponseQuick").html(response.talk);
+                $("#userMessageQuick").val('');
+                hljs.highlightAll();
+            },
+            complete: function () {
+                $("#userMessageQuick").prop("disabled", false);
+                $("#askButton").prop("disabled", false);
+                $("#spinner").hide();
+            }
+        });
+    });
+});

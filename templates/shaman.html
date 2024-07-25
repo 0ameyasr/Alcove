@@ -21,7 +21,7 @@
     {% include "partial_header.html"%}
     
     <div class="container">
-      <h1 class="h1">Tools for you</h1>
+      <h1 class="h1"><i class="fa-solid fa-leaf"></i>&nbsp;Tools for you</h1>
       <hr>
       <div class="album py-5 suggestion-tab">
         <div class="container">
@@ -73,7 +73,7 @@
     </div>
 
     <div class="window container d-flex flex-col">
-        <h1 class="h1">Talk it out</h1>
+        <h1 class="h1"><i class="fa-solid fa-phone-volume"></i>&nbsp;Talk it out</h1>
         <hr>
         <div class="container">
             <div class="accordion accordion-flush border rounded-3">
@@ -96,14 +96,17 @@
           </div>
         {% endif %}
         <div id="chatWindow" class="chat-window container-fluid text-center">
-          {{talk | safe}}
+          <div id="loading" class="spinner-grow text-light" role="status" hidden><span class="fs-5 visually-hidden">Loading...</span></div>
+          <p id="shamanResponse" class="container">
+              {{talk | safe}}
+          </p>
         </div>
         <div class="action-bar container">          
           <div class="search-bar input-group">
             <form id="chat" action="/chat_shaman" method="POST">
               <div class="chat-element input-group">
                 <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage" required></textarea>
-                <button class="p-lg continue" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
+                <button id="sendMessage" class="p-lg continue" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
               </div>    
             </form>
           </div>

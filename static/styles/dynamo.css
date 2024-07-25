@@ -13,8 +13,7 @@
     border-radius: 0.25rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     color: var(--primary-color);
     text-wrap: wrap;
     overflow-y: auto;
@@ -147,4 +146,8 @@ a {
 .carousel-control-prev,
 .carousel-control-next {
     display: none;
+}
+
+#dynamoResponse {
+    text-align: justify;
 }
