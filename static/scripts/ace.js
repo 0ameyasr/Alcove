@@ -34,4 +34,20 @@ $(document).ready(function () {
             }
         });
     })
+
+    $('#createTask').submit(function (e) {
+        e.preventDefault();
+        $('#createTaskButton').prop("disabled",true);
+        task = $('#taskDesc').val();
+        $.ajax({
+            type: "POST",
+            url: "/create_task",
+            data: {taskDesc:task},
+            dataType: "json",
+            success: function (response) {
+                $('#createTaskButton').prop("disabled",true);
+                window.location.href = window.location.href;
+            }
+        });
+    });
 });

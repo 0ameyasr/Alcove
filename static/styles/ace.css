@@ -200,3 +200,13 @@ a {
 #aceResponse {
     text-align: justify;
 }
+
+.outline-form {
+    background-color: #f8f9fa;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+#taskDesc {
+    min-height: 100px;
+    max-height: 200px;
+}

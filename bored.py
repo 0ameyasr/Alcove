@@ -565,10 +565,47 @@ def chat_ace():
 def pomodoro():
     return render_template("pomodoro.html")
 
+@app.route("/tasksempty")
+def empty():
+    session["tasks"] = {}
+    session["num_tasks"] = 0
+    return redirect("/outline")
+
 @app.route("/outline")
 def outline():
-    session["num_plans"] = 0
-    return render_template("outline.html")
+    existing_user = mongo.db.plans.find_one({"nickname":session["nickname"]})
+    if not existing_user:
+        mongo.db.plans.insert_one({"nickname":session["nickname"],"num_tasks":0})
+    else:
+        num_tasks,tasks = personalizer.get_tasks(session["nickname"]) 
+        pass
+    return render_template("outline.html",num_tasks=num_tasks,tasks=tasks)
+
+@app.route("/create_task",methods=["POST"])
+def create_task():
+    existing_user = mongo.db.plans.find_one({"nickname":session["nickname"]})
+    if existing_user:
+        num_tasks,tasks = personalizer.get_tasks(session["nickname"])
+        task_index = num_tasks
+        task_name = "Task " + str(task_index+1)
+        task_desc = request.form.get("taskDesc")
+        task_index = 1
+        try:
+            mongo.db.plans.update_one({"nickname":session["nickname"]},{"$set":{"num_tasks":existing_user["num_tasks"]+1,task_name:task_desc}})
+            tasks[task_name] = task_desc
+            num_tasks = task_index
+        except Exception as e:
+            return e
+    return jsonify(num_tasks=len(tasks),tasks=tasks)
+
+@app.route("/delete_task/<token>",methods=["POST"])
+def delete_task(token):
+    existing_user = mongo.db.plans.find_one({"nickname":session["nickname"]})
+    if existing_user:
+        mongo.db.plans.update_one({"nickname":session["nickname"]},{"$unset":{token:""},"$set":{"num_tasks":existing_user["num_tasks"]-1}})
+        task_name = str(token).replace("%20"," ")
+        session["tasks"].pop(task_name,"")
+    return redirect("/outline")
 
 @app.route("/progress")
 def progress():

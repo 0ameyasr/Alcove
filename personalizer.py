@@ -188,3 +188,16 @@ def get_mask_details(nickname):
         return mask,is_default
     else:
         return None,False
+
+def get_tasks(nickname):
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+    mongo = MongoClient(config["mongodb"]["uri"])
+    plans = mongo["credentials"]["plans"]
+    user = plans.find_one({"nickname":nickname})
+    if user:
+        num_tasks = user.get("num_tasks", 0)
+        tasks = {key: value for key, value in user.items() if key.startswith("Task ")}
+        return num_tasks,tasks
+    else:
+        return None,None
