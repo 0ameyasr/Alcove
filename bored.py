@@ -9,6 +9,7 @@ import google.generativeai as gemini_model
 from werkzeug.exceptions import NotFound,MethodNotAllowed,RequestTimeout,BadRequestKeyError,InternalServerError
 import google.api_core.exceptions as geminiExceptions
 import markdown,markdown2
+import models
 import os,binascii
 
 app = Flask(__name__)
@@ -532,7 +533,7 @@ def radar_response():
         score = [int(_) for _ in response[1:-1].split(',')]
         response = "END"
         status = 0
-        verdict = gemini.make_radar_verdict(score)
+        verdict = models.make_radar_verdict(score)
         history = gemini.get_clean_radar_history()
         concerns = gemini.get_radar_concerns(history)
     return jsonify(question=response,status=status,score=score,concerns=str(concerns),verdict=verdict,success=True)
@@ -573,13 +574,16 @@ def empty():
 
 @app.route("/outline")
 def outline():
-    existing_user = mongo.db.plans.find_one({"nickname":session["nickname"]})
-    if not existing_user:
-        mongo.db.plans.insert_one({"nickname":session["nickname"],"num_tasks":0})
-    else:
-        num_tasks,tasks = personalizer.get_tasks(session["nickname"]) 
-        pass
-    return render_template("outline.html",num_tasks=num_tasks,tasks=tasks)
+    try:
+        existing_user = mongo.db.plans.find_one({"nickname":session["nickname"]})
+        if not existing_user:
+            mongo.db.plans.insert_one({"nickname":session["nickname"],"num_tasks":0})
+        else:
+            num_tasks,tasks = personalizer.get_tasks(session["nickname"]) 
+            pass
+        return render_template("outline.html",num_tasks=num_tasks,tasks=tasks)
+    except:
+        return redirect("/outline")
 
 @app.route("/create_task",methods=["POST"])
 def create_task():
@@ -602,9 +606,12 @@ def create_task():
 def delete_task(token):
     existing_user = mongo.db.plans.find_one({"nickname":session["nickname"]})
     if existing_user:
-        mongo.db.plans.update_one({"nickname":session["nickname"]},{"$unset":{token:""},"$set":{"num_tasks":existing_user["num_tasks"]-1}})
+        updated_num_tasks =  existing_user["num_tasks"]-1 if existing_user["num_tasks"] > 0 else 0
+        mongo.db.plans.update_one({"nickname":session["nickname"]},{"$unset":{token:""},"$set":{"num_tasks":updated_num_tasks}})
         task_name = str(token).replace("%20"," ")
-        session["tasks"].pop(task_name,"")
+        tasks = session.get("tasks",None)
+        if tasks:
+            session["tasks"].pop(task_name,"")
     return redirect("/outline")
 
 @app.route("/progress")

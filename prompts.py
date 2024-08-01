@@ -17,7 +17,6 @@ class prompt_corpus:
             The user has been feeling {recent_mood} lately. The user expects to {expectation} (after using the website)
             The user can be redirected to the following pages:
             seeker = for those who are philosophically curious or just wanting to learn new things and are (feeling curious), 
-            challenger = for those interested in solving puzzles and games in an engaging way and (are neutral or energetic),
             shaman = for those who want to relax and unwind (for those who are stressed or neutral)
             ace = for those who want to be productive and organize themselves (for those who are neutral)
             generalist = for those wanting to discover new hobbies and interests 
@@ -33,7 +32,6 @@ class prompt_corpus:
             The user has been feeling {recent_mood} lately. The user expects to {expectation} (after using the website)
             The user can be redirected to the following pages:
             seeker = for those who are philosophically curious (feeling curious), 
-            challenger = for those interested in solving puzzles and games in an engaging way and (are neutral or energetic),
             shaman = for those who want to relax and unwind (for those who are stressed or neutral)
             ace = for those who want to be productive and organize themselves (for those who are neutral)
             generalist = for those wanting to discover new hobbies and interests 
@@ -180,12 +178,10 @@ class prompt_corpus:
                     Whether it be solving puzzles, learning a new instrument, planning your routine, journaling your thoughts, or just ruminating about various questions of life bored.ai is a multifaceted AI-guided platform that tries to convert your boredom into something more, “mindful”.
                     Activities:
                     1.	Learn something new
-                    2.	Solve challenges and puzzles
-                    3.	Relax and unwind
-                    4.	Organize yourself
-                    5.	Discover hobbies
-                    6.	Talk away boredom
-                    7.	Explore new POIs
+                    2.	Relax and unwind
+                    3.	Organize yourself
+                    4.	Discover hobbies
+                    5.	Talk away boredom
 
                     If the user could use something along the lines of the above activities, respond as follows, for example:
                     "You can open the menu on the top-left corner of your screen and click on the 'Discover hobbies' pane"
@@ -288,12 +284,10 @@ class prompt_corpus:
                     Whether it be solving puzzles, learning a new instrument, planning your routine, journaling your thoughts, or just ruminating about various questions of life bored.ai is a multifaceted AI-guided platform that tries to convert your boredom into something more, “mindful”.
                     Activities:
                     1.	Learn something new
-                    2.	Solve challenges and puzzles
-                    3.	Relax and unwind
-                    4.	Organize yourself
-                    5.	Discover hobbies
-                    6.	Talk away boredom
-                    7.	Explore new POIs
+                    2.	Relax and unwind
+                    3.	Organize yourself
+                    4.	Discover hobbies
+                    5.	Talk away boredom
 
                     If the user could use something along the lines of the above activities, respond as follows, for example:
                     "You can open the menu on the top-left corner of your screen and click on the 'Discover hobbies' pane"
@@ -390,11 +384,10 @@ class prompt_corpus:
                     Whether it be solving puzzles, learning a new instrument, planning your routine, journaling your thoughts, or just ruminating about various questions of life bored.ai is a multifaceted AI-guided platform that tries to convert your boredom into something more, “mindful”.
                     Activities:
                     1.	Learn something new
-                    2.	Solve challenges and puzzles
-                    3.	Relax and unwind
-                    4.	Organize yourself and be productive (which you, Ace will assist in)
-                    5.	Discover hobbies
-                    6.	Talk away boredom
+                    2.	Relax and unwind
+                    3.	Organize yourself
+                    4.	Discover hobbies
+                    5.	Talk away boredom
 
                     If the user could use something along the lines of the above activities, respond as follows, for example:
                     "You can open the menu on the top-left corner of your screen and click on the 'Discover hobbies' pane"
