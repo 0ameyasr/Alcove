@@ -614,6 +614,60 @@ def delete_task(token):
             session["tasks"].pop(task_name,"")
     return redirect("/outline")
 
-@app.route("/progress")
+@app.route("/collaborate")
 def progress():
-    return render_template("progress.html")
+    return render_template("collaborate.html")
+
+@app.route("/projects")
+def projects():
+    page = int(request.args.get('page', 1))
+    per_page = 5
+    existing_user = mongo.db.projects.find_one({"nickname":session["nickname"]})
+    if existing_user:
+        session["projects"] = True
+        all_projects = mongo.db.projects.count_documents({"nickname": session["nickname"]})
+        projects_ = mongo.db.projects.find({"nickname": session["nickname"]}, {"_id": False}).skip((page - 1) * per_page).limit(per_page)
+        session["list_projects"] = list(projects_)
+        total_pages = (all_projects + per_page - 1) // per_page
+    else:
+        session["projects"] = False
+        total_pages = 0
+    return render_template("hub.html",page=page,total_pages=total_pages)
+
+@app.route("/create_project",methods=["POST"])
+def create_project():
+    project_title = request.form["projectTitle"] 
+    project_desc = request.form["projectDesc"]
+    projects = mongo.db.projects.find({"nickname": session["nickname"]}, {"_id": False})
+    if projects and len(list(projects)) == 25:
+        flash("You cannot create more than 25 projects.","warning")
+        return redirect("/projects")
+
+    existing_title_count = mongo.db.projects.count_documents({"nickname": session["nickname"], "project_title": project_title})
+    if existing_title_count > 0:
+        flash("A project with the same name already exists.", "error")
+        return redirect("/projects")
+    
+    token = dynamic_web.token16b()
+    mongo.db.projects.insert_one({
+        "nickname":session["nickname"],
+        "project_id":token,
+        "project_title":project_title,
+        "project_desc":project_desc,
+        "created":dynamic_web.today()})
+    flash("Project created successfully.","success")
+    return redirect("/projects")
+
+@app.route("/projects/<token>")
+def new_project(token):
+    return f"You're on project {token}"
+
+@app.route("/delete_project/<token>",methods=["POST"])
+def delete_project(token):
+    existing_user = mongo.db.projects.find_one({"nickname":session["nickname"]})
+    if existing_user:
+        mongo.db.projects.delete_one({"nickname":session["nickname"],"project_id":token})
+    else:
+        session["projects"] = False
+    flash(f"Project deleted successfully.")
+    return redirect("/projects")

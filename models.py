@@ -6,21 +6,17 @@ class ANNModel(nn.Module):
   def __init__(self):
     super(ANNModel,self).__init__()
     
-    #fully-connected layers
     self.fc1 = nn.Linear(5,8)
     self.fc2 = nn.Linear(8,16)
     self.fc3 = nn.Linear(16,32)
     self.fc4 = nn.Linear(32,4)
 
-    #dropout layer
     self.dropout = nn.Dropout(p=0.75)
 
-    #activations
     self.relu = nn.ReLU()
     self.softmax = nn.Softmax(dim=1)
   
   def forward(self,x):
-    #apply activations
     x = self.relu(self.fc1(x))
     x = self.relu(self.fc2(x))
     x = self.relu(self.fc3(x))

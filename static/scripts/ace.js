@@ -50,4 +50,9 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#createProject').submit(function (e) {
+        $('#createProjectButton').prop("disabled",true);
+        $("#spinner").prop("hidden",false);
+    });
 });

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bored.ai - Project Hub</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link rel="icon" href="static/img/web_icon.png" />
+    <link rel="stylesheet" href="static/styles/main.css" />
+    <link rel="stylesheet" href="static/styles/home.css" />
+    <link rel="stylesheet" href="static/styles/ace.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+
+  <body>
+    <header class="p-3">
+        <div class="container-fluid">
+          <div class="d-flex flex-wrap align-items-center justify-content-center">
+            <a href="/ace" class="d-flex align-items-center link-body-emphasis text-decoration-none">
+              <img class="bi me-2" src="static/img/web_icon.png" width="32" height="32" />
+            </a>
+          </div>
+        </div>
+    </header>
+    <div class="toast-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                  <div class="toast toast-top-right" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                      <img src="static/img/web_icon.png" width="32" height="32" class="rounded me-2">
+                      <strong class="me-auto">bored.ai</strong>
+                      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                      {{ message }}
+                    </div>
+                  </div>
+              {% endfor %}
+          {% endif %}
+      {% endwith %}
+    </div>
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5 border rounded-3 create-project-form">
+      <div class="row align-items-center g-lg-5 py-5">
+        <div class="col-lg-7 text-center text-lg-start">
+        <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">Create a project</h1>
+        <p class="col-lg-10 fs-4">
+            Start your collaboration journey almost immediately.
+            No extra efforts required!
+        </p>
+        </div>
+        <div class="col-md-10 mx-auto col-lg-5">
+            <form id="createProject" action="/create_project" method="POST">
+                <div class="form-group">
+                    <label for="title" class="form-label fw-bold">Project Title</label>
+                    <input id="title" name="projectTitle" type="text" class="fc-dark form-control" placeholder="Enter a title" maxlength="50" required>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="desc" class="form-label fw-bold">Project Description</label>
+                    <textarea id="desc" class="fc-dark border form-control" name="projectDesc" placeholder="Describe your project" maxlength="200" required></textarea>
+                </div>
+                <div class="text-right mb-3">
+                    <small><b>Dated:</b> {{session["today"]}}</small>
+                </div>
+                <button type="submit" id="createProjectButton" class="btn btn-success btn-lg">
+                    <span id="spinner" class="spinner-border spinner-border-sm" aria-hidden="true" hidden></span>
+                    Create
+                </button>
+            </form>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="container">
+        <h1 class="h1"><i class="fa-solid fa-folder"></i>&nbsp;Your Projects</h1>
+        <hr>
+        {% if not session["projects"] %}
+        <div class="container my-5">
+          <div class="p-5 text-center bg-body-tertiary border rounded-3">
+            <h1 class="text-body-emphasis">It's all empty</h1>
+            <p class="lead">
+              You haven't started any projects. Gotta start somewhere?
+            </p>
+          </div>
+        </div>
+        {% endif %}
+        {% if session["projects"] %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col fw-bold">Title</th>
+                  <th scope="col fw-bold">Description</th>
+                  <th scope="col fw-bold">Created</th>
+                  <th scope="col fw-bold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for project in session["list_projects"]:%}
+                <tr>
+                  <td>{{project["project_title"]}}</td>
+                  <td>{{project["project_desc"]}}</td>
+                  <td>{{project["created"]}}</td>
+                  <td>
+                    <div class="d-flex flex-row g-3 buttons">
+                      <a href="/projects/{{project["project_id"]}}" class="btn btn-sm btn-success">Go</a>
+                      <form id="deleteProject" action="/delete_project/{{project["project_id"]}}" method="POST">
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
+                        <span id="spinnerDelete" class="spinner-border spinner-border-sm text-danger" aria-hidden="true" hidden></span>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <small><i class="fa-solid fa-circle-info"></i> <span class="fw-bold">Note:</span> You cannot create more than 25 projects at a time. </small>
+            </table>
+          </div>
+          <nav>
+            <ul class="pagination">
+              <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                  <a class="page-link" href="/projects?page={{ page - 1 }}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                  </a>
+              </li>
+              {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {% if p == page %}active{% endif %}"><a class="page-link" href="/projects?page={{ p }}">{{ p }}</a></li>
+              {% endfor %}
+              <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                  <a class="page-link" href="/projects?page={{ page + 1 }}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                  </a>
+              </li>
+            </ul>
+          </nav>
+        {% endif %}
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="static/scripts/home.js"></script>
+    <script src="static/scripts/ace.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('.toast').toast('show');
+      });
+    </script>
+    {% include "partial_footer.html" %}
+  </body>
+</html>

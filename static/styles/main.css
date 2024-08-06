@@ -242,3 +242,8 @@ border-radius: 0.25rem;
     font-weight: bold;
     cursor: pointer;
 }
+
+.unit {
+    width: 1em;
+    height: 1em;
+}

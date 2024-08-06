@@ -1,7 +1,8 @@
 import random
 import libs
 from datetime import datetime
-
+import binascii, os
+        
 class curate_web:
     def __init__(self) -> None:
         pass 
@@ -190,8 +191,10 @@ class curate_web:
         return random.choice(icebreakers)
     
     def token16b(self):
-        import binascii, os
         return str(binascii.hexlify(os.urandom(16)))[2:-1]
+
+    def token8b(self):
+        return str(binascii.hexlify(os.urandom(8)))[2:-1]
 
     def today(self):
         today = datetime.now()

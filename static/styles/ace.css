@@ -193,8 +193,21 @@ a {
 }
 
 #userMessageQuick {
+    flex-grow: 1;
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    outline: none;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    resize: vertical;
+    box-sizing: border-box;
     min-height: 100px;
     max-height: 450px;
+}
+
+#userMessageQuick::placeholder {
+    color: #bbb;
 }
 
 #aceResponse {
@@ -209,4 +222,39 @@ a {
 #taskDesc {
     min-height: 100px;
     max-height: 200px;
+}
+
+#desc {
+    flex-grow: 1;
+    outline: none;
+    border-radius: 8px;
+    resize: none;
+    box-sizing: border-box;
+    height: 100px;
+    min-height: 100px;
+    width: 100%;
+}
+
+.table {
+    width: 100%;
+}
+
+.buttons {
+    gap: 10px;
+}
+
+.create-project-form {
+    background-color: var(--accent-color);
+}
+.toast-top-right {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1050;
+}
+
+.table td, .table th {
+    word-wrap: break-word; 
+    overflow-wrap: break-word; 
+    max-width: 100px;
 }
