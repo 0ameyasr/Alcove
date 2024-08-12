@@ -11,6 +11,7 @@ def build_history(conversation_history,latest_message:str,user_message:str,model
     user_message = "User: "+user_message
     return conversation_history +"\n"+user_message+"\n"+latest_message
 
+
 def get_dynamo_history(nickname):
     config = configparser.ConfigParser()
     config.read("secrets.cfg")

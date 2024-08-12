@@ -616,6 +616,9 @@ def delete_task(token):
 
 @app.route("/collaborate")
 def progress():
+    projects = mongo.db.projects.count_documents({"nickname": session["nickname"]})
+    if projects > 0:
+        return redirect("/projects")
     return render_template("collaborate.html")
 
 @app.route("/projects")
@@ -654,13 +657,18 @@ def create_project():
         "project_id":token,
         "project_title":project_title,
         "project_desc":project_desc,
-        "created":dynamic_web.today()})
+        "created":dynamic_web.today(),
+        "init":False,
+        "context":""
+    })
     flash("Project created successfully.","success")
     return redirect("/projects")
 
-@app.route("/projects/<token>")
+@app.route("/project/<token>")
 def new_project(token):
-    return f"You're on project {token}"
+    project_id = token
+    project = dict(mongo.db.projects.find_one({"nickname": session["nickname"],"project_id":token}, {"_id": False}))
+    return render_template("project.html",project_id=project_id,project=project)
 
 @app.route("/delete_project/<token>",methods=["POST"])
 def delete_project(token):
@@ -671,3 +679,133 @@ def delete_project(token):
         session["projects"] = False
     flash(f"Project deleted successfully.")
     return redirect("/projects")
+
+@app.route("/project_init/<token>",methods=["POST"])
+def brief_project(token):
+    project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
+    project_details = request.form["projectDescription"]
+    project_tasks = request.form["assistanceDetails"]
+
+    if not project["context"] or project["context"] == "":
+        gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context="")
+    else:
+        gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"])
+
+    mongo.db.projects.update_one(
+        {
+            "nickname":session["nickname"],
+            "project_id":token
+        },
+        {
+            "$set":{
+                "init":True,
+                "project_details":project_details,
+                "project_tasks":project_tasks,
+                "active":1,
+                "discussions": [
+                    {
+                        "discussion_title":"Discussion #1",
+                        "discussion_history":""
+                    }
+                ]
+            }
+        }
+    )
+    return redirect(f"/project/{token}")
+
+@app.route("/chat_project_ace/<token>",methods=["POST"])
+def chat_project_ace(token):
+    project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
+    
+    message = request.form["usermsg"]
+    response, latest_message = gemini.chat_project_ace(message)
+    current_history = personalizer.build_history(project["context"],str(latest_message),message,model="Ace")
+    mongo.db.projects.update_one({"nickname":session["nickname"],"project_id":token},{"$set":{"context":current_history}})
+    return jsonify(talk=markdown2.markdown(response.text),error=False)
+
+@app.route("/new_discussion/<token>",methods=["POST"])
+def new_discussion(token):
+    query = {
+        "discussions.discussion_title": request.form["title"]
+    }
+    document = mongo.db.projects.find_one(query,{"_id":1})
+    if document:
+        flash("A discussion with the same title already exists.","error")
+        return redirect(f"/project/{token}")
+        
+    project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
+    
+    mongo.db.projects.update_one(
+        {
+            "nickname":session["nickname"],
+            "project_id":token
+        },
+        {
+            "$set":{
+                "active":project["active"]+1,
+                "discussions": project["discussions"]+ [
+                    {
+                        "discussion_title":request.form["title"].strip(),
+                        "discussion_history":""
+                    }
+                ]
+            }
+        }
+    )
+    flash(f"Successfully created a discussion titled '{request.form['title']}'")
+    return redirect(f"/project/{token}")
+
+@app.route("/delete_discussion/<token>",methods=["POST"])
+def delete_discussion(token):
+    project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
+    query = {
+        "discussions.discussion_title": request.form["title"]
+    }
+    document = mongo.db.projects.find_one(query,{"_id":1})
+    if not document:
+        flash(f"A discussion titled '{request.form['title']}' does not exist.","error")
+        return redirect(f"/project/{token}")
+        
+    mongo.db.projects.update_one(
+        {
+            "nickname": session["nickname"],
+            "project_id": token
+        },
+        {
+            "$set": {
+                "active": project["active"] - 1
+            },
+            "$pull": {
+                "discussions": {
+                    "discussion_title": request.form["title"]
+                }
+            }
+        }
+    )
+    flash(f"Successfully deleted discussion titled '{request.form['title']}'")
+    return redirect(f"/project/{token}")
+
+@app.route("/edit_discussion/<token>",methods=["POST"])
+def edit_discussion(token):
+    project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
+
+    prev_title = request.form.get("prevtitle")
+    new_title = request.form.get("newtitle")
+    discussion_exists = any(discussion["discussion_title"] == prev_title for discussion in project["discussions"])
+    if not discussion_exists:
+        flash(f"Discussion title '{prev_title}' not found.")
+        return redirect(f"/project/{token}")
+    
+    mongo.db.projects.update_one(
+        {
+            "nickname": session["nickname"],
+            "project_id": token,
+            "discussions.discussion_title": prev_title
+        },
+        {
+            "$set": {
+                "discussions.$.discussion_title": new_title
+            }
+        }
+    )
+    return redirect(f"/project/{token}")

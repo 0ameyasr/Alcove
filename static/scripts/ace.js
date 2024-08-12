@@ -55,4 +55,49 @@ $(document).ready(function () {
         $('#createProjectButton').prop("disabled",true);
         $("#spinner").prop("hidden",false);
     });
+
+    $('#projectInit').submit(function (e) { 
+        $('#initProjectButton').prop("disabled",true);
+        $("#initSpinner").prop("hidden",false);
+    });
+
+    $('#projectInitToggle').click(function (e) { 
+        let toggle = document.getElementById("toggleIcon");
+    
+        if (toggle.classList.contains("fa-eye")) {
+            toggle.classList.replace("fa-eye", "fa-eye-slash");
+            $("#infoPane").prop("hidden",true);
+            $("#projectInitToggle").attr("title","Show");
+        } else if (toggle.classList.contains("fa-eye-slash")) {
+            toggle.classList.replace("fa-eye-slash", "fa-eye");
+            $("#infoPane").prop("hidden",false);
+            $("#projectInitToggle").attr("title","Hide");
+        }
+    });    
+
+    $('.discussions-container').on('submit', '.discussion-form', function(event) {
+        event.preventDefault();
+        var $form = $(this);
+        var actionUrl = $form.attr('action');
+        console.log(actionUrl)
+        var formData = $form.serialize();
+        var formId = $form.find('textarea').attr('id'); 
+        var index = formId.split('-')[1];
+
+        $.ajax({
+            type: 'POST',
+            url: actionUrl,
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                console.log(response.talk)
+                $('#response-' + index).html(response.talk);
+                $form.find('.message').val('');
+            },
+            error: function(xhr, status, error) {
+                console.error("Error sending message: " + error);
+                $('#response-' + index).html('<div class="alert alert-danger">Failed to send message.</div>');
+            }
+        });
+    });
 });

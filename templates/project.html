@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bored.ai | {{project["project_title"]}}</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link rel="icon" href="/static/img/web_icon.png" />
+    <link rel="stylesheet" href="/static/styles/main.css" />
+    <link rel="stylesheet" href="/static/styles/home.css" />
+    <link rel="stylesheet" href="/static/styles/project.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+
+  <body>
+    <header class="p-3">
+        <div class="container-fluid">
+          <div class="d-flex flex-wrap align-items-center justify-content-center">
+            <a href="/ace" class="d-flex align-items-center link-body-emphasis text-decoration-none">
+              <img class="bi me-2" src="/static/img/web_icon.png" width="32" height="32" />
+            </a>
+          </div>
+        </div>
+    </header>
+    <div class="toast-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                  <div class="toast toast-top-right" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                      <img src="/static/img/web_icon.png" width="32" height="32" class="rounded me-2">
+                      <strong class="me-auto">bored.ai</strong>
+                      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                      {{ message }}
+                    </div>
+                  </div>
+              {% endfor %}
+          {% endif %}
+      {% endwith %}
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="d-flex align-items-center col-md-3 border rounded-3 p-3 back-soft">
+                <div class="window container-fluid back-soft">
+                    <h3>{{project["project_title"]}}</h3>
+                    <hr>
+                    <div class="list-group">
+                        <a class="list-group-item list-group-item-action" aria-current="true">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small class="about-heading"><i class="fa-regular fa-file-lines"></i>&nbsp;Description</small>
+                            </div>
+                            <small>{{project["project_desc"]}}</small>
+                        </a>
+                        <a class="list-group-item list-group-item-action" aria-current="true">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small class="about-heading"><i class="fa-regular fa-calendar-plus"></i>&nbsp;Created</small>
+                            </div>
+                            <small>{{project["created"]}}</small>
+                        </a>
+                    </div>
+                    <br>
+                    <div class="list-group">
+                      <a class="list-group-item list-group-item-action" aria-current="true">
+                        <div class="d-flex w-100 justify-content-between">
+                            <small class="about-heading"><i class="fa-solid fa-message"></i>&nbsp;Tip for you</small>
+                        </div>
+                        <small>
+                          {% if tip: %}
+                            {{tip | safe}}
+                          {% endif%}
+                          {% if not tip: %}
+                            Get started with your project!
+                          {% endif %}
+                        </small>
+                      </a>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-md-9 p-3">
+              <div class="container">
+                <div class="action-bar border">
+                  <div id="discussion_title">
+                    Project Briefing
+                  </div>
+                  <div>
+                    <button id="projectInitToggle" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hide">
+                      <i id="toggleIcon" class="fa-solid fa-eye"></i>
+                    </button>
+                    <button id="addDiscussion" type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#newDiscussionModal">
+                      <i class="fa-solid fa-plus" data-bs-toggle="tooltip" data-bs-placement="right" title="Add a Discussion"></i>
+                    </button>
+                    <button id="deleteDiscussion" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDiscussionModal">
+                      <i class="fa-solid fa-trash" data-bs-toggle="tooltip" data-bs-placement="right" title="Delete a Discussion"></i>
+                    </button>
+                  </div>
+                </div>
+                <div id="infoPane" class="container discussion-pane border p-3">
+                  {% if project["init"] == False: %}
+                  <form id="projectInit" action="/project_init/{{project_id}}" method="POST">
+                    <div class="mb-4">
+                        <label for="projectDescription" class="form-label fw-bold">What is your project about?</label>
+                        <textarea id="projectDescription" name="projectDescription" class="fc-dark form-control custom-textarea" rows="4" placeholder="Describe your project here..." required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="assistanceDetails" class="form-label fw-bold">What would you like Ace to assist you in?</label>
+                        <textarea id="assistanceDetails" name="assistanceDetails" class="fc-dark form-control custom-textarea" rows="4" placeholder="How can Ace help you?" required></textarea>
+                    </div>
+                    <button id="initProjectButton" type="submit" class="btn btn-success btn-lg px-5">
+                      <span id="initSpinner" class="spinner-border spinner-border-sm" aria-hidden="true" hidden></span>
+                      Submit</button>
+                  </form>
+                  {% endif %}
+                  {% if project["init"] == True: %}
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Project Description</h4>
+                      <p class="card-text">{{project["project_details"]}}</p>
+                    </div>
+                  </div>
+                  
+                  <div class="card mt-3">
+                    <div class="card-body">
+                      <h4 class="card-title">Assistance Required</h4>
+                      <p class="card-text">{{project["project_tasks"]}}</p>
+                    </div>
+                  </div>                
+                  {% endif %}
+                </div>
+              </div>
+              {% if project["init"] == true: %}
+                <div class="discussions-container">
+                  {% for discussion in project["discussions"]%}
+                  <br>
+                  <div class="container">
+                    <div class="action-bar border">
+                      <div id="discussion_title">
+                        {{discussion.get("discussion_title","ERROR")}}
+                      </div>
+                      <div>
+                        <button id="editDiscussionTitle" type="submit" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editDiscussionModal">
+                          <i class="fa-solid fa-pen" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit Title"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="container discussion-pane border p-3 d-flex flex-column info-pane">
+                      <div class="flex-grow-1">
+                        <p id="response-{{loop.index}}">
+                          {{talk | safe }}
+                        </p>
+                      </div>
+                      <form class="d-flex align-items-center mb-0 discussion-form" role="search" action="/chat_project_ace/{{project_id}}" method="POST">
+                          <textarea id="msg-{{loop.index}}" name="usermsg" class="message form-control fc-dark" placeholder="Message Ace.." required></textarea>
+                          <button class="btn btn-success btn-sm ms-2" type="submit" id="askButton-{{loop.index}}">
+                            <i class="fa-solid fa-paper-plane"></i>
+                          </button>
+                      </form>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+        </div>
+    </div>    
+    <div class="modal fade" id="newDiscussionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content profile-content">
+          <div class="border-none modal-header">
+            <h1 class="modal-title fs-5 fw-bold" id="profile-title">New Discussion</h1>
+          </div>
+          <form action="/new_discussion/{{project_id}}" method="POST" >
+              <div class="border-none modal-body">
+                  <div class="mb-3">
+                      <label for="title" class="form-label fw-bold">Discussion Title</label>
+                      <input name="title" type="text" class="fc-dark form-control" placeholder="Enter a title" required>
+                  </div>
+              </div>
+              <div class="border-none modal-footer">
+                  <button type="submit" class="btn btn-success rounded-pill px-3">
+                      Create
+                  </button>
+                  <button type="button" class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                      Close
+                  </button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="deleteDiscussionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content profile-content">
+            <div class="border-none modal-header">
+              <h1 class="modal-title fs-5 fw-bold" id="profile-title">Delete Discussion</h1>
+            </div>
+            <form action="/delete_discussion/{{project_id}}" method="POST" >
+                <div class="border-none modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">To confirm, <b>enter the title</b> of the discussion</label>
+                        <input id="confirmDelete" name="title" type="text" class="fc-dark form-control" placeholder="Enter the title" required>
+                        <small>This action <b>cannot be undone.</b></small>
+                    </div>
+                </div>
+                <div class="border-none modal-footer">
+                    <button type="submit" class="btn btn-success rounded-pill px-3">
+                        Delete
+                    </button>
+                    <button type="button" class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+          </div>
+        </div>
+    </div>   
+    <div class="modal fade" id="editDiscussionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content profile-content">
+          <div class="border-none modal-header">
+            <h1 class="modal-title fs-5 fw-bold" id="profile-title">Edit Discussion Title</h1>
+          </div>
+          <form action="/edit_discussion/{{project_id}}" method="POST" >
+              <div class="border-none modal-body">
+                <div class="mb-3">
+                  <label for="prevtitle" class="form-label fw-bold">Previous title</label>
+                  <input name="prevtitle" type="text" class="fc-dark form-control" placeholder="Enter the previous title" required>
+                  <small>This is for confirmation.</small>
+                </div>
+                  <div class="mb-3">
+                      <label for="newtitle" class="form-label fw-bold">New title</label>
+                      <input name="newtitle" type="text" class="fc-dark form-control" placeholder="Enter a title" required>
+                  </div>
+              </div>
+              <div class="border-none modal-footer">
+                  <button type="submit" class="btn btn-lg btn-success rounded-pill px-3">
+                      Edit
+                  </button>
+                  <button type="button" class="btn btn-lg btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                      Close
+                  </button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="/static/scripts/home.js"></script>
+    <script src="/static/scripts/ace.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('.toast').toast('show');
+      });
+    </script>
+  </body>
+</html>

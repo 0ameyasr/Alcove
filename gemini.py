@@ -89,9 +89,30 @@ modelAce =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings =
 ])
 ace = modelAce.start_chat(history=[])
 
+projectModelAce =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
+        {
+            "category": "HARM_CATEGORY_HARASSMENT",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_HATE_SPEECH",
+            "threshold": "HIGH",
+        },
+        {
+            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            "threshold": "HIGH",
+        },
+        {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold": "BLOCK_NONE",
+        },
+        ])
+project_ace = projectModelAce.start_chat(history=[])
+
+
 def fit_prompt(prompt):
     gemini.configure(api_key=config['gemini']['api_key'])
-    model =gemini.GenerativeModel(model_name="gemini-1.5-flash")
+    model=gemini.GenerativeModel(model_name="gemini-1.5-flash")
     response = model.generate_content(prompt)
     return response.text
 
@@ -104,8 +125,12 @@ def config_shaman(icebreaker,nickname,history):
     return resp
 
 def config_ace(nickname):
-    print("Ace talk")
     resp = ace.send_message(prompts.prompt_corpus([]).get_chat_config("How can I help you?",nickname,history="",mode="ace"))
+    return resp
+
+def config_project_ace(nickname,project_title,project_details,project_tasks,context):
+    config = prompts.prompt_corpus([]).get_ace_project_config(nickname,project_title,project_details,project_tasks,context)
+    resp = project_ace.send_message(config)
     return resp
     
 def chat_dynamo(message):
@@ -114,16 +139,18 @@ def chat_dynamo(message):
 def chat_shaman(message):
     return shaman.send_message(message),shaman.history[-1]
 
+def chat_ace(message):
+    return ace.send_message(message)
+
+def chat_project_ace(message):
+    return project_ace.send_message(message),project_ace.history[-1]
+
 def radar_config():
     response = radar.send_message(prompts.prompt_corpus([]).get_radar_prompt())
     return response.text.strip()
 
 def chat_radar(message):
     return radar.send_message(message)
-
-def manually_scale_score(score, mean, variance):
-    scaled_score = (score - mean) / numpy.sqrt(variance)
-    return scaled_score
 
 def get_clean_radar_history():
     history = str(radar.history)
@@ -134,3 +161,4 @@ def get_radar_concerns(history):
 
 def chat_ace(message):
     return ace.send_message(message)
+

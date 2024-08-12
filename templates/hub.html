@@ -111,7 +111,7 @@
                   <td>{{project["created"]}}</td>
                   <td>
                     <div class="d-flex flex-row g-3 buttons">
-                      <a href="/projects/{{project["project_id"]}}" class="btn btn-sm btn-success">Go</a>
+                      <a href="/project/{{project["project_id"]}}" class="btn btn-sm btn-success">Go</a>
                       <form id="deleteProject" action="/delete_project/{{project["project_id"]}}" method="POST">
                         <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
                         <span id="spinnerDelete" class="spinner-border spinner-border-sm text-danger" aria-hidden="true" hidden></span>

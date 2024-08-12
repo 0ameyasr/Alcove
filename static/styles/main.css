@@ -13,6 +13,9 @@
     --green: #365e32;
     --red: #952323;
     --black: #000000;
+    --white: #ffffff;
+    --dark-navy:#26355D;
+    --subte: #f5f9fa;
 }
 
 *:not(pre code,code){
