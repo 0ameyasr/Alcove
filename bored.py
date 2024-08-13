@@ -668,7 +668,22 @@ def create_project():
 def new_project(token):
     project_id = token
     project = dict(mongo.db.projects.find_one({"nickname": session["nickname"],"project_id":token}, {"_id": False}))
-    return render_template("project.html",project_id=project_id,project=project)
+    conv = None
+    marked_catchup,marked_history = None,None
+    if project["init"] == True:
+        project_details = project["project_details"]
+        project_tasks = project["project_tasks"]
+
+        if not project["context"] or project["context"] == "":
+            gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context="")
+            conv = None
+        else:
+            history = gemini.fit_prompt(prompts.prompt_corpus().get_discussion_history(project["context"]))
+            catchup = gemini.fit_prompt(prompts.prompt_corpus().get_discussion_icebreaker(project["context"]))
+            marked_history = markdown2.markdown(history,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+            marked_catchup = markdown2.markdown(catchup,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+            gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"])
+    return render_template("project.html",project_id=project_id,project=project,conversation=conv,history=marked_history,talk=marked_catchup)
 
 @app.route("/delete_project/<token>",methods=["POST"])
 def delete_project(token):
@@ -719,9 +734,9 @@ def chat_project_ace(token):
     
     message = request.form["usermsg"]
     response, latest_message = gemini.chat_project_ace(message)
-    current_history = personalizer.build_history(project["context"],str(latest_message),message,model="Ace")
+    current_history = personalizer.build_project_history(session["nickname"],project["context"],str(latest_message),message,model="Ace")
     mongo.db.projects.update_one({"nickname":session["nickname"],"project_id":token},{"$set":{"context":current_history}})
-    return jsonify(talk=markdown2.markdown(response.text),error=False)
+    return jsonify(talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"]),error=False)
 
 @app.route("/new_discussion/<token>",methods=["POST"])
 def new_discussion(token):

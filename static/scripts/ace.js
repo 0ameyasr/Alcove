@@ -93,6 +93,7 @@ $(document).ready(function () {
                 console.log(response.talk)
                 $('#response-' + index).html(response.talk);
                 $form.find('.message').val('');
+                hljs.highlightAll();
             },
             error: function(xhr, status, error) {
                 console.error("Error sending message: " + error);

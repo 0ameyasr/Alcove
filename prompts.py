@@ -706,3 +706,30 @@ class prompt_corpus:
             [Say OK, or give a thumbs up if you understand.]
         """
         return f"""Here is some context history of previous conversations: {context}\n"""+base_prompt if context else base_prompt
+    
+    def get_discussion_history(self,history):
+        return f""" 
+        This is some conversation history:
+        \n{history}
+        In this conversation, you are nicknamed 'Ace'.
+        List out the points the user and the model have discussed upto now.
+        Make sure to list specific points too, and highlight decision points
+        in their discussion.
+        For a starting filler text you can write: "We have discussed the following things:"
+        or something similar before listing the points.
+        The points you mention should be in first person, directly to the user, as if 
+        you had discussed the points with them.
+        [ONLY RETURN THE LIST OF DISCUSSED POINTS]
+        """
+
+    def get_discussion_icebreaker(self,history):
+        return f""" 
+        This is some conversation history:
+        \n{history}
+        As the user a catchup question based on the above conversation history as an
+        icebreaker, assuming that you are meeting them after a break or something.
+        In this conversation, you are nicknamed 'Ace'.
+        The question you ask should be in first person, directly to the user, as if 
+        you had the conversation with them.
+        [ONLY RETURN THE CATCH-UP QUESTION]
+        """

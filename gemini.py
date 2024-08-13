@@ -107,8 +107,7 @@ projectModelAce =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_set
             "threshold": "BLOCK_NONE",
         },
         ])
-project_ace = projectModelAce.start_chat(history=[])
-
+project_ace = modelAce.start_chat(history=[])
 
 def fit_prompt(prompt):
     gemini.configure(api_key=config['gemini']['api_key'])
@@ -128,10 +127,15 @@ def config_ace(nickname):
     resp = ace.send_message(prompts.prompt_corpus([]).get_chat_config("How can I help you?",nickname,history="",mode="ace"))
     return resp
 
-def config_project_ace(nickname,project_title,project_details,project_tasks,context):
+def reset_project_ace_history():
+    return projectModelAce.start_chat(history=[])
+
+def config_project_ace(nickname,project_title,project_details,project_tasks,context):    
+    global project_ace
+    project_ace = reset_project_ace_history()
     config = prompts.prompt_corpus([]).get_ace_project_config(nickname,project_title,project_details,project_tasks,context)
-    resp = project_ace.send_message(config)
-    return resp
+    _ = project_ace.send_message(config)
+    return project_ace
     
 def chat_dynamo(message):
     return dynamo.send_message(message),dynamo.history[-1]

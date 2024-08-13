@@ -4,6 +4,15 @@ import configparser
 import requests
 import random
 import libs
+import re
+import markdown2
+
+def clean_message(message):
+    message = re.sub(r'\\(.)', r'\1', message)
+    message = message.replace('\\"', '"')
+    message = message.replace('\\n', '\n')
+    message = re.sub(r'\s+', ' ', message).strip()
+    return message
 
 def build_history(conversation_history,latest_message:str,user_message:str,model="Dynamo"):
     trace='role: "model"'
@@ -11,6 +20,13 @@ def build_history(conversation_history,latest_message:str,user_message:str,model
     user_message = "User: "+user_message
     return conversation_history +"\n"+user_message+"\n"+latest_message
 
+def build_project_history(nickname,conversation_history,latest_message:str,user_message:str,model="Dynamo"):
+    trace='role: "model"'
+    latest_message = f"{model}: "+latest_message.replace("text: ","").replace("parts {","").replace("}","").replace(trace,"").strip() + "~"
+    user_message = f"{nickname}: "+user_message+"\n"
+    latest_message = clean_message(latest_message)
+    user_message = clean_message(user_message)
+    return conversation_history +"\n"+user_message+"\n"+latest_message
 
 def get_dynamo_history(nickname):
     config = configparser.ConfigParser()
