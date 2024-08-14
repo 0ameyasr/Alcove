@@ -670,6 +670,7 @@ def new_project(token):
     project = dict(mongo.db.projects.find_one({"nickname": session["nickname"],"project_id":token}, {"_id": False}))
     conv = None
     marked_catchup,marked_history = None,None
+    tip = None
     if project["init"] == True:
         project_details = project["project_details"]
         project_tasks = project["project_tasks"]
@@ -678,12 +679,15 @@ def new_project(token):
             gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context="")
             conv = None
         else:
-            history = gemini.fit_prompt(prompts.prompt_corpus().get_discussion_history(project["context"]))
-            catchup = gemini.fit_prompt(prompts.prompt_corpus().get_discussion_icebreaker(project["context"]))
-            marked_history = markdown2.markdown(history,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
-            marked_catchup = markdown2.markdown(catchup,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+            if project["active"] != 0:
+                history = gemini.fit_prompt(prompts.prompt_corpus().get_discussion_history(project["context"]))
+                catchup = gemini.fit_prompt(prompts.prompt_corpus().get_discussion_icebreaker(project["context"]))
+                tip = gemini.fit_prompt(prompts.prompt_corpus().get_tip(project["context"]))
+                marked_history = markdown2.markdown(history,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])    
+                marked_catchup = markdown2.markdown(catchup,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+                marked_tip = markdown2.markdown(tip,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
             gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"])
-    return render_template("project.html",project_id=project_id,project=project,conversation=conv,history=marked_history,talk=marked_catchup)
+    return render_template("project.html",project_id=project_id,project=project,conversation=conv,history=marked_history,talk=None,tip=tip,catchup=marked_catchup)
 
 @app.route("/delete_project/<token>",methods=["POST"])
 def delete_project(token):
@@ -719,7 +723,7 @@ def brief_project(token):
                 "active":1,
                 "discussions": [
                     {
-                        "discussion_title":"Discussion #1",
+                        "discussion_title":"Discussion",
                         "discussion_history":""
                     }
                 ]
@@ -731,12 +735,11 @@ def brief_project(token):
 @app.route("/chat_project_ace/<token>",methods=["POST"])
 def chat_project_ace(token):
     project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
-    
     message = request.form["usermsg"]
     response, latest_message = gemini.chat_project_ace(message)
     current_history = personalizer.build_project_history(session["nickname"],project["context"],str(latest_message),message,model="Ace")
     mongo.db.projects.update_one({"nickname":session["nickname"],"project_id":token},{"$set":{"context":current_history}})
-    return jsonify(talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"]),error=False)
+    return jsonify(talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"]),catchup=None,error=False)
 
 @app.route("/new_discussion/<token>",methods=["POST"])
 def new_discussion(token):
@@ -749,38 +752,86 @@ def new_discussion(token):
         return redirect(f"/project/{token}")
         
     project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
+    if not document and project["active"] != 1:
+        mongo.db.projects.update_one(
+            {
+                "nickname":session["nickname"],
+                "project_id":token
+            },
+            {
+                "$set":{
+                    "active":project["active"]+1,
+                    "discussions": project["discussions"]+ [
+                        {
+                            "discussion_title":request.form["title"].strip(),
+                            "discussion_history":""
+                        }
+                    ]
+                }
+            }
+        )
+        flash(f"Successfully created a discussion titled '{request.form['title']}'")
+    elif not document and project["active"] == 1:
+        flash(f"Cannot create a new discussion. Please conclude existing ones.","error")
+    return redirect(f"/project/{token}")
+
+@app.route("/conclude_discussion/<token>/<title>",methods=["POST"])
+def conclude_discussion(token,title):
+    project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
+    query = {
+        "discussions.discussion_title": title
+    }
+    document = mongo.db.projects.find_one(query,{"_id":1})
+    if not document:
+        flash(f"A discussion titled '{title}' does not exist.","error")
+        return redirect(f"/project/{token}")
     
+    latest_discussion = str(project["context"]).split("$$$BREAK$$$")[-1]
+    marked_history = markdown2.markdown(
+        gemini.fit_prompt(prompts.prompt_corpus().get_discussion_history(latest_discussion)),
+        extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
     mongo.db.projects.update_one(
         {
-            "nickname":session["nickname"],
-            "project_id":token
+            "nickname": session["nickname"],
+            "project_id": token,
+            "discussions.discussion_title": title
         },
         {
-            "$set":{
-                "active":project["active"]+1,
-                "discussions": project["discussions"]+ [
-                    {
-                        "discussion_title":request.form["title"].strip(),
-                        "discussion_history":""
-                    }
-                ]
-            }
+            "$set": {
+                "active": project["active"] - 1,
+                "context": project["context"]+"\n$$$BREAK$$$\n",
+                "discussions.$.closed": True,
+                "discussions.$.discussion_history": marked_history
+            },
         }
     )
-    flash(f"Successfully created a discussion titled '{request.form['title']}'")
+    flash(f"Closed discussion titled '{title}'")
     return redirect(f"/project/{token}")
 
 @app.route("/delete_discussion/<token>",methods=["POST"])
 def delete_discussion(token):
-    project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
-    query = {
-        "discussions.discussion_title": request.form["title"]
-    }
-    document = mongo.db.projects.find_one(query,{"_id":1})
-    if not document:
-        flash(f"A discussion titled '{request.form['title']}' does not exist.","error")
+    project = mongo.db.projects.find_one({"nickname": session["nickname"], "project_id": token})
+    
+    if not project:
+        flash("Project not found.", "error")
         return redirect(f"/project/{token}")
-        
+    
+    discussion_to_delete = None
+    discussion_index = -1
+
+    for index, discussion in enumerate(project.get("discussions", [])):
+        if discussion["discussion_title"] == request.form["title"]:
+            discussion_to_delete = discussion
+            discussion_index = index
+            break
+
+    if discussion_to_delete is None:
+        flash(f"A discussion titled '{request.form['title']}' does not exist.", "error")
+        return redirect(f"/project/{token}")
+
+    contexts = project["context"].split("$$$BREAK$$$")
+    new_context = "$$$BREAK$$$".join(contexts[:discussion_index] + contexts[discussion_index + 1:])
+
     mongo.db.projects.update_one(
         {
             "nickname": session["nickname"],
@@ -788,7 +839,8 @@ def delete_discussion(token):
         },
         {
             "$set": {
-                "active": project["active"] - 1
+                "active": project["active"] - 1,
+                "context": new_context,
             },
             "$pull": {
                 "discussions": {
@@ -797,8 +849,10 @@ def delete_discussion(token):
             }
         }
     )
+
     flash(f"Successfully deleted discussion titled '{request.form['title']}'")
     return redirect(f"/project/{token}")
+
 
 @app.route("/edit_discussion/<token>",methods=["POST"])
 def edit_discussion(token):

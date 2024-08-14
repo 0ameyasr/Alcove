@@ -190,7 +190,7 @@ a {
     display: flex;
     flex-direction: column;
     gap: 5px;
-}
+} 
 
 #userMessageQuick {
     flex-grow: 1;

@@ -48,8 +48,8 @@
     </div>
     <div class="container">
       <div class="row">
-        <div class="d-flex align-items-center col-md-3 border rounded-3 p-3 back-soft">
-            <div class="window container-fluid back-soft">
+        <div class="window-tab d-flex align-items-start col-md-3 border rounded-3 p-3 back-soft">
+            <div class="window-tab container back-soft">
                 <h3>{{project["project_title"]}}</h3>
                 <hr>
                 <div class="list-group">
@@ -142,24 +142,42 @@
               <div class="container">
                 <div class="action-bar border">
                   <div id="discussion_title">
+                    {% if not discussion["closed"]: %}
                     {{discussion.get("discussion_title","ERROR")}}
+                    {% endif %}
+                    {% if discussion["closed"]: %}
+                    {{discussion.get("discussion_title","ERROR")+" (Closed)"}}
+                    {% endif %}
                   </div>
                   <div>
+                    {% if not discussion["closed"]: %}
                     <button id="editDiscussionTitle" type="submit" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editDiscussionModal">
                       <i class="fa-solid fa-pen" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit Title"></i>
                     </button>
                     <button id="viewHistory" type="submit" class="btn btn-sm btn-help" data-bs-toggle="modal" data-bs-target="#historyModal">
                       <i class="fa-solid fa-clock-rotate-left" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View History"></i>
                     </button>
-                    <button id="stopDiscussion" type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Close this discussion">
-                      <i class="fa-solid fa-circle-stop"></i>
-                    </button>
+                    <form style="display:inline;" action="/conclude_discussion/{{project_id}}/{{discussion.get('discussion_title','ERROR')}}" method="POST">
+                      <button id="stopDiscussion" type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Close this discussion">
+                        <i class="fa-solid fa-circle-stop"></i>
+                      </button>
+                    </form>
+                    {% endif %}
                   </div>
                 </div>
                 <div class="container discussion-pane border p-3 d-flex flex-column info-pane">
+                  {% if not discussion["closed"]:%}
                   <div class="flex-grow-1">
-                    <p id="response-{{loop.index}}">
-                      {{ talk | safe }}
+                    {% if catchup: %}
+                    <small><i>Resumed from: </i></small>
+                    <p id="catchup-{{loop.index}}" style="display: {% if catchup %}block{% else %}none{% endif %};">
+                        {{ catchup | safe }}
+                    </p>
+                    <hr>
+                    {% endif %}
+                    <span id="talkSpinner" class="spinner-border me-2" role="status" aria-hidden="true" hidden><br></span>
+                    <p id="talk-{{loop.index}}" style="display: none;">
+                        {{ talk | safe }}
                     </p>
                   </div>
                   <form class="d-flex align-items-center mb-0 discussion-form" role="search" action="/chat_project_ace/{{project_id}}" method="POST">
@@ -168,6 +186,11 @@
                       <i class="fa-solid fa-paper-plane"></i>
                     </button>
                   </form>
+                  {% endif %}
+
+                  {% if discussion["closed"]: %}
+                  {{discussion["discussion_history"] | safe}}
+                  {% endif %}
                 </div>
               </div>
               {% endfor %}
@@ -175,7 +198,8 @@
           {% endif %}
         </div>
       </div>
-    </div>    
+    </div>  
+    <br>  
     <div class="modal fade" id="newDiscussionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content profile-content">

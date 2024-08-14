@@ -79,26 +79,36 @@ $(document).ready(function () {
         event.preventDefault();
         var $form = $(this);
         var actionUrl = $form.attr('action');
-        console.log(actionUrl)
         var formData = $form.serialize();
         var formId = $form.find('textarea').attr('id'); 
         var index = formId.split('-')[1];
-
+    
+        $('#talk-'+index).html('');
+        $('#talkSpinner').removeAttr("hidden");
+        $('#msg-'+index).prop("disabled", true);
+        $("#askButton-"+index).prop("disabled", true);
+        
         $.ajax({
             type: 'POST',
             url: actionUrl,
             data: formData,
             dataType: 'json',
             success: function(response) {
-                console.log(response.talk)
-                $('#response-' + index).html(response.talk);
+                console.log(response.talk);
+                $('#catchup-' + index).hide();
+                $('#talk-' + index).html(response.talk).show();
                 $form.find('.message').val('');
+                $('#msg-'+index).removeAttr("disabled"); 
+                $("#askButton-"+index).removeAttr("disabled"); 
+                $('#talkSpinner').prop("hidden","true");
                 hljs.highlightAll();
             },
             error: function(xhr, status, error) {
                 console.error("Error sending message: " + error);
-                $('#response-' + index).html('<div class="alert alert-danger">Failed to send message.</div>');
+                $('#talk-' + index).html('<div class="alert alert-danger">Failed to send message.</div>').show();
             }
         });
     });
+    
+    
 });

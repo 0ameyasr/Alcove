@@ -165,4 +165,3 @@ def get_radar_concerns(history):
 
 def chat_ace(message):
     return ace.send_message(message)
-

@@ -711,15 +711,11 @@ class prompt_corpus:
         return f""" 
         This is some conversation history:
         \n{history}
-        In this conversation, you are nicknamed 'Ace'.
-        List out the points the user and the model have discussed upto now.
-        Make sure to list specific points too, and highlight decision points
-        in their discussion.
-        For a starting filler text you can write: "We have discussed the following things:"
-        or something similar before listing the points.
-        The points you mention should be in first person, directly to the user, as if 
-        you had discussed the points with them.
-        [ONLY RETURN THE LIST OF DISCUSSED POINTS]
+        
+        DO NOT mention nouns like 'user' and 'model' or their names. Summarize
+        the entire discussion and its important points and thoughts in a single
+        paragraph. Let it just be like a description.
+        [ONLY RETURN THE SUMMARY PARAGRAPH (ONLY 1 PARAGRAPH)]
         """
 
     def get_discussion_icebreaker(self,history):
@@ -732,4 +728,4 @@ class prompt_corpus:
         The question you ask should be in first person, directly to the user, as if 
         you had the conversation with them.
         [ONLY RETURN THE CATCH-UP QUESTION]
-        """
+        """    
