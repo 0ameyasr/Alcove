@@ -258,3 +258,13 @@ a {
     overflow-wrap: break-word; 
     max-width: 100px;
 }
+
+.upload-link {
+    text-decoration: underline;
+    color: var(--black);
+}
+.upload-link:hover {
+    text-decoration: none;
+    font-weight: bold;
+    color: var(--black);
+}

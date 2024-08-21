@@ -102,6 +102,7 @@ $(document).ready(function () {
                 $("#askButton-"+index).removeAttr("disabled"); 
                 $('#talkSpinner').prop("hidden","true");
                 hljs.highlightAll();
+
             },
             error: function(xhr, status, error) {
                 console.error("Error sending message: " + error);
@@ -109,6 +110,83 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#uploadFileModal').on('submit', 'form', function(event) {
+        event.preventDefault();
+        var $form = $(this);
+        var actionUrl = $form.attr('action');
+        var formData = new FormData($form[0]);
+        var formId = $form.find('textarea').attr('id'); 
+        var index = formId.split('-')[1];
+
+        $('#talkSpinnerModal').removeAttr("hidden");
     
+        $.ajax({
+            type: 'POST',
+            url: actionUrl,
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: 'json',
+            success: function(response) {
+                console.log(response.talk);
+                var modalIndex = $form.find('textarea').attr('id').split('-')[1];
+                $('#talk-' + modalIndex).html(response.talk).show();
+                $('#uploadFileModal').modal('hide');
+                $('#talkSpinnerModal').prop("hidden","true");
+                $('#attached-' + index).prop("hidden","false");
+                hljs.highlightAll();
+                if (response.file_link) {
+                    $('#attached-' + index).attr("src", response.file_link);
+                    $('#attached-' + index).removeAttr("hidden");
+                    $('#attached-' + index).attr("width", "200");
+                    $('#attached-' + index).attr("height", "200");
+                    $('#attached-' + index).attr("draggable", "false");
+                } else {
+                    $('#attached-' + index).hide();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error uploading file: " + error);
+            }
+        });
+    });
+    
+    $('#uploadFileModalFree').on('submit', 'form', function(event) {
+        event.preventDefault();
+        $('#sendMessage').prop("disabled",true);
+        $('#aceResponse').html('');
+        $('#loading').prop("hidden",false);
+        $('#talkSpinnerModal').removeAttr("hidden");
+        var formData = new FormData(this);
+    
+        $.ajax({
+            type: 'POST',
+            url: "/chat_ace",
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: 'json',
+            success: function(response) {
+                $('#talkSpinnerModal').attr("hidden", true);
+                $("#aceResponse").html(response.talk);
+    
+                if (response.file_link) {
+                    $('#attached').attr("src", response.file_link);
+                    $('#attached').removeAttr("hidden");
+                    $('#attached').attr("width", "200");
+                    $('#attached').attr("height", "200");
+                    $('#attached').attr("draggable", "false");
+                } else {
+                    $('#attached').hide();
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#talkSpinnerModal').attr("hidden", true);
+                console.error("Error uploading file: " + error);
+                $("#aceResponse").html("An error occurred while uploading the file.");
+            }
+        });
+    });
     
 });

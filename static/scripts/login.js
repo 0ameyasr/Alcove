@@ -58,7 +58,7 @@ window.onload = function () {
     })
 
     const messages = [
-        "bored.ai"
+        "Alcove"
     ];
 
     typewrite(messages[0], "talk", 1000, fontColor)
@@ -112,7 +112,7 @@ function forgotPassword()
     register_form.hidden = true;
     document.getElementById("forgot").hidden = false;
     caption.hidden = false;
-    caption.innerText="bored.ai"
+    caption.innerText="Alcove"
     logo.hidden = true;
 }
 

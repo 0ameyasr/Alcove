@@ -21,7 +21,7 @@ function updateDisplay() {
     timerDisplay.textContent = timeString;
     
     const status = isBreak ? 'Break' : 'Pomodoro';
-    document.title = `${timeString} - ${status} | bored.ai`;
+    document.title = `${timeString} - ${status} | Alcove`;
 }
 
 function startTimer() {

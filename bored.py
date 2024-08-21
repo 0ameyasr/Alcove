@@ -8,9 +8,8 @@ import configparser
 import google.generativeai as gemini_model
 from werkzeug.exceptions import NotFound,MethodNotAllowed,RequestTimeout,BadRequestKeyError,InternalServerError
 import google.api_core.exceptions as geminiExceptions
-import markdown,markdown2
-import models
-import os,binascii
+import markdown2,models,os,base64,requests
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 config = configparser.ConfigParser()
@@ -19,6 +18,8 @@ config.read("secrets.cfg")
 app.config["MONGO_URI"] = config['mongodb']['uri']
 app.config["SECRET_KEY"] = config['captcha']['secret_key']
 app.config["SITE_KEY"] = config['captcha']['site_key']
+app.config["UPLOADS"] = "static/uploads"
+app.config["API_KEY"] = config["gemini"]["api_key"]
 mongo = PyMongo(app)
 oauth = OAuth(app)
 
@@ -264,7 +265,6 @@ def chat():
         print(e)
         return jsonify(talk=markdown2.markdown(response.text), error=False)
     
-
 @app.route("/create_mask",methods=["POST"])
 def create_mask():
     instructions = request.form.get("mask")
@@ -286,7 +286,6 @@ def create_mask():
         return redirect("/dynamo")
     else:
         return render_template("response.html",code=500)
-
 
 @app.route("/create_mask/<token>",methods=["POST"])
 def default_mask(token):
@@ -671,12 +670,13 @@ def new_project(token):
     conv = None
     marked_catchup,marked_history = None,None
     tip = None
+    catchup = None
     if project["init"] == True:
         project_details = project["project_details"]
         project_tasks = project["project_tasks"]
 
         if not project["context"] or project["context"] == "":
-            gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context="")
+            gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context="",catchup=None)
             conv = None
         else:
             if project["active"] != 0:
@@ -686,7 +686,7 @@ def new_project(token):
                 marked_history = markdown2.markdown(history,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])    
                 marked_catchup = markdown2.markdown(catchup,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
                 marked_tip = markdown2.markdown(tip,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
-            gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"])
+            gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"],catchup=catchup)
     return render_template("project.html",project_id=project_id,project=project,conversation=conv,history=marked_history,talk=None,tip=tip,catchup=marked_catchup)
 
 @app.route("/delete_project/<token>",methods=["POST"])
@@ -706,9 +706,9 @@ def brief_project(token):
     project_tasks = request.form["assistanceDetails"]
 
     if not project["context"] or project["context"] == "":
-        gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context="")
+        gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context="",catchup=None)
     else:
-        gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"])
+        gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"],catchup=None)
 
     mongo.db.projects.update_one(
         {
@@ -736,6 +736,32 @@ def brief_project(token):
 def chat_project_ace(token):
     project = mongo.db.projects.find_one({"nickname":session["nickname"],"project_id":token})
     message = request.form["usermsg"]
+    
+    if "attachment" in request.files:
+        file = request.files["attachment"]
+        if file.filename == "":
+            return jsonify(talk="No file selected.", catchup=None, error=False)
+
+        allowed_text_extensions = {"txt", "py", "js", "cpp", "java", "html", "css", "c", "csv", "md", "json", "xml", "sql", "go", "rb", "php", "swift", "yaml", "toml", "log", "docx", "pdf"}
+        allowed_image_extensions = {"jpg", "jpeg", "png"}
+        
+        filename = secure_filename(file.filename)
+        file_extension = os.path.splitext(filename)[1][1:].lower()
+        if (file_extension not in allowed_text_extensions) and (file_extension not in allowed_image_extensions):
+            return jsonify(talk="ERROR: Invalid file type. Ace only serves text, code or image types.", catchup=None, error=False)
+        elif file_extension in allowed_text_extensions:
+            file_content = file.read().decode("utf-8")
+            message = f"""FILE CONTENT: {file_content} \n INSTRUCTIONS: {request.form['usermsg']}"""
+
+        if file_extension in allowed_image_extensions:
+            path = os.path.join(app.config['UPLOADS'], filename)
+            file.save(path)
+            file_url = url_for('static', filename=f'uploads/{filename}', _external=False)
+            response, latest_message = gemini.chat_project_ace(message,image=path)
+            current_history = personalizer.build_project_history(session["nickname"],project["context"],str(latest_message),message,model="Ace")
+            mongo.db.projects.update_one({"nickname":session["nickname"],"project_id":token},{"$set":{"context":current_history}})
+            return jsonify(talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"]),catchup=None,error=False,file_link=file_url)
+
     response, latest_message = gemini.chat_project_ace(message)
     current_history = personalizer.build_project_history(session["nickname"],project["context"],str(latest_message),message,model="Ace")
     mongo.db.projects.update_one({"nickname":session["nickname"],"project_id":token},{"$set":{"context":current_history}})
@@ -852,7 +878,6 @@ def delete_discussion(token):
 
     flash(f"Successfully deleted discussion titled '{request.form['title']}'")
     return redirect(f"/project/{token}")
-
 
 @app.route("/edit_discussion/<token>",methods=["POST"])
 def edit_discussion(token):

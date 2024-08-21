@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>bored.ai - Ace</title>
+    <title>Alcove - Ace</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -92,17 +92,27 @@
                     <div class="sidebar">
                         <div class="sidebar-content">
                             <div class="card">
-                                <h5 class="card-header">Tip of the Day</h5>
+                                <h5 class="card-header">Habit Tracker</h5>
                                 <div class="card-body">
-                                <h5 class="card-title">Special title treatment</h5>
-                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <h5 class="card-header">Featured</h5>
-                                <div class="card-body">
-                                <h5 class="card-title">Special title treatment</h5>
-                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                    {% if not tracked_habits: %}
+                                        You haven't began tracking any habits. Begin tracking <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#habitTracker">now</a>
+                                    {% endif %}
+                                    {% if tracked_habits: %}
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                          A list item
+                                          <span class="badge text-bg-primary rounded-pill">14</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                          A second list item
+                                          <span class="badge text-bg-primary rounded-pill">2</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                          A third list item
+                                          <span class="badge text-bg-primary rounded-pill">1</span>
+                                        </li>
+                                    </ul>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -159,6 +169,87 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="infoModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header border-none">
+              <h1 class="modal-title fs-5">Ace</h1>
+            </div>
+            <div class="modal-body">
+              Ace is your assistant on Alcove; designed best resolving
+              your problems and giving advice. You can discuss anything with it,
+              as long as you provide proper context.
+              <br><br>
+              Here are some ways you can engage in conversations with it:
+              <ul>
+                <li>Ask it to solve issues you want to resolve</li>
+                <li>Discuss ideas, approaches and problems</li>
+                <li>Attach files for specific help and analysis (*)</li>
+              </ul>
+              * This feature is not available for the Quick Access widget
+              you are currently using. For retention of conversation history
+              and access to better responses, create a new project discussion
+              in the 'Collaborate' pane.
+              <br>
+            </div>
+            <div class="modal-footer border-none">
+              <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="uploadFileModalFree" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog">
+          <form action="/chat_ace" method="POST" enctype="multipart/form-data">
+            <div class="modal-content profile-content">
+              <div class="border-none modal-header">
+                <h1 class="modal-title fs-5 fw-bold" id="profile-title">Upload a file</h1>
+              </div>
+              <div class="border-none modal-content profile-content">
+                <div class="border-none modal-body">
+                  <div class="mb-3">
+                    <label for="attachment" class="form-label fw-bold">Attachment</label>
+                    <input name="attachment" type="file" class="fc-dark" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="newtitle" class="form-label fw-bold">Instructions</label>
+                    <textarea id="msg" name="usermsg" class="message form-control fc-dark" placeholder="What do you want Ace to do?" required></textarea>
+                  </div>
+                  <span id="talkSpinnerModal" class="spinner-border me-2" role="status" aria-hidden="true" hidden><br></span>
+                </div>
+              </div>
+              <div class="border-none modal-footer">
+                <button type="submit" id="askButton" class="btn btn-lg btn-success rounded-pill px-3">
+                  Submit
+                </button>
+                <button type="button" class="btn btn-lg btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                  Close
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="habitTracker" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header border-none">
+              <h1 class="modal-title fs-5 fw-bold">Habit Tracker</h1>
+            </div>
+            <div class="modal-body">
+              
+            </div>
+            <div class="modal-footer border-none">
+              <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+    
+
     {% include "personalise_modal.html"%}
     {% include "partial_profile.html"%}
     {% include "partial_menu.html"%}

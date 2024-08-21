@@ -1,9 +1,7 @@
 import google.generativeai as gemini
 import configparser
-import numpy
-import torch
+import PIL.Image
 import prompts
-import personalizer
 config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
@@ -115,6 +113,12 @@ def fit_prompt(prompt):
     response = model.generate_content(prompt)
     return response.text
 
+def fit_image(prompt,image):
+    gemini.configure(api_key=config['gemini']['api_key'])
+    model=gemini.GenerativeModel(model_name="gemini-1.5-flash")
+    response = model.generate_content([prompt, PIL.Image.open(image)])
+    return response
+
 def config_dynamo(icebreaker,nickname,history,instructions):
     resp = dynamo.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="dynamo",mask=instructions))
     return resp
@@ -130,10 +134,10 @@ def config_ace(nickname):
 def reset_project_ace_history():
     return projectModelAce.start_chat(history=[])
 
-def config_project_ace(nickname,project_title,project_details,project_tasks,context):    
+def config_project_ace(nickname,project_title,project_details,project_tasks,context,catchup):    
     global project_ace
     project_ace = reset_project_ace_history()
-    config = prompts.prompt_corpus([]).get_ace_project_config(nickname,project_title,project_details,project_tasks,context)
+    config = prompts.prompt_corpus([]).get_ace_project_config(nickname,project_title,project_details,project_tasks,context,catchup)
     _ = project_ace.send_message(config)
     return project_ace
     
@@ -146,7 +150,9 @@ def chat_shaman(message):
 def chat_ace(message):
     return ace.send_message(message)
 
-def chat_project_ace(message):
+def chat_project_ace(message,image=None):
+    if image:
+        return project_ace.send_message([message,PIL.Image.open(image)]),project_ace.history[-1]
     return project_ace.send_message(message),project_ace.history[-1]
 
 def radar_config():

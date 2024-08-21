@@ -43,7 +43,7 @@ window.onload = function () {
     }
 
 
-    typewrite("bored.ai","talk",0,fontColor);
+    typewrite("Alcove","talk",0,fontColor);
     typewrite("Reflection Game","talk",3000,fontColor);
     setTimeout(()=>{
         talk.hidden = true;
