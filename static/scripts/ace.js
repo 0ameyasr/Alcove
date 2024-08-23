@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
+    var toastElements = document.querySelectorAll('.toast');
+    toastElements.forEach(function(toastElement) {
+        var toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    });
+
     var chatWindow = document.getElementById('chatWindow');
     function checkOverflow() {
         if (chatWindow.scrollHeight > chatWindow.clientHeight) {
@@ -187,6 +193,85 @@ $(document).ready(function () {
                 $("#aceResponse").html("An error occurred while uploading the file.");
             }
         });
+    });
+
+    $(".updateHabits").on('submit', '.updateHabit', function (e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var url = $form.attr('action');
+        var index = $form.attr('id').split('_')[1];
+        
+        $('#spinnerUpdate_' + index).removeAttr("hidden");
+        $("#updateHabit_" + index + "_b").prop("disabled", true);
+        
+        $.ajax({
+            type: "POST",
+            data: {},
+            dataType: "json",
+            url: url,
+            success: function (response) {
+                $('#spinnerUpdate_' + index).attr("hidden", true);
+                $("#updateHabit_" + index + "_b").prop("disabled", true);
+                if (response.success) {
+                    console.log(response)
+                    $('#score_' + index).html(response.score);
+                    $('#d_score_' + index).html(response.score);
+                    if (response.score == response.max_score) {
+                        $("#status_"+index).html("Done")
+                    }
+                } else {
+                    if (response.missed) {
+                        $("#status_"+index).html("Failed");
+                        $("#updateHabit_" + index + "_b").prop("disabled", true);
+                    }
+                    console.error("Failed to update habit:", response.error);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX request failed:", error);
+                $('#spinnerUpdate_' + index).attr("hidden", true);
+                $("#updateHabit_" + index + "_b").prop("disabled", false);
+            }
+        });
+    });
+
+    
+    $(".updateHabits").on('submit', '.deleteHabit', function (e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var url = $form.attr('action');
+        var index = $form.attr('id').split('_')[1];
+        $('#spinnerDelete_' + index).removeAttr("hidden");
+        
+        $.ajax({
+            type: "POST",
+            data: {},
+            dataType: "json",
+            url: url,
+            success: function (response) {
+                $('#spinnerDelete_' + index).attr("hidden", true);
+                
+                if (response.success) {
+                    if ($("tbody tr").length === 1) {
+                        location.reload();
+                    } else {
+                        $('#habitRow_' + index).remove();
+                    }
+                } else {
+                    console.error("Failed to delete habit:", response.error);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX request failed:", error);
+                $('#spinnerDelete_' + index).attr("hidden", true);
+            }
+        });
+    });    
+
+    $('#createHabit').submit(function (e) { 
+        $('#newHabit').prop("disabled","true");
     });
     
 });

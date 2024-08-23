@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Alcove - Ace</title>
+    <title>Alcove | Ace</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -19,6 +19,24 @@
 
   <body>
     {% include "partial_header.html"%}
+    <div class="toast-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="toast toast-top-right" role="alert" aria-live="assertive" aria-atomic="true">
+                      <div class="toast-header">
+                        <img src="static/img/web_icon.png" width="32" height="32" class="rounded me-2">
+                        <strong class="me-auto">Alcove</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                      </div>
+                      <div class="toast-body">
+                        {{ message }}
+                      </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
     <audio controls id="pingAudio" src="static/audio/ping.mp3" style="display:none;"></audio>
     <div class="container">
         <h1 class="h1">{{session["today"]}}</h1>
@@ -95,23 +113,28 @@
                                 <h5 class="card-header">Habit Tracker</h5>
                                 <div class="card-body">
                                     {% if not tracked_habits: %}
-                                        You haven't began tracking any habits. Begin tracking <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#habitTracker">now</a>
+                                        You haven't began tracking any habits. Begin tracking <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#createHabit">now</a>
                                     {% endif %}
                                     {% if tracked_habits: %}
-                                    <ul class="list-group">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                          A list item
-                                          <span class="badge text-bg-primary rounded-pill">14</span>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                          A second list item
-                                          <span class="badge text-bg-primary rounded-pill">2</span>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                          A third list item
-                                          <span class="badge text-bg-primary rounded-pill">1</span>
-                                        </li>
-                                    </ul>
+                                        <ol class="list-group list-group-numbered">
+                                            {% for habit in tracked_habits: %}
+                                            {% if loop.index <= 3: %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                <div class="ms-2 me-auto">
+                                                    <div class="fw-bold">{{habit["habit_name"]}}</div>
+                                                    <p>{{habit["habit_desc"]}}</p>
+                                                </div>
+                                                <span class="badge text-bg-success rounded-pill"><span id="d_score_{{loop.index}}">{{habit["score"]}}</span>/{{habit["max_score"]}}</span>
+                                            </li>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% if tracked_habits | length > 3:%}
+                                            <span>+{{tracked_habits | length - 3}} more...</span>
+                                            {% endif %}
+                                        </ol>  
+                                        <p>
+                                            Manage your <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#habitTracker">habits</a>
+                                        </p>
                                     {% endif %}
                                 </div>
                             </div>
@@ -234,21 +257,112 @@
     </div>
     
     <div class="modal fade" id="habitTracker" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-fullscreen">
           <div class="modal-content">
-            <div class="modal-header border-none">
-              <h1 class="modal-title fs-5 fw-bold">Habit Tracker</h1>
+            <div class="modal-header">
+              <h1 class="modal-title fs-5 fw-bold" id="exampleModalToggleLabel">Manage your Habits</h1>
             </div>
             <div class="modal-body">
-              
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                              <thead>
+                                <tr>
+                                  <th class="fw-bold" scope="col">Name</th>
+                                  <th class="fw-bold" scope="col">Task</th>
+                                  <th class="fw-bold" scope="col">Progress</th>
+                                  <th class="fw-bold" scope="col">Update</th>
+                                  <th class="fw-bold" scope="col">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <p><span class="fw-bold">NOTE:</span> Use the Update button to update your daily progress. If you haven't 
+                                    engaged with the habit today, do not press it. Also, you won't be allowed to update habits you have failed,
+                                    i.e. those whose streaks you could not maintain continuously.</p>
+                                    {% if tracked_habits %}
+                                    {% for habit in tracked_habits %}
+                                    <tr id="habitRow_{{ loop.index }}">
+                                        <td>{{ habit["habit_name"] }}</td>
+                                        <td>{{ habit["habit_desc"] }}</td>
+                                        <td><span id="score_{{ loop.index }}">{{ habit["score"] }}</span> of {{ habit["max_score"] }}</td>
+                                        <td>
+                                            <div class="d-flex flex-row g-3 buttons updateHabits">
+                                                <form class="updateHabit" id="updateHabit_{{ loop.index }}" action="/update_habit/{{ session['nickname'] }}/{{ habit['habit_name'] }}" method="POST">
+                                                    <button id="updateHabit_{{ loop.index }}_b" type="submit" class="btn btn-sm btn-success" value="1" 
+                                                    {% if session["modified_habits"][habit["habit_name"]] == 1 or session["completed_habits"][habit["habit_name"]] == 1 or session["missed_habits"][habit["habit_name"]] == 1:%}disabled{% endif %}>
+                                                        <i class="fa-solid fa-plus"></i>
+                                                    </button>
+                                                    <span id="spinnerUpdate_{{ loop.index }}" class="spinner-border spinner-border-sm text-success" aria-hidden="true" hidden></span>
+                                                </form>
+                                                <form class="deleteHabit" id="deleteHabit_{{ loop.index }}" action="/delete_habit/{{ session['nickname'] }}/{{ habit['habit_name'] }}" method="POST">
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                    <span id="spinnerDelete_{{ loop.index }}" class="spinner-border spinner-border-sm text-danger" aria-hidden="true" hidden></span>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        <td id="status_{{loop.index}}">
+                                            {% if habit["score"] != habit["max_score"] and session["missed_habits"][habit["habit_name"]] != 1: %}
+                                                Ongoing
+                                            {% endif %}
+                                            {% if habit["score"] == habit["max_score"]: %}
+                                                Done
+                                            {% endif %}
+                                            {% if session["missed_habits"][habit["habit_name"]] == 1: %}
+                                                Failed !
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% endif %}                                
+                            </tbody>                            
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer border-none">
+            <div class="modal-footer">
+              <button class="btn btn-primary" data-bs-target="#createHabit" data-bs-toggle="modal">New Habit</button>
               <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
     </div>
-    
+
+    <div class="modal fade" id="createHabit" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header border-none">
+                <h1 class="modal-title fs-5 fw-bold">Daily Habit Tracker</h1>
+            </div>
+            <form id="createHabit" action="/create_habit" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="habitName" class="fw-bold form-label">Name a habit</label>
+                        <input type="text" class="fc-dark form-control" name="habitName" id="habitName" placeholder="e.g., Drink Water" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="habitDescription" class="fw-bold form-label">What do you want to look after?</label>
+                        <textarea class="fc-dark form-control textarea" name="habitDescription" id="habitDescription" rows="3" placeholder="e.g., I must drink 8 glasses of water daily" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="habitTarget" class="fw-bold form-label">For how long (days) do you wish to track this habit?</label>
+                        <input id="habitTarget" name="habitTarget" type="number" class="fc-dark form-control" min="1" max="3650" name="habit" required></input>
+                    </div>
+                    <small> This widget will only serve its purpose as long as the habit you
+                        are tracking is fit to be updated daily, and you take responsibility
+                        to be honest to yourself and your responses. </small>
+                </div>
+                <div class="modal-footer border-none">
+                    <button id="newHabit" type="submit" class="btn btn-primary nav-pills">Start Tracking</button>
+                    <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
 
     {% include "personalise_modal.html"%}
     {% include "partial_profile.html"%}
@@ -257,6 +371,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="static/scripts/home.js"></script>
-    <script src="static/scripts/ace.js"></script>
+    <script src="static/scripts/ace.js"></script>    
   </body>
 </html>

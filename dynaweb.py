@@ -1,6 +1,6 @@
 import random
 import libs
-from datetime import datetime
+from datetime import datetime, timedelta
 import binascii, os
         
 class curate_web:
@@ -25,7 +25,7 @@ class curate_web:
         return descriptions[user_class.lower()]
     
     def no_history_response(self,opted):
-        return "Once you start interacting with bored.ai, results will be reflected. Get started!" if opted else "You are not using Personalization (Turn it on). Once you Opt-In, results will be reflected."
+        return "Once you start interacting with Alcove, results will be reflected. Get started!" if opted else "You are not using Personalization (Turn it on). Once you Opt-In, results will be reflected."
     
     def get_tag_tooltip(self,user_class:str) -> str:
         tooltips = {
@@ -55,7 +55,7 @@ class curate_web:
             ,
             "Dynamo":
                 """Engage in quick and dynamic conversations with 
-                Dynamo, your AI-chat companion on bored.ai"""
+                Dynamo, your AI-chat companion on Alcove"""
             ,
             "Seeker":
                 """Debate on various philosophies and paradoxes, or
@@ -200,6 +200,10 @@ class curate_web:
         today = datetime.now()
         return str(today.strftime("%A"))+", "+str(today.strftime("%d"))+" "+str(today.strftime("%B"))+" "+str(today.strftime("%Y"))
     
+    def yesterday(self):
+        yesterday = datetime.now() - timedelta(days=1)
+        return str(yesterday.strftime("%A"))+", "+str(yesterday.strftime("%d"))+" "+str(yesterday.strftime("%B"))+" "+str(yesterday.strftime("%Y"))
+
     def now(self):
         today = datetime.now()
         return str(today.strftime("%H:%M"))

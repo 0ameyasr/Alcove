@@ -214,9 +214,6 @@ def dynamo():
         session["is_opted"] = home_engine.is_opted(session["nickname"])
 
         session["mask"],session["is_default_mask"] = personalizer.get_mask_details(session["nickname"])
-        print(f"MASK: {session['mask']}")
-        print(f"IS DEFAULT: {session['is_default_mask']}")
-        
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
         topics_list = None
         if opted_in_user:
@@ -401,7 +398,6 @@ def journal():
     existing_journals = mongo.db.journals.find({"nickname":session["nickname"]},{"_id":False})
     session["list_journals"] = list(existing_journals)
     session["journals"] = True if session["list_journals"] != [] else False
-    print(session["list_journals"])
     return render_template("journal.html")
 
 @app.route("/blank",methods=["POST"])
@@ -549,7 +545,36 @@ def ace():
     icebreaker = "How can I help you?"
     user = session["nickname"]
     gemini.config_ace(user)
-    return render_template("ace.html",talk=icebreaker)
+
+    session["modified_habits"] = {}
+    session["completed_habits"] = {}
+    session["missed_habits"] = {}
+    
+
+    habits = mongo.db.habits.find_one({"nickname": session["nickname"]})
+    if habits:
+        habits = dict(habits).get("tracked_habits", [])
+        for habit in habits:
+            habit_name = habit["habit_name"]
+            if habit.get("interacted") == dynamic_web.today():
+                session["modified_habits"][habit_name] = 1
+            else:
+                session["modified_habits"][habit_name] = 0
+            
+            if habit.get("score") == habit.get("max_score"):
+                session["completed_habits"][habit_name] = 1
+            else:
+                session["completed_habits"][habit_name] = 0
+            
+            if habit.get("score") != 0 and habit.get("check_next") > 0:
+                if habit.get("interacted") ==  dynamic_web.yesterday() or habit.get("interacted") == dynamic_web.today():
+                    session["missed_habits"][habit_name] = 0
+                else:
+                    session["missed_habits"][habit_name] = 1
+                    
+            else:
+                session["missed_habits"][habit_name] = 0
+    return render_template("ace.html",talk=icebreaker,tracked_habits=habits)
 
 @app.route("/chat_ace",methods=["POST"])
 def chat_ace():
@@ -903,3 +928,95 @@ def edit_discussion(token):
         }
     )
     return redirect(f"/project/{token}")
+
+@app.route("/create_habit",methods=["POST"])
+def create_habit():
+    exists = mongo.db.habits.find_one({"nickname":session["nickname"]})
+    if not exists:
+        mongo.db.habits.insert_one({"nickname":session["nickname"],"tracked_habits":[]})
+        exists = True
+    
+    habit_name = request.form["habitName"]
+    habit_desc = request.form["habitDescription"]
+    max_score = int(request.form["habitTarget"])
+    query = {
+        "nickname": session["nickname"],
+        "tracked_habits.habit_name": habit_name
+    }
+    document = mongo.db.habits.find_one(query,{"_id":1})
+    if exists and not document:
+        mongo.db.habits.update_one({"nickname": session["nickname"]}, {
+            "$push": {
+                "tracked_habits": {
+                    "habit_name": habit_name,
+                    "habit_desc": habit_desc,
+                    "score": 0,
+                    "max_score": max_score,
+                    "check_next": max_score,
+                }
+            }
+        })
+        flash(f"Now tracking habit '{habit_name}'","success")
+    else:
+        flash("A habit with the same name already exists.","error")
+    return redirect("/ace")
+
+@app.route("/update_habit/<nickname>/<habit>", methods=["POST"])
+def update_habit(nickname, habit):
+    query = {
+        "nickname": str(nickname),
+        "tracked_habits.habit_name": str(habit),
+    }
+    
+    habit_doc = mongo.db.habits.find_one(query, {"tracked_habits.$": 1})
+    if habit_doc:
+        habit_data = habit_doc["tracked_habits"][0]
+        
+        if habit_data.get("interacted") == dynamic_web.today():
+            return jsonify(success=False, error="Habit already updated today"), 400
+        
+        if habit_data["score"] != 0 and habit_data["check_next"] > 0:
+            if not(habit_data.get("interacted") ==  dynamic_web.yesterday() or habit_data.get("interacted") == dynamic_web.today()):
+                return jsonify(success=False,missed=True)
+        
+        update = {
+            "$inc": {
+                "tracked_habits.$.score": 1,
+                "tracked_habits.$.check_next": -1
+            },
+            "$set": {
+                "tracked_habits.$.interacted": dynamic_web.today()
+            }
+        }
+        result = mongo.db.habits.update_one(query, update)
+
+        updated_habit = mongo.db.habits.find_one(query, {"tracked_habits.$": 1})
+        new_score = updated_habit["tracked_habits"][0]["score"] if updated_habit else 0
+        
+        if result.modified_count > 0:
+            return jsonify(success=True, max_score=habit_data["max_score"], score=new_score)
+        else:
+            return jsonify(success=False)
+    else:
+        return jsonify(success=False, error="Habit not found"), 404
+
+@app.route("/delete_habit/<nickname>/<habit>", methods=["POST"])
+def delete_habit(nickname, habit):
+    query = {
+        "nickname": str(nickname),
+        "tracked_habits.habit_name": str(habit),
+    }
+    
+    habit_doc = mongo.db.habits.find_one(query, {"tracked_habits.$": 1})
+    if habit_doc:
+        result = mongo.db.habits.update_one(
+            {"nickname": str(nickname)},
+            {"$pull": {"tracked_habits": {"habit_name": str(habit)}}}
+        )
+        
+        if result.modified_count > 0:
+            return jsonify(success=True)
+        else:
+            return jsonify(success=False, error="Habit not deleted")
+    else:
+        return jsonify(success=False, error="Habit not found"), 404

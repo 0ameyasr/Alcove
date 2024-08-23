@@ -268,3 +268,9 @@ a {
     font-weight: bold;
     color: var(--black);
 }
+
+.textarea {
+    max-height: 300px;
+    min-height: 200px;
+}
+
