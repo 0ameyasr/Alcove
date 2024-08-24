@@ -109,9 +109,26 @@ project_ace = modelAce.start_chat(history=[])
 
 def fit_prompt(prompt):
     gemini.configure(api_key=config['gemini']['api_key'])
-    model=gemini.GenerativeModel(model_name="gemini-1.5-flash")
+    model=gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
+        {
+            "category": "HARM_CATEGORY_HARASSMENT",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_HATE_SPEECH",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold": "BLOCK_NONE",
+        },
+        ])
     response = model.generate_content(prompt)
-    return response.text
+    return response.text if response else ""
 
 def fit_image(prompt,image):
     gemini.configure(api_key=config['gemini']['api_key'])
@@ -171,3 +188,7 @@ def get_radar_concerns(history):
 
 def chat_ace(message):
     return ace.send_message(message)
+
+def condense_topic(topic,desc):
+    tdesc = fit_prompt(prompts.prompt_corpus().condense_wiki_corpus(topic,desc))
+    return tdesc

@@ -274,3 +274,15 @@ a {
     min-height: 200px;
 }
 
+
+.list-group-item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.habit-desc {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
+}

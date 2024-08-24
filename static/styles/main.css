@@ -250,3 +250,7 @@ border-radius: 0.25rem;
     width: 1em;
     height: 1em;
 }
+
+.fc-accent {
+    color: var(--accent-color);
+}

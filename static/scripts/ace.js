@@ -211,19 +211,23 @@ $(document).ready(function () {
             dataType: "json",
             url: url,
             success: function (response) {
+                console.log('AJAX response:', response);
+            
                 $('#spinnerUpdate_' + index).attr("hidden", true);
                 $("#updateHabit_" + index + "_b").prop("disabled", true);
+                
                 if (response.success) {
-                    console.log(response)
                     $('#score_' + index).html(response.score);
-                    $('#d_score_' + index).html(response.score);
+                    var widthPercent = ((response.score / response.max_score) * 100).toFixed(2);
+                    console.log('Progress Bar Width:', widthPercent);
+                    $("#progressBar_" + index).css("width", widthPercent + "%").attr("aria-valuenow", response.score);
+            
                     if (response.score == response.max_score) {
-                        $("#status_"+index).html("Done")
+                        $("#status_" + index).html("Done");
                     }
                 } else {
                     if (response.missed) {
-                        $("#status_"+index).html("Failed");
-                        $("#updateHabit_" + index + "_b").prop("disabled", true);
+                        $("#status_" + index).html("Failed");
                     }
                     console.error("Failed to update habit:", response.error);
                 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Alcove | Outline</title>
+    <title>Alcove | Condensation</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -12,7 +12,7 @@
     <link rel="icon" href="static/img/web_icon.png" />
     <link rel="stylesheet" href="static/styles/main.css" />
     <link rel="stylesheet" href="static/styles/home.css" />
-    <link rel="stylesheet" href="static/styles/ace.css" />
+    <link rel="stylesheet" href="static/styles/seeker.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -81,19 +81,8 @@
         <div class="album py-5">
           <div class="container">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-3">
-              {% for task in tasks: %}
-                <div class="col">
-                  <div class="card shadow-sm">
-                    <div class="card-body">
-                      <p class="fs-5">{{tasks[task]}}</p> 
-                      <div class="button-group">
-                        <form action="/delete_task/{{task}}" method="POST">
-                          <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-trash" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"></i></button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {% for topic in topics: %}
+                <p>{{topic}}</p>
               {% endfor %}
             </div>
           </div>

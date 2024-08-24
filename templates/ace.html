@@ -38,8 +38,9 @@
         {% endwith %}
     </div>
     <audio controls id="pingAudio" src="static/audio/ping.mp3" style="display:none;"></audio>
+
     <div class="container">
-        <h1 class="h1">{{session["today"]}}</h1>
+        <h1 class="h1"><i class="fa-regular fa-clock"></i>&nbsp;{{session["today"]}}</h1>
         <hr>         
         <div class="container">
             <div class="row">
@@ -51,7 +52,7 @@
                                     <div class="col">
                                         <div class="card shadow-sm">
                                             <div class="card-body">
-                                                <p class="fs-5">Pomodoro</p>
+                                                <p class="fs-5"><i class="fa-solid fa-hourglass-start"></i>&nbsp;Pomodoro</p>
                                                 <div class="button-group">
                                                     <a type="button" class="btn btn-sm btn-success" href="/pomodoro">Go</a>
                                                     <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#pomodoroModal">Details</button>
@@ -62,7 +63,7 @@
                                     <div class="col">
                                         <div class="card shadow-sm">
                                             <div class="card-body">
-                                                <p class="fs-5">Outline</p>
+                                                <p class="fs-5"><i class="fa-solid fa-cubes-stacked"></i>&nbsp;Outline</p>
                                                 <div class="button-group">
                                                     <a type="button" class="btn btn-sm btn-success" href="/outline">Go</a>
                                                     <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#outlineModal">Details</button>
@@ -73,7 +74,7 @@
                                     <div class="col">
                                         <div class="card shadow-sm">
                                             <div class="card-body">
-                                                <p class="fs-5">Collaborate</p>
+                                                <p class="fs-5"><i class="fa-solid fa-hand-sparkles"></i>&nbsp;Collaborate</p>
                                                 <div class="button-group">
                                                     <a type="button" class="btn btn-sm btn-success" href="/collaborate">Go</a>
                                                     <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#progressModal">Details</button>
@@ -110,31 +111,66 @@
                     <div class="sidebar">
                         <div class="sidebar-content">
                             <div class="card">
-                                <h5 class="card-header">Habit Tracker</h5>
+                                <h5 class="card-header"><i class="fa-solid fa-glasses"></i>&nbsp;Habit Tracker</h5>
                                 <div class="card-body">
                                     {% if not tracked_habits: %}
-                                        You haven't began tracking any habits. Begin tracking <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#createHabit">now</a>
+                                        You haven't began tracking any habits. Begin tracking <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#createHabit">now</a>.
                                     {% endif %}
                                     {% if tracked_habits: %}
+                                        <p>
+                                            <i class="fa-solid fa-circle-info"></i>&nbsp; Manage your habits <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#habitTracker">here</a>.
+                                        </p>
+                                        <p class="fw-bold"><i class="fa-solid fa-play"></i>&nbsp;Ongoing Habit Streaks</p><hr>
                                         <ol class="list-group list-group-numbered">
-                                            {% for habit in tracked_habits: %}
-                                            {% if loop.index <= 3: %}
-                                            <li class="list-group-item d-flex justify-content-between align-items-start">
-                                                <div class="ms-2 me-auto">
-                                                    <div class="fw-bold">{{habit["habit_name"]}}</div>
-                                                    <p>{{habit["habit_desc"]}}</p>
-                                                </div>
-                                                <span class="badge text-bg-success rounded-pill"><span id="d_score_{{loop.index}}">{{habit["score"]}}</span>/{{habit["max_score"]}}</span>
-                                            </li>
-                                            {% endif %}
+                                            {% for habit in ongoing_habits: %}
+                                                {% if loop.index0 < 2: %}
+                                                    {% if session["completed_habits"][habit["habit_name"]] != 1: %}
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto text-wrap">
+                                                                <div class="fw-bold">{{habit["habit_name"]}}</div>
+                                                                <p class="habit-desc">{{habit["habit_desc"]}}</p>
+                                                            </div>
+                                                            {% if session["missed_habits"][habit["habit_name"]] != 1: %}
+                                                                <span class="badge text-bg-warning rounded-pill">
+                                                                    <span id="d_score_{{loop.index}}">{{habit["score"]}}</span>/{{habit["max_score"]}}
+                                                                </span>
+                                                            {% endif %}
+                                                            {% if session["missed_habits"][habit["habit_name"]] == 1: %}
+                                                                <span class="badge text-bg-danger rounded-pill">Failed!</span>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
                                             {% endfor %}
-                                            {% if tracked_habits | length > 3:%}
-                                            <span>+{{tracked_habits | length - 3}} more...</span>
+                                            {% if ongoing_habits | length > 2:%}
+                                                <span>+{{ongoing_habits | length - 2}} more...</span>
                                             {% endif %}
                                         </ol>  
-                                        <p>
-                                            Manage your <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#habitTracker">habits</a>
-                                        </p>
+                                
+                                        <br>
+                                        {% if session["completed_habits"]: %}
+                                            <p class="fw-bold"><i class="fa-solid fa-check"></i>&nbsp;Habit Streaks completed</p><hr>
+                                            <ol class="list-group list-group-numbered">
+                                                {% for habit in completed_habits: %}
+                                                    {% if loop.index0 < 2: %}
+                                                        {% if session["completed_habits"][habit["habit_name"]] == 1: %}
+                                                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                                <div class="ms-2 me-auto text-wrap">
+                                                                    <div class="fw-bold">{{habit["habit_name"]}}</div>
+                                                                    <p class="habit-desc">{{habit["habit_desc"]}}</p>
+                                                                </div>
+                                                                <span class="badge text-bg-success rounded-pill">
+                                                                    <span id="d_score_{{loop.index}}">{{habit["score"]}}</span>/{{habit["max_score"]}}
+                                                                </span>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if completed_habits | length > 2: %}
+                                                    <span>+{{completed_habits | length - 2}} more...</span>
+                                                {% endif %}
+                                            </ol>  
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -144,11 +180,12 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="pomodoroModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header border-none">
-                    <h1 class="modal-title fs-5">Pomodoro Timer</h1>
+                    <h1 class="modal-title fs-5 fw-bold">Pomodoro Timer</h1>
                 </div>
                 <div class="modal-body">
                     Customize your pomodoros for 25 or 50 minutes. This technique enhances focus and productivity by breaking work into manageable intervals.
@@ -164,7 +201,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header border-none">
-                    <h1 class="modal-title fs-5">Tasks Outline</h1>
+                    <h1 class="modal-title fs-5 fw-bold">Tasks Outline</h1>
                 </div>
                 <div class="modal-body">
                     Set an outline for tasks you would want to complete in the present moment. Stay organized by managing your tasks.
@@ -180,7 +217,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header border-none">
-                    <h1 class="modal-title fs-5">Collaborate</h1>
+                    <h1 class="modal-title fs-5 fw-bold">Collaborate</h1>
                 </div>
                 <div class="modal-body">
                     Collaborate with Ace! Best recommended for programming and creative tasks.
@@ -285,7 +322,13 @@
                                     <tr id="habitRow_{{ loop.index }}">
                                         <td>{{ habit["habit_name"] }}</td>
                                         <td>{{ habit["habit_desc"] }}</td>
-                                        <td><span id="score_{{ loop.index }}">{{ habit["score"] }}</span> of {{ habit["max_score"] }}</td>
+                                        <td>
+                                            <span id="score_{{loop.index}}">{{habit["score"]}}</span> of {{habit["max_score"]}}
+                                            <div class="progress">
+                                              <div id="progressBar_{{loop.index}}" class="progress-bar" role="progressbar" style="width: {{ (habit["score"] / habit["max_score"]) * 100 }}%;" aria-valuenow="{{ habit["score"] }}" aria-valuemin="0" aria-valuemax="{{ habit["max_score"] }}">
+                                              </div>
+                                            </div>
+                                        </td>
                                         <td>
                                             <div class="d-flex flex-row g-3 buttons updateHabits">
                                                 <form class="updateHabit" id="updateHabit_{{ loop.index }}" action="/update_habit/{{ session['nickname'] }}/{{ habit['habit_name'] }}" method="POST">
@@ -341,11 +384,11 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="habitName" class="fw-bold form-label">Name a habit</label>
-                        <input type="text" class="fc-dark form-control" name="habitName" id="habitName" placeholder="e.g., Drink Water" required>
+                        <input type="text" class="fc-dark form-control" name="habitName" id="habitName" placeholder="e.g., Drink Water" required minlength="10" maxlength="20">
                     </div>
                     <div class="mb-3">
                         <label for="habitDescription" class="fw-bold form-label">What do you want to look after?</label>
-                        <textarea class="fc-dark form-control textarea" name="habitDescription" id="habitDescription" rows="3" placeholder="e.g., I must drink 8 glasses of water daily" required></textarea>
+                        <input type="text" class="fc-dark form-control" name="habitDescription" id="habitDescription" placeholder="e.g., I must drink 8 glasses of water daily" minlength="15" maxlength="45" required>
                     </div>
                     <div class="mb-3">
                         <label for="habitTarget" class="fw-bold form-label">For how long (days) do you wish to track this habit?</label>

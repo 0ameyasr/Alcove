@@ -2,7 +2,10 @@ import random
 import libs
 from datetime import datetime, timedelta
 import binascii, os
-        
+import requests
+from urllib.parse import urlparse
+import re
+
 class curate_web:
     def __init__(self) -> None:
         pass 
@@ -217,3 +220,47 @@ class curate_web:
         else:
             return True
         
+    def wiki_extract(self,url):
+        parsed_url = urlparse(url)
+        path = parsed_url.path
+        title = path.split('/wiki/')[-1]
+        endpoint = 'https://en.wikipedia.org/w/api.php'
+        params = {
+            'action': 'query',
+            'format': 'json',
+            'prop': 'extracts',
+            'titles': title,
+            'explaintext': True,
+            'formatversion': 2
+        }
+        response = requests.get(endpoint, params=params)
+        response.raise_for_status()
+        data = response.json()
+        pages = data['query']['pages']
+        for page in pages:
+            page_info = {page["extract"]}
+            return page_info.pop()
+    
+    def wiki_split(self,corpus):
+        splits = corpus.split("=== ")
+        topics = {}
+        stop_phrases = ["== See also ==", "== Notes ==", "== References ==", "== External links =="]
+        
+        for phrase in stop_phrases:
+            if phrase in corpus:
+                corpus = corpus.split(phrase)[0]
+                break
+        
+        splits = re.split(r'\n==+ (.*?) ==+\n', corpus)
+
+        for i in range(1, len(splits), 2):
+            topic_name = splits[i].strip()
+            topic_desc = splits[i + 1].strip()
+
+            topic_desc = re.sub(r'\s+', ' ', topic_desc)
+            topic_desc = topic_desc.replace('\n', ' ').replace('\r', ' ').strip()
+
+            if topic_desc != '':
+                topics[topic_name] = topic_desc
+
+        return topics

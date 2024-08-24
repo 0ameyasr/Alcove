@@ -731,3 +731,12 @@ class prompt_corpus:
         you had the conversation with them.
         [ONLY RETURN THE CATCH-UP QUESTION]
         """    
+    
+    def condense_wiki_corpus(self,topic,desc):
+        return f"""
+            Provided is a wikipedia article corpus on a topic {topic}:\n
+            {desc}\n
+            Return a condensed summary of the topic in a condensed paragraph.
+            Include every detail or fact important to the topic. 
+            [ONLY RETURN THE SINGLE DESCRIPTION PARAGRAPH.]
+        """

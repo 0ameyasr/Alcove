@@ -45,33 +45,33 @@ try:
 except Exception as e:
     print("Error connecting to MongoDB:", e)
 
-@app.errorhandler(NotFound)
-def not_found(error):
-    return render_template("response.html",code=404)
+# @app.errorhandler(NotFound)
+# def not_found(error):
+#     return render_template("response.html",code=404)
 
-@app.errorhandler(MethodNotAllowed)
-def method_not_allowed(error):
-    return render_template("response.html",code=405)
+# @app.errorhandler(MethodNotAllowed)
+# def method_not_allowed(error):
+#     return render_template("response.html",code=405)
 
-@app.errorhandler(RequestTimeout)
-def method_not_allowed(error):
-    return render_template("response.html",code=408)
+# @app.errorhandler(RequestTimeout)
+# def method_not_allowed(error):
+#     return render_template("response.html",code=408)
 
-@app.errorhandler(BadRequestKeyError)
-def bad_request_key_error(error):
-    return render_template("response.html",code=410)
+# @app.errorhandler(BadRequestKeyError)
+# def bad_request_key_error(error):
+#     return render_template("response.html",code=410)
 
-@app.errorhandler(InternalServerError)
-def internal_server_error(error):
-    return render_template("response.html",code=500)
+# @app.errorhandler(InternalServerError)
+# def internal_server_error(error):
+#     return render_template("response.html",code=500)
 
-@app.errorhandler(geminiExceptions.InternalServerError)
-def internal_server_error(error):
-    return redirect("/dynamo")
+# @app.errorhandler(geminiExceptions.InternalServerError)
+# def internal_server_error(error):
+#     return redirect("/dynamo")
 
-@app.errorhandler(geminiExceptions.ResourceExhausted)
-def resource_exhausted(error):
-    return redirect("/dynamo")
+# @app.errorhandler(geminiExceptions.ResourceExhausted)
+# def resource_exhausted(error):
+#     return redirect("/dynamo")
 
 @app.route("/")
 def intro():
@@ -308,19 +308,6 @@ def clear_mask():
     mongo.db.masks.delete_one({"nickname":session["nickname"]})
     return redirect("/dynamo")
     
-@app.route("/seeker")
-def seeker():
-    if not session:
-        return redirect("/")
-    user = mongo.db.seeker.find_one({"nickname":session["nickname"]})
-    if not user or not user["survey"]:
-        mongo.db.seeker.insert_one({"nickname":session["nickname"],"survey":"False"})
-        session["askTopics"] = True
-    
-    if user and user["survey"] == "True":
-        session["askTopics"] = False
-    return render_template("seeker.html")
-
 @app.route("/shaman")
 def shaman():
     try:
@@ -549,7 +536,11 @@ def ace():
     session["modified_habits"] = {}
     session["completed_habits"] = {}
     session["missed_habits"] = {}
+
+    session["completed_habits_list"] = []
+    session["ongoing_habits_list"] = []
     
+    session["n_completed_habits"] = 0
 
     habits = mongo.db.habits.find_one({"nickname": session["nickname"]})
     if habits:
@@ -563,8 +554,10 @@ def ace():
             
             if habit.get("score") == habit.get("max_score"):
                 session["completed_habits"][habit_name] = 1
+                session["n_completed_habits"] += 1
+                session["completed_habits_list"].append(habit)
             else:
-                session["completed_habits"][habit_name] = 0
+                session["ongoing_habits_list"].append(habit)
             
             if habit.get("score") != 0 and habit.get("check_next") > 0:
                 if habit.get("interacted") ==  dynamic_web.yesterday() or habit.get("interacted") == dynamic_web.today():
@@ -574,7 +567,7 @@ def ace():
                     
             else:
                 session["missed_habits"][habit_name] = 0
-    return render_template("ace.html",talk=icebreaker,tracked_habits=habits)
+    return render_template("ace.html",talk=icebreaker,tracked_habits=habits,completed_habits=session["completed_habits_list"],ongoing_habits=session["ongoing_habits_list"])
 
 @app.route("/chat_ace",methods=["POST"])
 def chat_ace():
@@ -584,7 +577,7 @@ def chat_ace():
         html_content = markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
         return jsonify(talk=html_content, error=False)
     except Exception as e:
-        return jsonify(talk=str(e), error=True)
+        return jsonify(talk="Ace could not respond to your request.", error=True)
 
 @app.route("/pomodoro")
 def pomodoro():
@@ -948,8 +941,8 @@ def create_habit():
         mongo.db.habits.update_one({"nickname": session["nickname"]}, {
             "$push": {
                 "tracked_habits": {
-                    "habit_name": habit_name,
-                    "habit_desc": habit_desc,
+                    "habit_name": habit_name.strip(),
+                    "habit_desc": habit_desc.strip(),
                     "score": 0,
                     "max_score": max_score,
                     "check_next": max_score,
@@ -967,7 +960,6 @@ def update_habit(nickname, habit):
         "nickname": str(nickname),
         "tracked_habits.habit_name": str(habit),
     }
-    
     habit_doc = mongo.db.habits.find_one(query, {"tracked_habits.$": 1})
     if habit_doc:
         habit_data = habit_doc["tracked_habits"][0]
@@ -1020,3 +1012,29 @@ def delete_habit(nickname, habit):
             return jsonify(success=False, error="Habit not deleted")
     else:
         return jsonify(success=False, error="Habit not found"), 404
+
+@app.route("/seeker")
+def seeker():
+    if not session:
+        return redirect("/")
+    user = mongo.db.seeker.find_one({"nickname":session["nickname"]})
+    if not user or not user["survey"]:
+        mongo.db.seeker.insert_one({"nickname":session["nickname"],"survey":"False"})
+        session["askTopics"] = True
+    
+    if user and user["survey"] == "True":
+        session["askTopics"] = False
+        user_topics = [str(x).capitalize() for x in dict(mongo.db.seeker.find_one({"nickname":session["nickname"]})).get("topics")]
+    return render_template("seeker.html",user_topics=user_topics)
+
+@app.route("/condense_wiki",methods=["POST"])
+def condense_wiki():
+    data = request.get_json()
+    url = data.get('url')
+    corpus = dynamic_web.wiki_extract(url)
+    topics = dynamic_web.wiki_split(corpus)
+    for topic in topics:
+        flash(f"Processing {topic}","alert")
+        print(f"processing {topic}")
+        topics[topic] = gemini.condense_topic(topic,topics[topic])
+    return jsonify(success=True,corpus=corpus,topics=topics)
