@@ -1,17 +1,22 @@
 from flask import Flask, render_template,redirect,request,session,make_response,url_for,jsonify,flash,Response
 from flask_pymongo import PyMongo
+from flask_socketio import SocketIO, emit
 from gridfs import GridFS
 from authlib.integrations.flask_client import OAuth
 import dynaweb,engine,gemini,prompts,personalizer
 from datetime import datetime
-import configparser
+import configparser, time
 import google.generativeai as gemini_model
 from werkzeug.exceptions import NotFound,MethodNotAllowed,RequestTimeout,BadRequestKeyError,InternalServerError
 import google.api_core.exceptions as geminiExceptions
 import markdown2,models,os,base64,requests
 from werkzeug.utils import secure_filename
+from datetime import datetime, timedelta
+import pytz
+
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
@@ -356,13 +361,6 @@ def chat_shaman():
     except Exception as e:
         print(e)
         return jsonify(talk=markdown2.markdown(response.text), error=False)
-
-@app.route("/seeker/intro",methods=["POST"])
-def seeker_intro():
-    topics = list(dict(request.form).keys())
-    session["askTopics"] = False
-    mongo.db.seeker.update_one({"nickname":session["nickname"],"survey":"False"},{"$set":{"survey":"True","topics":topics}})
-    return redirect("/seeker")
 
 @app.route("/personalize",methods=["POST"])
 def doPersonalize():
@@ -1013,28 +1011,146 @@ def delete_habit(nickname, habit):
     else:
         return jsonify(success=False, error="Habit not found"), 404
 
+@app.route("/seeker/intro",methods=["POST"])
+def seeker_intro():
+    topics = list(dict(request.form).keys())
+    session["askTopics"] = False
+    mongo.db.seeker.update_one({"nickname":session["nickname"],"survey":"False"},{"$set":{"survey":"True","topics":topics,"history":""}})
+    return redirect("/seeker")
+
 @app.route("/seeker")
 def seeker():
     if not session:
         return redirect("/")
-    user = mongo.db.seeker.find_one({"nickname":session["nickname"]})
-    if not user or not user["survey"]:
-        mongo.db.seeker.insert_one({"nickname":session["nickname"],"survey":"False"})
-        session["askTopics"] = True
     
-    if user and user["survey"] == "True":
-        session["askTopics"] = False
-        user_topics = [str(x).capitalize() for x in dict(mongo.db.seeker.find_one({"nickname":session["nickname"]})).get("topics")]
-    return render_template("seeker.html",user_topics=user_topics)
+    user = mongo.db.seeker.find_one({"nickname": session["nickname"]})
+    banned = False
+    warning = None
+    duration = 0
+    enable_ban_lift = False
 
-@app.route("/condense_wiki",methods=["POST"])
+    exclude = user.get("facts_history","")
+    fact_topic,fact = gemini.get_fotd(user["topics"],exclude)
+    personalizer.update_fact_history(session["nickname"],fact,fact_topic)
+
+    if user:
+        tz = pytz.UTC
+        now = datetime.now(tz)
+        ban_expiry = user.get("ban_expiry")
+        if ban_expiry:
+            if isinstance(ban_expiry, datetime) and ban_expiry.tzinfo is None:
+                ban_expiry = tz.localize(ban_expiry)
+            
+            if isinstance(ban_expiry, datetime) and ban_expiry.tzinfo is not None:
+                if now < ban_expiry:
+                    banned = True
+                    warning = True
+                    duration = (ban_expiry - now).total_seconds()
+                else:
+                    mongo.db.seeker.update_one(
+                        {"nickname": session["nickname"]},
+                        {"$set": {"active": 0, "ban_duration": 0, "ban_expiry": None}}
+                    )
+                    banned = False
+                    warning = None
+                    enable_ban_lift = True
+            else:
+                enable_ban_lift = True
+        else:
+            enable_ban_lift = True
+        
+        if not user or not user.get("survey"):
+            mongo.db.seeker.insert_one({"nickname": session["nickname"], "survey": "False"})
+            session["askTopics"] = True
+        
+        if user and user.get("survey") == "True":
+            session["askTopics"] = False
+            user_topics = [str(x).capitalize() for x in user.get("topics", [])]
+    else:
+        user_topics = []
+    
+    try:
+        user = session["nickname"]
+        session["opted_users%"] = home_engine.opted_users_p()
+        session["is_opted"] = home_engine.is_opted(session["nickname"])
+        opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
+        if opted_in_user:
+            history = personalizer.get_seeker_history(session["nickname"])
+            if not history or history == "":
+                icebreaker = dynamic_web.get_seeker_icebreaker()
+                session["icebreaker"] = icebreaker
+                session["tip"] = dynamic_web.no_history_response(opted=True)
+            else:
+                icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
+                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus([]).get_tip(history))
+                session["icebreaker"] = icebreaker    
+            gemini.config_seeker(session["icebreaker"],user,history)
+        else:
+            icebreaker = dynamic_web.get_seeker_icebreaker()
+            session["icebreaker"] = icebreaker
+            session["tip"] = dynamic_web.no_history_response(opted=False)
+            gemini.config_seeker(session["nickname"],user,None)
+        return render_template("seeker.html",talk=session["icebreaker"],data=data,error=False, user_topics=user_topics, warning=warning, banned=banned, duration=int(duration), enable_ban_lift=enable_ban_lift,fact=fact,fact_topic = str(fact_topic).capitalize())
+    except KeyError:
+        return redirect("/")
+    
+@app.route("/condense_wiki", methods=["POST"])
 def condense_wiki():
     data = request.get_json()
     url = data.get('url')
     corpus = dynamic_web.wiki_extract(url)
     topics = dynamic_web.wiki_split(corpus)
+
+    if corpus == "":
+        socketio.emit('processing_topic', {'topic': "Invalid URL."})
+        return jsonify(success="False")
+    
+    ban_duration = 10 * len(topics)
+    tz = pytz.UTC
+    ban_expiry = datetime.now(tz) + timedelta(seconds=ban_duration)
+    
+    mongo.db.seeker.update_one(
+        {"nickname": session["nickname"]},
+        {"$set": {"active": 1, "ban_duration": ban_duration, "ban_expiry": ban_expiry}}
+    )
+    
     for topic in topics:
-        flash(f"Processing {topic}","alert")
-        print(f"processing {topic}")
-        topics[topic] = gemini.condense_topic(topic,topics[topic])
-    return jsonify(success=True,corpus=corpus,topics=topics)
+        socketio.emit('processing_topic', {'topic': topic})
+        topics[topic] = gemini.condense_topic(topic, topics[topic])
+        time.sleep(3)
+    
+    mongo.db.seeker.update_one(
+        {"nickname": session["nickname"]},
+        {"$set": {"active": 0, "ban_duration": 0, "ban_expiry": None}}
+    )
+    
+    return jsonify(success=True, corpus=corpus, topics=topics)
+
+@app.route("/lift_ban", methods=["POST"])
+def lift_ban():
+    mongo.db.seeker.update_one({"nickname": session["nickname"]}, {"$set": {"active": 0, "ban_duration": 0, "ban_expiry": None}})
+    return redirect("/logout")
+
+@app.route("/chat_seeker",methods=["POST"])
+def chat_seeker():
+    try:
+        message = request.form["message"]
+        response, latest_message = gemini.chat_seeker(message)
+        user_message = message
+        opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
+        if opted_in_user:
+            user_in_chats = mongo.db.seeker.find_one({"nickname":session["nickname"]})
+            if not user_in_chats:
+                mongo.db.seeker.insert_one({"nickname":session["nickname"],"history":""})
+            user_in_chats = mongo.db.seeker.find_one({"nickname":session["nickname"]})
+            previous_history = user_in_chats["history"]
+            if previous_history == "" or previous_history[-1] == "~":
+                previous_history += "\n[CHAT] "+session["icebreaker"]
+            current_history = personalizer.build_history(previous_history,str(latest_message),user_message,model="Seeker")
+            updated_history = mongo.db.seeker.update_one({"nickname":session["nickname"]},{"$set":{"nickname":session["nickname"],"history":current_history}})
+        return jsonify(talk=markdown2.markdown(response.text), error=False)
+    except Exception as e:
+        return jsonify(talk="Seeker could not respond to your request.",error=True)
+
+if __name__ == "__main__":
+    socketio.run(app, debug=True, port=7000)

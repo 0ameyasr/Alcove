@@ -58,6 +58,22 @@ def get_shaman_history(nickname):
     else:
         return ""
 
+def get_seeker_history(nickname):
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+
+    mongo = MongoClient(config["mongodb"]["uri"])
+    chats = mongo["credentials"]["seeker"]
+    user = chats.find_one({"nickname":nickname})
+    
+    if user:
+        history = str(user.get("history",""))
+        if history != "":
+            history = history.replace("\\n","").replace("\\","").strip()
+        return history
+    else:
+        return ""
+
 def get_random_topics(nickname):
     config = configparser.ConfigParser()
     config.read("secrets.cfg")
@@ -218,3 +234,16 @@ def get_tasks(nickname):
         return num_tasks,tasks
     else:
         return None,None
+    
+def update_fact_history(nickname,fact,fact_topic):
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+    mongo = MongoClient(config["mongodb"]["uri"])
+    seeker = mongo["credentials"]["seeker"]
+    try:
+        user = seeker.find_one({"nickname":nickname})
+        seeker.update_one({"nickname":nickname},{"$set":{"facts_history":user.get("facts_history","")+f"[{fact_topic}]:{fact}"}})
+        return True
+    except Exception:
+        return False
+        

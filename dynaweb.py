@@ -193,6 +193,59 @@ class curate_web:
         ]
         return random.choice(icebreakers)
     
+    def get_seeker_icebreaker(self):
+        icebreakers = [
+            "What is a philosophical idea that has deeply influenced your worldview?",
+            "If you could have a conversation with any philosopher, past or present, who would it be and why?",
+            "What do you think is the purpose of life, or do you believe life has no inherent purpose?",
+            "How do you define 'happiness,' and do you think it's achievable for everyone?",
+            "What role do you believe free will plays in our lives, if any?",
+            "Do you think humans are inherently good, evil, or neutral? Why?",
+            "What is one moral or ethical dilemma that you find particularly challenging?",
+            "How do you approach the concept of truth? Do you believe in absolute truths or that truth is subjective?",
+            "What's a philosophical or existential question you find yourself pondering often?",
+            "Do you believe that we have control over our own destiny, or is it predetermined?",
+            "What is your stance on the existence of a higher power or the concept of God?",
+            "How do you balance individual freedom with societal responsibility?",
+            "What does 'justice' mean to you, and do you think it is ever truly attainable?",
+            "Do you think the ends justify the means, or is the process more important than the outcome?",
+            "How do you make decisions when faced with a moral or ethical dilemma?",
+            "What is your view on the nature of reality? Do you believe we can truly know anything?",
+            "What do you think is the most important question humanity should be asking right now?",
+            "How do you interpret the concept of 'the good life'? What does it look like for you?",
+            "Do you believe that people can change, or are we fundamentally the same throughout our lives?",
+            "How do you reconcile the idea of suffering with the existence of a just world?",
+            "Do you believe in fate, coincidence, or neither? Why?",
+            "What is one philosophical book or essay that has had a profound impact on you?",
+            "What are your thoughts on the concept of time? Do you think it is linear, cyclical, or something else?",
+            "How do you define 'wisdom,' and do you think it's different from knowledge?",
+            "What do you believe happens after we die, and how does that belief influence your life?",
+            "How do you approach the idea of self-identity? Do you think we create it, or is it something inherent?",
+            "What are your thoughts on the relationship between mind and body? Do you believe they are separate or one?",
+            "How do you view the concept of freedom? Is it something we truly possess, or is it an illusion?",
+            "Do you think it's possible to live a fully authentic life? Why or why not?",
+            "What is your perspective on the meaning of existence? Do we create our own meaning, or is it given to us?",
+            "What role do you think emotions should play in decision-making?",
+            "How do you think technology is influencing our understanding of humanity and existence?",
+            "What is your opinion on the idea of moral relativism versus moral absolutism?",
+            "How do you interpret the concept of 'beauty'? Is it objective or subjective?",
+            "What are your thoughts on the idea of altruism? Do you believe true altruism exists?",
+            "How do you navigate the balance between reason and emotion in your life?",
+            "What is one philosophical idea you find difficult to accept or understand?",
+            "Do you believe that language shapes our thoughts and reality, or is it merely a tool for communication?",
+            "How do you approach the concept of mortality, and does it influence the way you live?",
+            "What are your thoughts on the idea of universal ethics? Do you believe certain morals apply to everyone?",
+            "Do you think there is a distinction between knowledge and belief? If so, how do you define it?",
+            "How do you view the relationship between the individual and the collective in society?",
+            "What is your perspective on the role of art in understanding the human experience?",
+            "Do you think it's more important to seek truth or to seek happiness? Can they coexist?",
+            "What is one paradox or contradiction you find intriguing or perplexing?",
+            "How do you interpret the concept of love? Is it a feeling, a choice, or something else?",
+            "What do you think is the role of suffering in personal growth or development?"
+        ]
+        return random.choice(icebreakers)
+    
+
     def token16b(self):
         return str(binascii.hexlify(os.urandom(16)))[2:-1]
 
@@ -221,25 +274,28 @@ class curate_web:
             return True
         
     def wiki_extract(self,url):
-        parsed_url = urlparse(url)
-        path = parsed_url.path
-        title = path.split('/wiki/')[-1]
-        endpoint = 'https://en.wikipedia.org/w/api.php'
-        params = {
-            'action': 'query',
-            'format': 'json',
-            'prop': 'extracts',
-            'titles': title,
-            'explaintext': True,
-            'formatversion': 2
-        }
-        response = requests.get(endpoint, params=params)
-        response.raise_for_status()
-        data = response.json()
-        pages = data['query']['pages']
-        for page in pages:
-            page_info = {page["extract"]}
-            return page_info.pop()
+        try:
+            parsed_url = urlparse(url)
+            path = parsed_url.path
+            title = path.split('/wiki/')[-1]
+            endpoint = 'https://en.wikipedia.org/w/api.php'
+            params = {
+                'action': 'query',
+                'format': 'json',
+                'prop': 'extracts',
+                'titles': title,
+                'explaintext': True,
+                'formatversion': 2
+            }
+            response = requests.get(endpoint, params=params)
+            response.raise_for_status()
+            data = response.json()
+            pages = data['query']['pages']
+            for page in pages:
+                page_info = {page["extract"]}
+                return page_info.pop()
+        except Exception as e:
+            return ""
     
     def wiki_split(self,corpus):
         splits = corpus.split("=== ")
@@ -252,15 +308,15 @@ class curate_web:
                 break
         
         splits = re.split(r'\n==+ (.*?) ==+\n', corpus)
-
-        for i in range(1, len(splits), 2):
+        splits = ['Introduction']+splits
+        for i in range(0, len(splits), 2):
             topic_name = splits[i].strip()
             topic_desc = splits[i + 1].strip()
 
             topic_desc = re.sub(r'\s+', ' ', topic_desc)
             topic_desc = topic_desc.replace('\n', ' ').replace('\r', ' ').strip()
 
-            if topic_desc != '':
+            if topic_desc.strip() != '':
                 topics[topic_name] = topic_desc
 
         return topics

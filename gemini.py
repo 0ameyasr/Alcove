@@ -2,6 +2,7 @@ import google.generativeai as gemini
 import configparser
 import PIL.Image
 import prompts
+import random
 config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
@@ -26,6 +27,26 @@ modelDynamo =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_setting
     },
 ])
 dynamo = modelDynamo.start_chat(history=[])
+
+modelSeeker =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "HIGH",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "HIGH",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "MEDIUM",
+    },
+])
+seeker = modelSeeker.start_chat(history=[])
 
 modelShaman =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
     {
@@ -144,6 +165,10 @@ def config_shaman(icebreaker,nickname,history):
     resp = shaman.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="shaman"))
     return resp
 
+def config_seeker(icebreaker,nickname,history):
+    resp = seeker.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="seeker"))
+    return resp
+
 def config_ace(nickname):
     resp = ace.send_message(prompts.prompt_corpus([]).get_chat_config("How can I help you?",nickname,history="",mode="ace"))
     return resp
@@ -166,6 +191,9 @@ def chat_shaman(message):
 
 def chat_ace(message):
     return ace.send_message(message)
+
+def chat_seeker(message):
+    return seeker.send_message(message),seeker.history[-1]
 
 def chat_project_ace(message,image=None):
     if image:
@@ -192,3 +220,7 @@ def chat_ace(message):
 def condense_topic(topic,desc):
     tdesc = fit_prompt(prompts.prompt_corpus().condense_wiki_corpus(topic,desc))
     return tdesc
+
+def get_fotd(topics,exclude):
+    topic = random.choice(topics)
+    return topic,fit_prompt(prompts.prompt_corpus().get_fact_prompt(topic,exclude))
