@@ -167,3 +167,5 @@ client_secret.json
 creds.py
 *.mp4
 data
+
+static\uploads

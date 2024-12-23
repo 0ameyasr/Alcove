@@ -1,11 +1,8 @@
 from pymongo import MongoClient
-import urllib.parse
 import configparser
-import requests
 import random
 import libs
 import re
-import markdown2
 
 def clean_message(message):
     message = re.sub(r'\\(.)', r'\1', message)
