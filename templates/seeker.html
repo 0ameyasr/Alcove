@@ -43,43 +43,43 @@
       <hr>         
       <div class="container">
           <div class="row">
-              <div class="col-lg-8 col-md-7 col-sm-12">
-                  <div class="main-body">
-                    <div id="chatWindow" class="chat-window container-fluid text-center">
-                        <div id="loading" class="spinner-grow text-light" role="status" hidden><span class="fs-5 visually-hidden">Loading...</span></div>
-                        <p id="seekerResponse" class="container">
-                            {{talk | safe}}
-                        </p>
-                    </div>
-                    <div class="action-bar container">          
-                        <div class="search-bar input-group">
-                            <form id="chat" action="/chat_seeker" method="POST">
-                            <div class="chat-element input-group">
-                                <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage" required></textarea>
-                                <button class="p-lg continue" id="sendMessage" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
-                            </div>    
-                            </form>
-                        </div>
-                        <div class="item-bar">
-                            <div><a class="link-icon" href="/seeker" data-bs-toggle="tooltip" data-bs-placement="left" title="Restart chat"><i class="fa-solid fa-arrows-rotate fs-5"></i></a></div>
-                            <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#personalizeModal"><i class="fa-solid fa-wand-sparkles fs-5" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Personalize"></i></a></div>
-                            <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#infoModal" ><i class="fa-solid fa-circle-info fs-5" data-bs-toggle="tooltip" data-bs-placement="right" title="About Seeker"></i></a></div>
-                        </div>
-                    </div>
+            <div class="col-lg-8 col-md-7 col-sm-12">
+                <div class="main-body">
+                  <div id="chatWindow" class="chat-window container-fluid text-center">
+                      <div id="loading" class="spinner-grow text-light" role="status" hidden><span class="fs-5 visually-hidden">Loading...</span></div>
+                      <p id="seekerResponse" class="container">
+                          {{talk | safe}}
+                      </p>
                   </div>
-              </div>
-              <div class="col-lg-4 col-md-5 col-sm-12">
-                  <div class="sidebar">
-                      <div class="sidebar-content">
-                          <div class="card">
-                              <h5 class="card-header"><i class="fa-solid fa-lightbulb"></i>&nbsp;Random Fact - {{fact_topic}}</h5>
-                              <div class="card-body">
-                                {{fact}}
-                              </div>
-                          </div>
+                  <div class="action-bar container">          
+                      <div class="search-bar input-group">
+                          <form id="chat" action="/chat_seeker" method="POST">
+                          <div class="chat-element input-group">
+                              <textarea name="message" placeholder="Type a message" class="user-msg" id="userMessage" required></textarea>
+                              <button class="p-lg continue" id="sendMessage" type="submit" tabindex="-1"><i class="fa-solid fa-paper-plane"></i></button>
+                          </div>    
+                          </form>
+                      </div>
+                      <div class="item-bar">
+                          <div><a class="link-icon" href="/seeker" data-bs-toggle="tooltip" data-bs-placement="left" title="Restart chat"><i class="fa-solid fa-arrows-rotate fs-5"></i></a></div>
+                          <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#personalizeModal"><i class="fa-solid fa-wand-sparkles fs-5" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Personalize"></i></a></div>
+                          <div><a class="link-icon" data-bs-toggle="modal" data-bs-target="#infoModal" ><i class="fa-solid fa-circle-info fs-5" data-bs-toggle="tooltip" data-bs-placement="right" title="About Seeker"></i></a></div>
                       </div>
                   </div>
-              </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-12">
+                <div class="sidebar">
+                    <div class="sidebar-content">
+                        <div class="card">
+                            <h5 class="card-header"><i class="fa-solid fa-lightbulb"></i>&nbsp;Random Fact - {{fact_topic}}</h5>
+                            <div class="card-body">
+                              {{fact}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
           </div>
       </div>
     </div>

@@ -151,3 +151,81 @@ a {
 #dynamoResponse {
     text-align: justify;
 }
+
+#maskModal .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+#maskArea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border-radius: 0.5rem;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    color: #333;
+    transition: border-color 0.2s ease;
+    resize: vertical; 
+    min-height: 50px;
+    max-height: 200px;
+}
+
+#maskArea:focus {
+    border-color: var(--button-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Carousel inner items */
+.carousel-inner {
+    margin-bottom: 20px; /* Adds space between carousel items */
+}
+
+/* Card adjustments */
+.card {
+    margin-bottom: 20px; /* Add spacing between cards */
+    border-radius: 0.75rem; /* Slightly round corners for the cards */
+}
+
+/* Make sure cards are spaced evenly on small screens */
+@media (max-width: 768px) {
+    .carousel-item .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px; /* Add spacing between cards when stacked */
+    }
+
+    .carousel-item .col-lg-4 {
+        flex: 1 1 calc(33.33% - 15px); /* Ensure each card takes up one-third of the space with gap */
+    }
+
+    .carousel-item .col-12 {
+        flex: 1 1 100%; /* Allow each column to take full width in smaller screens */
+    }
+}
+
+/* Ensure buttons at the bottom of cards also have some spacing */
+.card-footer {
+    padding: 10px 15px;
+}
+
+.card-footer .btn {
+    width: 100%; /* Make buttons span the width of the card on small screens */
+    margin-top: 10px;
+}
+
+/* Controls in carousel */
+.carousel-control-prev, 
+.carousel-control-next {
+    z-index: 5; /* Ensure controls stay above content */
+}
+
+/* Prevent carousel controls from showing on small screens */
+@media (max-width: 768px) {
+    .carousel-control-prev, 
+    .carousel-control-next {
+        display: block;
+    }
+}

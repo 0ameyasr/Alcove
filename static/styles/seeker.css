@@ -236,3 +236,9 @@ a {
   #seekerResponse {
     text-align: justify;
   }
+
+  @media (max-width: 768px) {
+    .row {
+        gap: 10px; 
+    }
+  }

@@ -2,12 +2,12 @@
     <div class="modal-dialog">
       <div class="modal-content profile-content">
         <div class="border-none modal-header">
-          <h1 class="modal-title fs-5" id="profile-title">New Blank Journal</h1>
+          <h1 class="modal-title fs-5 fw-bold" id="profile-title">New Blank Journal</h1>
         </div>
         <form action="/blank" method="POST" >
             <div class="border-none modal-body">
                 <div class="mb-3">
-                    <label for="title" class="form-label">Journal Title</label>
+                    <label for="title" class="form-label fw-bold">Journal Title</label>
                     <input name="title" type="text" class="fc-dark form-control" placeholder="Enter a title" required>
                     <small><b>Dated:</b> {{session["today"]}}</small>
                 </div>

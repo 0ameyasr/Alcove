@@ -203,7 +203,7 @@ a {
     resize: vertical;
     box-sizing: border-box;
     min-height: 100px;
-    max-height: 450px;
+    max-height: 300px;
 }
 
 #userMessageQuick::placeholder {

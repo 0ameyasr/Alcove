@@ -53,3 +53,42 @@ body{
     font-weight: bold;
     cursor: pointer;
 }
+
+.btn.generic-button {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--button-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 1rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: auto;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 5px 0;
+}
+
+.btn.generic-button i {
+    margin-right: 10px; 
+    font-size: 1.2rem; 
+}
+
+.btn.generic-button:hover {
+    background-color: var(--primary-color);
+    color: var(--button-color); 
+    font-weight: bold;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05); 
+}
+
+.btn.generic-button:active {
+    transform: scale(1); 
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn.generic-button[hidden] {
+    display: none;
+}

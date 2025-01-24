@@ -12,6 +12,7 @@
     <link rel="icon" href="static/img/web_icon.png" />
     <link rel="stylesheet" href="static/styles/main.css" />
     <link rel="stylesheet" href="static/styles/home.css" />
+    <link rel="stylesheet" href="static/styles/shaman.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
   </head>
 
@@ -37,55 +38,53 @@
     {% endif %}
   </div>
   <div class="album py-5 suggestion-tab">
-      <div class="container">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-          <div class="col">
-            <form action="/blank" method="POST">
-              <div class="card shadow-sm">
-                <img class="bd-placeholder-img card-img-top" src="static/img/journal.jpg">
-                <div class="card-body">
-                  <p class="card-text text-justify">
-                    <h5><b><u>New blank journal</u></b></h5>
-                    The most basic journal type. It's totally blank, so you can 
-                    jot down anything you like. This is a blank canvas for 
-                    endless freedom and creativity.
-                  </p>
-                  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newJournalModal">Create</button>
-                </div>
-              </div>
-            </form>
-          </div>
-
-          <div class="col">
-            <div class="card shadow-sm">
-              <img class="bd-placeholder-img card-img-top" src="static/img/reflection.jpg">
-              <div class="card-body">
-                <p class="card-text text-justify">
-                  <h5><b><u>Reflection Game</u></b></h5>
-                  Acknowledge your thoughts and reflect on current and past 
-                  experiences. It may help you gain clarity of thought and 
-                  find insight into your lifestyle.
-                </p>
-                <a href="/reflection" class="btn btn-success">Go</a>
-              </div>
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="col">
+          <div class="card shadow-sm">
+            <img class="bd-placeholder-img card-img-top" src="static/img/journal.jpg">
+            <div class="card-body">
+              <p class="card-text text-justify">
+                <h5><b><u>New blank journal</u></b></h5>
+                The most basic journal type. It's totally blank, so you can 
+                jot down anything you like. This is a blank canvas for 
+                endless freedom and creativity.
+              </p>
+              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newJournalModal">Create</button>
             </div>
           </div>
+        </div>
 
-          <div class="col">
-            <div class="card shadow-sm">
-              <img class="bd-placeholder-img card-img-top" src="static/img/mood_timeline.jpg">
-              <div class="card-body">
-                <p class="card-text text-justify">
-                  <h5><b><u>Mood Timeline</u></b></h5>
-                  Dump your thoughts and feelings in this organised journal 
-                  calendar so that you can keep track of your mental health.
-                  Gain insights into your efforts.
-                </p>
-                <a href="/timeline" class="btn btn-success">Go</a>
-              </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <img class="bd-placeholder-img card-img-top" src="static/img/reflection.jpg">
+            <div class="card-body">
+              <p class="card-text text-justify">
+                <h5><b><u>Reflection Game</u></b></h5>
+                Acknowledge your thoughts and reflect on current and past 
+                experiences. It may help you gain clarity of thought and 
+                find insight into your lifestyle.
+              </p>
+              <a href="/reflection" class="btn btn-success">Go</a>
             </div>
           </div>
-      </div>
+        </div>
+
+        <div class="col">
+          <div class="card shadow-sm">
+            <img class="bd-placeholder-img card-img-top" src="static/img/mood_timeline.jpg">
+            <div class="card-body">
+              <p class="card-text text-justify">
+                <h5><b><u>Mood Timeline</u></b></h5>
+                Dump your thoughts and feelings in this organised journal 
+                calendar so that you can keep track of your mental health.
+                Gain insights into your efforts.
+              </p>
+              <a href="/timeline" class="btn btn-success">Go</a>
+            </div>
+          </div>
+        </div>
+    </div>
   </div>
   <br><br>
   <div class="container">
