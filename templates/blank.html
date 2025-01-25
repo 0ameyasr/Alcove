@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Alcove - {{journal["title"]}}</title>
-    
+    <title>Alcove | {{journal["title"]}}</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,10 +18,11 @@
   </head>
 
   <body>
+    <!-- Blank journal container body-->
     <div class="journal container-fluid">
       <div class="journal-header">
         <h1 class="journal-title">{{journal["title"]}}</h1>
-        <h4><b>Created:</b> {{journal["date"]}}</h4>
+        <h4>Created: {{journal["date"]}}</h4>
       </div>
       <hr>
       
@@ -58,7 +58,11 @@
       </form>
     </div>
     <br>
+
+    <!-- Journal deletion modal -->
     {% include "delete_journal_modal.html" %}
+
+    <!-- Journal FAQ modal-->
     <div class="modal fade" data-bs-backdrop="static" id="FAQ" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -71,20 +75,20 @@
             
             <span class="fw-bold">Benefits of Journaling:</span>
             <ul>
-              <li><b>Reduces Stress</b>: Provides an outlet for emotions.</li>
-              <li><b>Enhances Self-Awareness</b>: Helps you understand your thoughts and behaviors.</li>
-              <li><b>Improves Emotional Regulation</b>: Assists in managing emotions.</li>
-              <li><b>Boosts Mental Clarity</b>: Clears mental clutter.</li>
-              <li><b>Encourages Gratitude</b>: Promotes positivity by reflecting on good moments.</li>
+              <li>Reduces Stress: Provides an outlet for emotions.</li>
+              <li>Enhances Self-Awareness: Helps you understand your thoughts and behaviors.</li>
+              <li>Improves Emotional Regulation: Assists in managing emotions.</li>
+              <li>Boosts Mental Clarity: Clears mental clutter.</li>
+              <li>Encourages Gratitude: Promotes positivity by reflecting on good moments.</li>
             </ul>
           
             <span class="fw-bold">What to Write in a Mindfulness Journal:</span>
             <ul>
-              <li><b>Daily Reflections</b>: Reflect on your day, thoughts, and emotions.</li>
-              <li><b>Gratitude Entries</b>: List things you're grateful for.</li>
-              <li><b>Emotional Check-Ins</b>: Record your emotional state and reasons.</li>
-              <li><b>Mindfulness Practices</b>: Document exercises or meditations.</li>
-              <li><b>Goals & Intentions</b>: Write about your aspirations and growth.</li>
+              <li>Daily Reflections: Reflect on your day, thoughts, and emotions.</li>
+              <li>Gratitude Entries: List things you're grateful for.</li>
+              <li>Emotional Check-Ins: Record your emotional state and reasons.</li>
+              <li>Mindfulness Practices: Document exercises or meditations.</li>
+              <li>Goals & Intentions: Write about your aspirations and growth.</li>
             </ul>
           
             <span class="fw-bold">How Often Should I Journal?</span><br>
@@ -98,17 +102,17 @@
           
             <span class="fw-bold">Techniques for Better Journaling:</span>
             <ul>
-              <li><b>Free Writing</b>: Write non-stop for a set time.</li>
-              <li><b>Bullet Journaling</b>: Use bullet points to stay concise.</li>
-              <li><b>Reflective Questions</b>: Answer specific questions to explore thoughts deeply.</li>
+              <li>Free Writing: Write non-stop for a set time.</li>
+              <li>Bullet Journaling: Use bullet points to stay concise.</li>
+              <li>Reflective Questions: Answer specific questions to explore thoughts deeply.</li>
             </ul>
           
             <span class="fw-bold">How to Make Journaling a Habit:</span>
             <ul>
-              <li><b>Set a Time</b>: Pick a specific time each day.</li>
-              <li><b>Create a Space</b>: Find a quiet place to write.</li>
-              <li><b>Use Prompts</b>: Keep prompts handy for inspiration.</li>
-              <li><b>Be Patient</b>: Building a habit takes time.</li>
+              <li>Set a Time: Pick a specific time each day.</li>
+              <li>Create a Space: Find a quiet place to write.</li>
+              <li>Use Prompts: Keep prompts handy for inspiration.</li>
+              <li>Be Patient: Building a habit takes time.</li>
             </ul>
           
             <p>Journaling is a personal practice—there's no right or wrong way. Find a method that keeps you connected with your thoughts and emotions.</p>
@@ -119,6 +123,7 @@
         </div>
       </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>

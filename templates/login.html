@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <title>Alcove</title>
-    
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,12 +15,20 @@
   </head>
 
   <body>
+    <!-- Main section -->
     <div class="main-div">
+      <!-- Icon -->
       <div id="icon" hidden>
         <img width="80" height="80" draggable="false" src="static/img/web_icon.png">
       </div>
+
+      <!-- Text placeholder area-->
       <p class="fs-1" id="talk"></p>
+
+      <!-- Alternate login button-->
       <button class="btn generic-button" id="forgot" onclick="window.location.href='{{ url_for('reset') }}'" hidden><i class="fa-brands fa-google"></i> Login with Google</button>
+      
+      <!-- Registration form -->
       <div class="details-body col-md-10 mx-auto col-lg-5" hidden>
         <form class="p-4 p-md-5" action="/register" method="POST">
           <div class="form-floating mb-3">
@@ -43,6 +50,8 @@
           <a class="fs-6 register-direct" onclick="loginDirect()"><br><br>I want to login</a>
         </form>
       </div>
+
+      <!-- Login body -->
       <div class="login-body col-md-10 mx-auto col-lg-5" hidden>
         <form class="p-4 p-md-5" action="/login" method="POST">
           <div class="form-floating mb-3">
@@ -59,6 +68,7 @@
         </form>
       </div>
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>

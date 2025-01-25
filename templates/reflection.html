@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Alcove - Reflection Game</title>
-    
+    <title>Alcove | Reflection Game</title> 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,28 +18,32 @@
   </head>
 
   <body>
+    <!-- Video in the background -->
     <video class="video-background" id="gameVid">
         <source id="vidSrc" src="/static/img/reflection_game_morning.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
+
+    <!-- Content displayed here (text) -->
     <div id="contentHolder" class="content fade-back">
         <p id="talk" class="h1 text-center"></p>
         <p id="info" class="h3 text-center" hidden></p>
         <button id="begin" onclick="beginGame()" class="btn btn-lg fc-light btn-dark btn-outline-dark" hidden>Begin</button>
         <p id="question" class="h3 text-center" hidden></p>
         <div id="questionOptions" class="container" hidden>
-            <div class="d-flex gap-2 justify-content-center py-5">
-                <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="positive"><i class="fa-regular fa-face-smile"></i></button>
-                <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="neutral"><i class="fa-regular fa-face-meh"></i></button>
-                <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="negative"><i class="fa-regular fa-face-frown"></i></button>
-            </div>
+          <div class="d-flex gap-2 justify-content-center py-5">
+              <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="positive"><i class="fa-regular fa-face-smile"></i></button>
+              <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="neutral"><i class="fa-regular fa-face-meh"></i></button>
+              <button class="mood-option btn btn-dark rounded-pill px-3" type="button" value="negative"><i class="fa-regular fa-face-frown"></i></button>
+          </div>
         </div>
         <div id="bar" class="container" hidden>
-            <div class="progress">
-              <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
+          <div class="progress">
+            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>

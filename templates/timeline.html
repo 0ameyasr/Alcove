@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Alcove - Mood Timeline</title>
-
+    <title>Alcove | Mood Timeline</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
@@ -16,7 +15,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   </head>
   <body>
+    <!-- Hidden audio element for ping -->
     <audio controls id="pingAudio" src="/static/audio/ping.mp3" hidden></audio>
+
+    <!-- Mood Timeline container -->
     <div class="container-fluid">
         <div class="row">
             <div class="d-flex align-items-center col-md-6">
@@ -58,9 +60,11 @@
                         </ul>
                         <hr>
                         <p id="#status" class="fw-bold">
+                            <!-- User has not submitted a note yet -->
                             {% if not timelineData["timeline_entry_done"]: %}
                                 Remember, you can only submit a note once a day.
                             {% endif %}
+                            <!-- User has submitted a note today -->
                             {% if timelineData["timeline_entry_done"]: %}
                                 Since you've already submitted a note, come back tomorrow.
                             {% endif %}
@@ -77,11 +81,13 @@
                       </ul>
                     </header>
                     <div class="statistics-content container d-flex flex-col flex-wrap justify-content-center">
+                        <!-- No timeline data  -->
                         {% if timelineData["timeline"] == []:%}
                             <div class="d-flex flex-col flex-wrap justify-content-center align-items-center">
                                 <p class="fs-5 text-center">Make an entry to see results.</p>
                             </div>
                         {% endif %}
+                        <!-- Timeline data is avlbl -->
                         {% if timelineData["timeline"] != []:%}
                             {% for item in timelineData["timeline"]:%}
                             <div class="card timeline-card">

@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <title>Alcove | Dynamo</title>
-
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
@@ -16,9 +15,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   </head>
+
   <body>
+    <!-- Header -->
     {% include "partial_header.html"%}
 
+    <!-- Dynamo chat widget-->
     <div class="window container d-flex flex-col">
       <h1 class="h1"><i class="fa-solid fa-comments"></i>&nbsp;Talk away your boredom</h1>
         <hr>
@@ -91,9 +93,9 @@
       </div>
       {% endif %}
     </div>
-    </div>
-    
+
     <br><br>
+    <!-- Widget to choose masks -->
     <div class="container">
       <h1 class="h1"><i class="fa-solid fa-masks-theater"></i>&nbsp;Choose a Mask</h1>
       <hr>
@@ -247,7 +249,10 @@
       </div>
     </div>
 
+    <!-- Hidden audio element for message pings -->
     <audio controls id="pingAudio" src="static/audio/ping.mp3" style="display:none;"></audio>
+
+    <!-- About Dynamo -->
     <div class="modal fade" id="infoModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -276,6 +281,7 @@
       </div>
     </div>
 
+    <!-- Mask Creation Modal -->
     <div class="modal fade" id="maskModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -302,6 +308,7 @@
       </div>
     </div>
 
+    <!-- Information about Masks -->
     <div class="modal fade" id="maskInfo" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -337,6 +344,7 @@
       </div>
     </div>
     
+    <!-- Include the rest of the partial templates -->
     {% include "personalise_modal.html"%}
     {% include "partial_profile.html"%}
     {% include "partial_menu.html"%}

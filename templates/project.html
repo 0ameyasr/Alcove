@@ -18,7 +18,9 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
+
   <body>
+    <!-- Header -->
     <header class="p-3">
       <div class="container-fluid">
         <div class="d-flex flex-wrap align-items-center justify-content-center">
@@ -28,6 +30,8 @@
         </div>
       </div>
     </header>
+
+    <!-- Toasts will be displayed here -->
     <div class="toast-container">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -46,43 +50,45 @@
         {% endif %}
       {% endwith %}
     </div>
+
+    <!-- Project Info sidetab -->
     <div class="container">
       <div class="row">
         <div class="window-tab d-flex align-items-start col-md-3 border rounded-3 p-3 back-soft">
-            <div class="window-tab container back-soft">
-                <h3>{{project["project_title"]}}</h3>
-                <hr>
-                <div class="list-group">
-                    <a class="list-group-item list-group-item-action" aria-current="true">
-                        <div class="d-flex w-100 justify-content-between">
-                            <small class="about-heading"><i class="fa-regular fa-file-lines"></i>&nbsp;Description</small>
-                        </div>
-                        <small>{{project["project_desc"]}}</small>
-                    </a>
-                    <a class="list-group-item list-group-item-action" aria-current="true">
-                        <div class="d-flex w-100 justify-content-between">
-                            <small class="about-heading"><i class="fa-regular fa-calendar-plus"></i>&nbsp;Created</small>
-                        </div>
-                        <small>{{project["created"]}}</small>
-                    </a>
-                </div>
-                <br>
-                <div class="list-group">
+          <div class="window-tab container back-soft">
+              <h3>{{project["project_title"]}}</h3>
+              <hr>
+              <div class="list-group">
                   <a class="list-group-item list-group-item-action" aria-current="true">
-                    <div class="d-flex w-100 justify-content-between">
-                        <small class="about-heading"><i class="fa-solid fa-message"></i>&nbsp;Tip for you</small>
-                    </div>
-                    <small>
-                      {% if tip: %}
-                        {{tip | safe}}
-                      {% endif%}
-                      {% if not tip: %}
-                        Get started with your project!
-                      {% endif %}
-                    </small>
+                      <div class="d-flex w-100 justify-content-between">
+                          <small class="about-heading"><i class="fa-regular fa-file-lines"></i>&nbsp;Description</small>
+                      </div>
+                      <small>{{project["project_desc"]}}</small>
                   </a>
-                </div>
-            </div>
+                  <a class="list-group-item list-group-item-action" aria-current="true">
+                      <div class="d-flex w-100 justify-content-between">
+                          <small class="about-heading"><i class="fa-regular fa-calendar-plus"></i>&nbsp;Created</small>
+                      </div>
+                      <small>{{project["created"]}}</small>
+                  </a>
+              </div>
+              <br>
+              <div class="list-group">
+                <a class="list-group-item list-group-item-action" aria-current="true">
+                  <div class="d-flex w-100 justify-content-between">
+                      <small class="about-heading"><i class="fa-solid fa-message"></i>&nbsp;Tip for you</small>
+                  </div>
+                  <small>
+                    {% if tip: %}
+                      {{tip | safe}}
+                    {% endif%}
+                    {% if not tip: %}
+                      Get started with your project!
+                    {% endif %}
+                  </small>
+                </a>
+              </div>
+          </div>
         </div>
 
         <div class="col-md-9 p-3">
@@ -237,8 +243,10 @@
           {% endif %}
         </div>
       </div>
-    </div>  
-    <br>  
+    </div>
+
+    <br> 
+    <!-- New Discussion Modal -->
     <div class="modal fade" id="newDiscussionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content profile-content">
@@ -246,26 +254,28 @@
             <h1 class="modal-title fs-5 fw-bold" id="profile-title">New Discussion</h1>
           </div>
           <form action="/new_discussion/{{project_id}}" method="POST" >
-              <div class="border-none modal-body">
-                  <div class="mb-3">
-                      <label for="title" class="form-label fw-bold">Discussion Title</label>
-                      <input name="title" type="text" class="fc-dark form-control" placeholder="Enter a title" required
-                      {% if project["active"] == 1:%}disabled{% endif %}>
-                  </div>
-                  <small>To create a new discussion, you must conclude a preceding one. You can have only one discussion at a time.</small>
+            <div class="border-none modal-body">
+              <div class="mb-3">
+                  <label for="title" class="form-label fw-bold">Discussion Title</label>
+                  <input name="title" type="text" class="fc-dark form-control" placeholder="Enter a title" required
+                  {% if project["active"] == 1:%}disabled{% endif %}>
               </div>
-              <div class="border-none modal-footer">
-                  <button type="submit" class="btn btn-success rounded-pill px-3" {% if project["active"] == 1:%}disabled{% endif %}>
-                      Create
-                  </button>
-                  <button type="button" class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal">
-                      Close
-                  </button>
-              </div>
+              <small>To create a new discussion, you must conclude a preceding one. You can have only one discussion at a time.</small>
+            </div>
+            <div class="border-none modal-footer">
+              <button type="submit" class="btn btn-success rounded-pill px-3" {% if project["active"] == 1:%}disabled{% endif %}>
+                  Create
+              </button>
+              <button type="button" class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                  Close
+              </button>
+            </div>
           </form>
         </div>
       </div>
     </div>
+
+    <!-- Delete Discussion Modal -->
     <div class="modal fade" id="deleteDiscussionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content profile-content">
@@ -273,25 +283,27 @@
               <h1 class="modal-title fs-5 fw-bold" id="profile-title">Delete Discussion</h1>
             </div>
             <form action="/delete_discussion/{{project_id}}" method="POST" >
-                <div class="border-none modal-body">
-                    <div class="mb-3">
-                        <label for="title" class="form-label">To confirm, <b>enter the title</b> of the discussion</label>
-                        <input id="confirmDelete" name="title" type="text" class="fc-dark form-control" placeholder="Enter the title" required>
-                        <small>This action <b>cannot be undone.</b></small>
-                    </div>
+              <div class="border-none modal-body">
+                <div class="mb-3">
+                    <label for="title" class="form-label">To confirm, <b>enter the title</b> of the discussion</label>
+                    <input id="confirmDelete" name="title" type="text" class="fc-dark form-control" placeholder="Enter the title" required>
+                    <small>This action <b>cannot be undone.</b></small>
                 </div>
-                <div class="border-none modal-footer">
-                    <button type="submit" class="btn btn-success rounded-pill px-3">
-                        Delete
-                    </button>
-                    <button type="button" class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal">
-                        Cancel
-                    </button>
-                </div>
+              </div>
+              <div class="border-none modal-footer">
+                <button type="submit" class="btn btn-success rounded-pill px-3">
+                    Delete
+                </button>
+                <button type="button" class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                    Cancel
+                </button>
+              </div>
             </form>
           </div>
         </div>
-    </div>   
+    </div>  
+
+    <!-- Edit Discussion Modal -->
     <div class="modal fade" id="editDiscussionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content profile-content">
@@ -299,29 +311,31 @@
             <h1 class="modal-title fs-5 fw-bold" id="profile-title">Edit Discussion Title</h1>
           </div>
           <form action="/edit_discussion/{{project_id}}" method="POST" >
-              <div class="border-none modal-body">
+            <div class="border-none modal-body">
+              <div class="mb-3">
+                <label for="prevtitle" class="form-label fw-bold">Previous title</label>
+                <input name="prevtitle" type="text" class="fc-dark form-control" placeholder="Enter the previous title" required>
+                <small>This is for confirmation.</small>
+              </div>
                 <div class="mb-3">
-                  <label for="prevtitle" class="form-label fw-bold">Previous title</label>
-                  <input name="prevtitle" type="text" class="fc-dark form-control" placeholder="Enter the previous title" required>
-                  <small>This is for confirmation.</small>
+                    <label for="newtitle" class="form-label fw-bold">New title</label>
+                    <input name="newtitle" type="text" class="fc-dark form-control" placeholder="Enter a title" required>
                 </div>
-                  <div class="mb-3">
-                      <label for="newtitle" class="form-label fw-bold">New title</label>
-                      <input name="newtitle" type="text" class="fc-dark form-control" placeholder="Enter a title" required>
-                  </div>
-              </div>
-              <div class="border-none modal-footer">
-                  <button type="submit" class="btn btn-lg btn-success rounded-pill px-3">
-                      Edit
-                  </button>
-                  <button type="button" class="btn btn-lg btn-danger rounded-pill px-3" data-bs-toggle="modal">
-                      Close
-                  </button>
-              </div>
+            </div>
+            <div class="border-none modal-footer">
+                <button type="submit" class="btn btn-lg btn-success rounded-pill px-3">
+                    Edit
+                </button>
+                <button type="button" class="btn btn-lg btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                    Close
+                </button>
+            </div>
           </form>
         </div>
       </div>
     </div>
+    
+    <!-- Previous chat history will be displayed in this -->
     <div class="modal fade" id="historyModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content profile-content">
@@ -346,6 +360,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="/static/scripts/home.js"></script>
     <script src="/static/scripts/ace.js"></script>
+
+    <!-- Trigger toasts -->
     <script>
       $(document).ready(function() {
         $('.toast').toast('show');
