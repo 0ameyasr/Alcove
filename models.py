@@ -1,3 +1,11 @@
+""" 
+models.py
+
+Stores the model used to make verdicts on the Radar Tool. Is trained on a
+synthetic set of data that aims to capture real-world mental health data.
+
+"""
+
 import torch
 import torch, torch.nn as nn, torch.optim as optim
 import numpy
@@ -24,13 +32,25 @@ class ANNModel(nn.Module):
     x = self.softmax(self.fc4(x))
     return x
 
-def manually_scale_score(score, mean, variance):
-  scaled_score = (score - mean) / numpy.sqrt(variance)
-  return scaled_score
-
 def make_radar_verdict(score):
-  mean = numpy.array([13.54867257, 10.31969027, 19.35619469, 10.27323009, 5.30973451])
-  variance = numpy.array([64.18347169, 41.98961229, 147.62976251, 43.91981435, 12.00583444])
+  def manually_scale_score(score, mean, variance):
+    scaled_score = (score - mean) / numpy.sqrt(variance)
+    return scaled_score
+  
+  mean = numpy.array([
+    13.54867257, 
+    10.31969027, 
+    19.35619469, 
+    10.27323009, 
+    5.30973451])
+  variance = numpy.array([
+    64.18347169, 
+    41.98961229, 
+    147.62976251,
+    43.91981435, 
+    12.00583444
+  ])
+  
   score = manually_scale_score(numpy.array(score), mean, variance)
   score = torch.tensor(score, dtype=torch.float32).unsqueeze(0)
 

@@ -160,7 +160,6 @@ cython_debug/
 #.idea/
 
 *.docx
-*.txt
 secrets.cfg
 bored-ai.pptx
 client_secret.json
@@ -169,3 +168,4 @@ creds.py
 data
 
 static\uploads
+model

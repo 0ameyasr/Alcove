@@ -1,4 +1,13 @@
-import pandas,random,numpy
+""" 
+libs.py
+
+Fetches some of the hefty textual data stored in .csv files. This stores
+only static content and interacts with the local data folder.
+
+"""
+
+import pandas
+import random
 
 def journal_prompt_lib():
     prompt = random.choice(list(pandas.read_csv("data/journal_prompts.csv")["prompts"]))

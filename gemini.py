@@ -1,8 +1,15 @@
+""" 
+gemini.py
+
+Our AI Agent's core. Used for methods implementing configurations and chatting, etc.
+"""
+
 import google.generativeai as gemini
 import configparser
 import PIL.Image
 import prompts
 import random
+
 config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
@@ -47,6 +54,7 @@ modelSeeker =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_setting
     },
 ])
 seeker = modelSeeker.start_chat(history=[])
+context_seeker = modelSeeker.start_chat(history=[])
 
 modelShaman =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
     {
@@ -128,6 +136,7 @@ projectModelAce =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_set
         ])
 project_ace = modelAce.start_chat(history=[])
 
+
 def fit_prompt(prompt):
     gemini.configure(api_key=config['gemini']['api_key'])
     model=gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_settings = [
@@ -158,19 +167,23 @@ def fit_image(prompt,image):
     return response
 
 def config_dynamo(icebreaker,nickname,history,instructions):
-    resp = dynamo.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="dynamo",mask=instructions))
+    resp = dynamo.send_message(prompts.prompt_corpus().get_chat_config(icebreaker,nickname,history,mode="dynamo",mask=instructions))
     return resp
 
 def config_shaman(icebreaker,nickname,history):
-    resp = shaman.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="shaman"))
+    resp = shaman.send_message(prompts.prompt_corpus().get_chat_config(icebreaker,nickname,history,mode="shaman"))
     return resp
 
 def config_seeker(icebreaker,nickname,history):
-    resp = seeker.send_message(prompts.prompt_corpus([]).get_chat_config(icebreaker,nickname,history,mode="seeker"))
+    resp = seeker.send_message(prompts.prompt_corpus().get_chat_config(icebreaker,nickname,history,mode="seeker"))
+    return resp
+
+def config_context_seeker(nickname,corpus):
+    resp = context_seeker.send_message(prompts.prompt_corpus().get_wiki_context(nickname,corpus))
     return resp
 
 def config_ace(nickname):
-    resp = ace.send_message(prompts.prompt_corpus([]).get_chat_config("How can I help you?",nickname,history="",mode="ace"))
+    resp = ace.send_message(prompts.prompt_corpus().get_chat_config("How can I help you?",nickname,history="",mode="ace"))
     return resp
 
 def reset_project_ace_history():
@@ -179,7 +192,7 @@ def reset_project_ace_history():
 def config_project_ace(nickname,project_title,project_details,project_tasks,context,catchup):    
     global project_ace
     project_ace = reset_project_ace_history()
-    config = prompts.prompt_corpus([]).get_ace_project_config(nickname,project_title,project_details,project_tasks,context,catchup)
+    config = prompts.prompt_corpus().get_ace_project_config(nickname,project_title,project_details,project_tasks,context,catchup)
     _ = project_ace.send_message(config)
     return project_ace
     
@@ -192,6 +205,9 @@ def chat_shaman(message):
 def chat_ace(message):
     return ace.send_message(message)
 
+def chat_wiki(message):
+    return context_seeker.send_message(message)
+
 def chat_seeker(message):
     return seeker.send_message(message),seeker.history[-1]
 
@@ -201,7 +217,7 @@ def chat_project_ace(message,image=None):
     return project_ace.send_message(message),project_ace.history[-1]
 
 def radar_config():
-    response = radar.send_message(prompts.prompt_corpus([]).get_radar_prompt())
+    response = radar.send_message(prompts.prompt_corpus().get_radar_prompt())
     return response.text.strip()
 
 def chat_radar(message):
@@ -217,8 +233,8 @@ def get_radar_concerns(history):
 def chat_ace(message):
     return ace.send_message(message)
 
-def condense_topic(topic,desc):
-    tdesc = fit_prompt(prompts.prompt_corpus().condense_wiki_corpus(topic,desc))
+def condense_wiki(title,corpus):
+    tdesc = fit_prompt(prompts.prompt_corpus().condense_wiki_corpus(title,corpus))
     return tdesc
 
 def get_fotd(topics,exclude):

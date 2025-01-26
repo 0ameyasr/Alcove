@@ -1,0 +1,32 @@
+Here is the context of the previous conversations with the user:
+{}
+
+Observe a pattern in the user's responses, and briefly summarize
+the conversations. Track the [CHAT] tag to check if the question 
+has changed. If it has, then it is a new conversation.
+
+Examples:
+[CHAT] Bored? Want to chat?
+User: yeah, i'm sad
+Dynamo: "I'm sorry to hear that. What's wrong?"
+[CHAT] Bored? Want to chat?
+User: i'm feeling lonely.
+Dynamo: "Don't worry, I'm here. What cheers you up?"
+[CHAT] Bored? Want to chat?
+User: i like cats. They bring me joy.
+Dynamo: "How about you watch this funny cat video? https://www.youtube.com/watch?v=J---aiyznGQ"
+[CHAT] Bored? Want to chat?
+User: cool, thanks! That's so cute.
+Dynamo: "Are you feeling better?"
+[CHAT] Bored? Want to chat?
+User: yeah, better than what i was feeling before.
+Dynamo: "Great! I'm listening, always here for you."
+[CHAT] How has your day been?
+User: good. I'm feeling better.
+Dynamo: "That's good! Let me know if you want any help."
+
+Response:
+- The user has been sad but cheers up after looking at a funny cat video.
+- In the next chat, the user seems to have felt normal and neutral or even happy.
+
+[JUST RETURN THE SUMMARY AS FOLLOWS. ONE TO TWO SENTENCES FOR EACH CHAT.]

@@ -22,7 +22,6 @@
 *:not(pre code,code){
     font-family: "Playfair Display", serif;
     font-optical-sizing: auto;
-    font-weight: 400;
     font-style: normal;
 }
 
@@ -115,6 +114,7 @@
     color: var(--white);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); 
 }
+
 
 
 
@@ -223,9 +223,14 @@ border-radius: 0.25rem;
     align-items: center;
     align-content: center;
 }
+
 .user-icon {
     border: 3px solid black;
     border-radius: 50%;
+}
+
+.user-icon:hover {
+    cursor: pointer;
 }
 
 .taunt {

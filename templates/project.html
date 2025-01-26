@@ -199,6 +199,7 @@
                     <small><i class="fa-solid fa-circle-info"></i> Or, <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#uploadFileModal">choose a file and give special instructions</a></small>
                     <br>
                   </div>
+                  <!-- Upload a File -->
                   <div class="modal fade" id="uploadFileModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                     <div class="modal-dialog">
                       <form action="/chat_project_ace/{{project_id}}" method="POST" enctype="multipart/form-data">
@@ -220,10 +221,10 @@
                             </div>
                           </div>
                           <div class="border-none modal-footer">
-                            <button type="submit" id="askButton-{{loop.index}}" class="btn btn-lg btn-success rounded-pill px-3">
+                            <button type="submit" id="askButton-{{loop.index}}" class="btn continue">
                               Submit
                             </button>
-                            <button type="button" class="btn btn-lg btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                            <button type="button" class="btn dismiss" data-bs-toggle="modal">
                               Close
                             </button>
                           </div>

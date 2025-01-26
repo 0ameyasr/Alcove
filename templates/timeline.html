@@ -18,6 +18,26 @@
     <!-- Hidden audio element for ping -->
     <audio controls id="pingAudio" src="/static/audio/ping.mp3" hidden></audio>
 
+    <!-- Toasts will be displayed here -->
+    <div class="toast-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+                <div class="toast toast-top-right" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <img src="/static/img/web_icon.png" width="32" height="32" class="rounded me-2">
+                    <strong class="me-auto">Alcove</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    {{ message }}
+                </div>
+                </div>
+            {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+        
     <!-- Mood Timeline container -->
     <div class="container-fluid">
         <div class="row">
@@ -110,5 +130,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="static/scripts/timeline.js"></script>
+    <!-- Trigger toasts -->
+    <script>
+        $(document).ready(function() {
+            $('.toast').toast('show');
+        });
+        </script>
   </body>
 </html>

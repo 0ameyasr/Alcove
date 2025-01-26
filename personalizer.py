@@ -1,3 +1,11 @@
+""" 
+personalizer.py
+
+This is a dynamic user content fetcher program that manages the interactions of the system
+and the MongoDB backend. 
+
+"""
+
 from pymongo import MongoClient
 import configparser
 import random
@@ -243,4 +251,3 @@ def update_fact_history(nickname,fact,fact_topic):
         return True
     except Exception:
         return False
-        

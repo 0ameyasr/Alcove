@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="static/styles/seeker.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
   </head>
 
   <body>
@@ -106,69 +109,60 @@
         </div>
       </div>
 
-      <!-- User is not banned -->
-      {% if banned != True: %}
-        <div class="my-4">
-          <form id="wiki-form" action="/condense_wiki" method="POST" class="d-flex">
-            <input type="text" id="wiki-url" class="form-control me-2 fc-dark" placeholder="Enter Wikipedia URL" required>
-            <button type="submit" id="submit-btn" class="btn btn-primary">
-              <span id="button-text">Submit</span>
-              <span class="spinner-border spinner-border-sm d-none" id="spinner" role="status" aria-hidden="true"></span>
-            </button>
-          </form>
-          <div id="message" class="mt-3"></div>
-          <div id="modal-container"></div>
-          <div id="wiki-table" class="table-responsive" hidden>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th class="fw-bold" scope="col">Topic</th>
-                  <th class="fw-bold" scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="topics-container">
-                
-              </tbody>
-            </table>
-          </div>
+      <div class="alert alert-dark">
+        <p class="fw-bold fs-4"><i class="fa-solid fa-globe"></i>&nbsp;How to use Briefings</p>
+        Simply open a Wikipedia page and enter its URL in the box below. Hit submit and you're good to go! We'll process and 
+        condense your wiki article for you to read through. You can then ask Seeker any queries or doubts you have. 
+      </div>
+
+      <div class="my-4">
+        <form id="wiki-form" action="/condense_wiki" method="POST" class="d-flex">
+          <input type="text" id="wiki-url" class="form-control me-2 fc-dark" placeholder="Enter Wikipedia URL" required>
+          <button type="submit" id="submit-btn" class="btn btn-primary">
+            <span id="button-text">Submit</span>
+            <span class="spinner-border spinner-border-sm d-none" id="spinner" role="status" aria-hidden="true"></span>
+          </button>
+        </form>
+        <div id="message" class="mt-3"></div>
+
+        <div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="summaryModalLabel"><i class="fa-brands fa-wikipedia-w"></i>{{title}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p id="summary">{{summary | safe}}</p>
+              </div>
+              <div class="modal-footer border-none">
+                <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
           </div>
         </div>
-      {% endif %}
+      </div>
 
-      <!-- User has been banned -->
-      {% if banned and warning %}
-        <!-- Ban Message -->
-        <div class="alert alert-danger">
-            <p id="user" class="hidden">{{session["nickname"]}}</p>
-            <p class="fw-bold fs-4"><i class="fa-solid fa-face-tired"></i>&nbsp;Request Processing Interrupted</p>
-            <p>To ensure a smooth and reliable experience for everyone, we've temporarily restricted new requests. This helps us manage the processing load efficiently and prevents interruptions for other users.</p>
-            <p>
-              <span class="fw-bold">SENTRY:</span>&nbsp;You have <span class="fw-bold">been banned</span> from making another request.  
-              Refreshing the page while a request is processing can overload our systems and slow things down for everyone. <span class="fw-bold">Please wait for your current request to finish before submitting another or refreshing the page.</span>
-              This behaviour also arouses suspicions of automated activity. </p>
-            <p id="countdown" class="fw-bold">  
-              Please wait atleast {{duration}} seconds for your ban to be lifted.
-            </p>
+      <div class="container mt-5 p-4 border rounded-3 bg-light shadow-sm d-none" id="discuss">
+        <h4>Discussions</h4>
+        <div class="row">
+          <div class="col-12">
+            <form class="d-flex mb-3" role="search" id="quickWikiChat" action="/chat_wiki" method="POST">
+              <textarea id="userWikiMessageQuick" class="search-bar" placeholder="Enter a topic or query" aria-label="Search" required></textarea>
+              <button class="btn btn-success btn-sm" type="submit" id="askButton">
+                Ask
+              </button>
+            </form>
+          </div>
         </div>
-        <!-- JS embedded -->
-        <script>
-          document.addEventListener("DOMContentLoaded", function() {
-              const durationElement = document.getElementById('countdown');
-              let remainingSeconds = parseInt(durationElement.textContent.match(/\d+/)[0], 10);
-          
-              function updateCountdown() {
-                  if (remainingSeconds > 0) {
-                      remainingSeconds -= 1;
-                      durationElement.textContent = `Please wait atleast ${remainingSeconds} seconds for your ban to be lifted.`;
-                  } else {
-                      window.location.reload();
-                  }
-              }
+        <div class="row">
+            <div class="col-12">
+              <span id="spinnerQuick" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display: none;"></span>
+              <p id="wikiResponseQuick" class="text-muted"></p>
+            </div>
+        </div>
+      </div>
 
-              setInterval(updateCountdown, 1000);
-          });
-        </script>
-      {% endif %}
     </div>
     
     <!-- Include the rest of the partial templates -->

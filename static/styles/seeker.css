@@ -242,3 +242,22 @@ a {
         gap: 10px; 
     }
   }
+
+  
+#userWikiMessageQuick {
+  flex-grow: 1;
+  border: none;
+  padding: 15px;
+  font-size: 16px;
+  outline: none;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  resize: vertical;
+  box-sizing: border-box;
+  min-height: 100px;
+  max-height: 300px;
+}
+
+#userWikiMessageQuick::placeholder {
+  color: #bbb;
+}

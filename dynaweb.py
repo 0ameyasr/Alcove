@@ -245,7 +245,6 @@ class curate_web:
         ]
         return random.choice(icebreakers)
     
-
     def token16b(self):
         return str(binascii.hexlify(os.urandom(16)))[2:-1]
 

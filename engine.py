@@ -1,3 +1,9 @@
+""" 
+engine.py
+
+Specifically made for extracting information from the database.
+"""
+
 from pymongo import MongoClient
 from gemini import fit_prompt
 from prompts import prompt_corpus

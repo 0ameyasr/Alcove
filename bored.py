@@ -14,7 +14,6 @@ from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 import pytz
 
-
 app = Flask(__name__)
 socketio = SocketIO(app)
 config = configparser.ConfigParser()
@@ -171,9 +170,10 @@ def home():
         for cookie in request.cookies:
             if cookie == "first_visit":
                 data["first_visit"] = True
-        
-        rec_prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
-        recommendations = [tag.capitalize() for tag in gemini.fit_prompt(rec_prompts.get_sentiment_corpus(True)).split()]
+
+        tags = home_engine.build_tags(session["nickname"])
+        rec_prompts = prompts.prompt_corpus()
+        recommendations = [tag.capitalize() for tag in gemini.fit_prompt(rec_prompts.get_sentiment_corpus(tags,True)).split()]
         data["top1"] = recommendations[0]
         data["top2"] = recommendations[1]
         data["top3"] = recommendations[2]
@@ -223,17 +223,17 @@ def dynamo():
         topics_list = None
         if opted_in_user:
             history = personalizer.get_dynamo_history(session["nickname"])
-            topics_list = gemini.fit_prompt(prompts.prompt_corpus([]).get_dynamo_highlights(history)).split('#')
+            topics_list = gemini.fit_prompt(prompts.prompt_corpus().get_dynamo_highlights(history)).split('#')
             if not history or history == "":
                 icebreaker = dynamic_web.get_dynamo_icebreaker()
                 session["icebreaker"] = icebreaker
                 session["tip"] = dynamic_web.no_history_response(opted=True)
             else:
                 if not session["mask"]:
-                    icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
+                    icebreaker = gemini.fit_prompt(prompts.prompt_corpus().get_relevant_icebreaker(session["nickname"],history))
                 else:
-                    icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history,instructions=session["mask"]))
-                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus([]).get_tip(history))
+                    icebreaker = gemini.fit_prompt(prompts.prompt_corpus().get_relevant_icebreaker(session["nickname"],history,instructions=session["mask"]))
+                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus().get_tip(history))
                 session["icebreaker"] = icebreaker    
             gemini.config_dynamo(session["icebreaker"],user,history,instructions=session["mask"])
         else:
@@ -272,7 +272,7 @@ def create_mask():
     instructions = request.form.get("mask")
     status = False
     try:
-        status = dynamic_web.get_instruction_status(gemini.fit_prompt(prompts.prompt_corpus([]).get_dynamo_mask(instructions)))
+        status = dynamic_web.get_instruction_status(gemini.fit_prompt(prompts.prompt_corpus().get_dynamo_mask(instructions)))
     except:
         status = False
     
@@ -292,7 +292,7 @@ def create_mask():
 @app.route("/create_mask/<token>",methods=["POST"])
 def default_mask(token):
     try:
-        instructions = prompts.prompt_corpus([]).get_default_mask(token)
+        instructions = prompts.prompt_corpus().get_default_mask(token)
         session["default_mask"] = token
         session["is_default_mask"] = True
         session["mask"] = instructions
@@ -327,8 +327,8 @@ def shaman():
                 session["icebreaker"] = icebreaker
                 session["tip"] = dynamic_web.no_history_response(opted=True)
             else:
-                icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
-                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus([]).get_tip(history))
+                icebreaker = gemini.fit_prompt(prompts.prompt_corpus().get_relevant_icebreaker(session["nickname"],history))
+                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus().get_tip(history))
                 session["icebreaker"] = icebreaker    
             gemini.config_shaman(session["icebreaker"],user,history)
         else:
@@ -462,13 +462,13 @@ def timeline():
 
 @app.route("/mood_timeline_update",methods=["POST"])
 def update_mood():
-    existing_user = mongo.db.timeline.find_one({"nickname":session["nickname"]})
     date = datetime.now().strftime(f"%d/%m/%Y")
+    existing_user = mongo.db.timeline.find_one({"nickname":session["nickname"]})
     corpus = request.form["corpus"]
 
-    mood_prompt = prompts.prompt_corpus([]).get_mood_prompt(corpus)
+    mood_prompt = prompts.prompt_corpus().get_mood_prompt(corpus)
     detected_mood = gemini.fit_prompt(mood_prompt)
-    if existing_user: 
+    if existing_user and existing_user["last_interacted"] != date: 
         mongo.db.timeline.update_one({
             "nickname":session["nickname"]
         },
@@ -479,6 +479,8 @@ def update_mood():
                 "history": personalizer.build_timeline_history(session["nickname"],date,detected_mood)
             }
         })
+    else:
+        return jsonify({"status":"error","flash":"Cannot submit another note today."})
     return jsonify({"status":"success","flash":"Save successful! Come back again tommorrow!"})
 
 @app.route("/zen")
@@ -521,7 +523,7 @@ def radar_response():
 @app.route("/get_radar_analysis",methods=["POST"])
 def get_radar_analysis():
     scores = personalizer.get_scores(request.json)
-    analysis = gemini.fit_prompt(prompts.prompt_corpus([]).get_analysis_prompt(scores))
+    analysis = gemini.fit_prompt(prompts.prompt_corpus().get_analysis_prompt(scores))
     return jsonify(success=True,title=scores["title"],scores=scores,analysis=analysis,safeword="Analysis")
 
 @app.route("/ace")
@@ -1081,8 +1083,8 @@ def seeker():
                 session["icebreaker"] = icebreaker
                 session["tip"] = dynamic_web.no_history_response(opted=True)
             else:
-                icebreaker = gemini.fit_prompt(prompts.prompt_corpus([]).get_relevant_icebreaker(session["nickname"],history))
-                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus([]).get_tip(history))
+                icebreaker = gemini.fit_prompt(prompts.prompt_corpus().get_relevant_icebreaker(session["nickname"],history))
+                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus().get_tip(history))
                 session["icebreaker"] = icebreaker    
             gemini.config_seeker(session["icebreaker"],user,history)
         else:
@@ -1098,33 +1100,16 @@ def seeker():
 def condense_wiki():
     data = request.get_json()
     url = data.get('url')
+    title = f"wiki/"+url.split('/wiki/')[-1]
     corpus = dynamic_web.wiki_extract(url)
     topics = dynamic_web.wiki_split(corpus)
-
+    
     if corpus == "":
-        socketio.emit('processing_topic', {'topic': "Invalid URL."})
         return jsonify(success="False")
     
-    ban_duration = 10 * len(topics)
-    tz = pytz.UTC
-    ban_expiry = datetime.now(tz) + timedelta(seconds=ban_duration)
-    
-    mongo.db.seeker.update_one(
-        {"nickname": session["nickname"]},
-        {"$set": {"active": 1, "ban_duration": ban_duration, "ban_expiry": ban_expiry}}
-    )
-    
-    for topic in topics:
-        socketio.emit('processing_topic', {'topic': topic})
-        topics[topic] = gemini.condense_topic(topic, topics[topic])
-        time.sleep(3)
-    
-    mongo.db.seeker.update_one(
-        {"nickname": session["nickname"]},
-        {"$set": {"active": 0, "ban_duration": 0, "ban_expiry": None}}
-    )
-    
-    return jsonify(success=True, corpus=corpus, topics=topics)
+    summary = gemini.condense_wiki(title,topics)
+    gemini.config_context_seeker(session["nickname"],corpus=summary)
+    return jsonify(success=True, title=title, summary=markdown2.markdown(summary))
 
 @app.route("/lift_ban", methods=["POST"])
 def lift_ban():
@@ -1151,6 +1136,16 @@ def chat_seeker():
         return jsonify(talk=markdown2.markdown(response.text), error=False)
     except Exception as e:
         return jsonify(talk="Seeker could not respond to your request.",error=True)
+
+@app.route("/chat_wiki",methods=["POST"])
+def chat_wiki():
+    try:
+        message = request.form["message"]
+        response = gemini.chat_wiki(message)
+        html_content = markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+        return jsonify(talk=html_content, error=False)
+    except Exception as e:
+        return jsonify(talk="Seeker could not respond to your request.", error=True)
 
 if __name__ == "__main__":
     socketio.run(app, debug=True, port=7000)

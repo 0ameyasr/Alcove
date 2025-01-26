@@ -15,7 +15,7 @@
           More than <b>{{session["opted_users%"]}}%</b> of our users have opted-in for Personalization.
 
           <br><br>
-          <h3>How it works</h3>
+          <p class="fw-bold">How it works</p>
           When Personalization is on, Alcove analyses your past messages and conversations
           to improve the responses provided by Alcove; Here is how it works:
           <ol>
@@ -23,7 +23,7 @@
             <li>Your data and responses are analyzed to ensure the conversations remain relatable</li>
           </ol>
           <br>
-          <h3>Benefits of Personalization</h3>
+          <span class="fw-bold">Benefits of Personalization</span>
           <ol>
             <li>Chat companions remember your interests and things that you talk about.</li>
             <li>You can resume new conversations on the context of where you left before.</li>
@@ -48,11 +48,13 @@
           You are already using Personalization. If you would like to stop this, please press the 
           "Opt-Out" button. 
           <br><br>
-          <h3>What's going on</h3>
+          <span class="fw-bold">What's going on</span>
           <ol>
             <li>Your history is being stored on our cloud, and is undergoing constant analysis</li>
             <li>Your data and responses are being analysed to ensure that conversations remain relatable</li>
           </ol>
+          If you opt out, we will stop recording your past chat history and data. Your data will be deleted, 
+          and all of our services will start over. <span class="fw-bold">This action cannot be undone.</span>
         </div>
         <div class="modal-footer border-none">
           <form action="/depersonalize" method="POST"><button class="btn continue" type="submit">Opt-Out</button></form>

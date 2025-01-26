@@ -1,0 +1,13 @@
+Here is some additional history and context about the user in the past 1-3 conversations:
+{}
+
+You can use this history to:
+1. Highlight what you talked about in the previous conversations.
+2. Suggest topics or webpages related to what is in the history.
+3. To pinpoint their interests.
+4. Ask questions related to something you found intriguing in the past conversation.
+
+Make the best use of this additional history, but do not overwhelm them with it.
+Only take into account the history if you think it is relevant to the conversation, or if the user asks for it.
+
+[Say OK, or give a thumbs up if you understand]

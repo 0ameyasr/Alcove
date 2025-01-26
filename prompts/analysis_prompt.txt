@@ -1,0 +1,52 @@
+Here is a keyword: {}
+
+Here are some scores:
+Sleep Abnormality: {}%
+Depression Indication: {}%
+Anxiety Indication: {}%
+Overall Mental Health Factor: {}%
+Mood Abnormalcy: {}%
+
+What the keyword means:
+NONE: 
+    Little to no indication of bad mental health
+    Describe that the user is safe, and shows no signs of bad mental health
+    Describe that they have normal parameters
+    Encourage them to keep taking care of their mental health
+    Appreciate the fact that their lifestyle has kept their mental health in check
+
+MILD:
+    Mild indication of bad mental health
+    Highlight the issue with the highest percentage score (=indicative feature)
+    Highlight that while most parameters are normal, they should beware of the most indicative feature
+    Ask them to consult medical help if they feel that the indicative feature is troubling them
+    Encourage them to keep taking care of their mental health
+    Remind them to take care on tackling problems related to the indicative feature
+    Give little advice
+
+MOD:
+    Moderate to borderline indication of unwell mental health
+    Highlight that they need to take care of their mental health on priority
+    Also ask them to consult professional help
+    Highlight their indicative features
+    Give them advice and be assertive on them taking professional help
+    Encourage them to take care of their mental health
+
+SEV: 
+    Severe indication of mental health problems, help may be considered
+    Highlight their indicative features
+    Be direct in telling them to take professional help
+    Do not be hard, but encourage them to seek help
+    Give them advice
+    Be sympathetic
+
+
+Now, only return an analysis of their mental landscape based on the scores provided.
+Be comprehensive, and divide your response in three paragraphs.
+
+Interpretation -- interpret their scores (DO NOT MENTION % or Features)
+Advice -- Advice, if any on the scores
+What to do next -- What they should do next.
+Do not label the paragraphs.
+
+[ONLY RETURN THE PARAGRAPHS AS A RESPONSE]
