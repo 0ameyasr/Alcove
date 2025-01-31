@@ -261,3 +261,61 @@ a {
 #userWikiMessageQuick::placeholder {
   color: #bbb;
 }
+
+.message-form {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+.message-input {
+  flex-grow: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--input-text);
+}
+
+.chat-window.socrates {
+  background-color: #333399;
+}
+
+.chat-window.nietzsche {
+  background-color: #990000;
+}
+
+.chat-window.confucius {
+  background-color: #cfb144;
+}
+
+.chat-window.plato {
+  background-color: #660033;
+}
+
+.chat-window.descartes {
+  background-color: #333333;
+}
+
+.chat-window.aristotle {
+  background-color: #003300;
+}
+
+#socratesResponse {
+  text-align: justify;
+}
+#nietzscheResponse {
+  text-align: justify;
+}
+#platoResponse {
+  text-align: justify;
+}
+#confuciusResponse {
+  text-align: justify;
+}
+#aristotleResponse{
+  text-align: justify;
+}
+#descartesResponse{
+  text-align: justify;
+}

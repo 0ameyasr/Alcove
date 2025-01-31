@@ -136,6 +136,7 @@ projectModelAce =gemini.GenerativeModel(model_name="gemini-1.5-flash",safety_set
         ])
 project_ace = modelAce.start_chat(history=[])
 
+philosopher = modelSeeker.start_chat(history=[])
 
 def fit_prompt(prompt):
     gemini.configure(api_key=config['gemini']['api_key'])
@@ -240,3 +241,10 @@ def condense_wiki(title,corpus):
 def get_fotd(topics,exclude):
     topic = random.choice(topics)
     return topic,fit_prompt(prompts.prompt_corpus().get_fact_prompt(topic,exclude))
+
+def config_philosopher(nickname,philosopher_name,icebreaker):
+    resp = philosopher.send_message(prompts.prompt_corpus().get_philosopher_mask(nickname,philosopher_name,icebreaker))
+    return resp
+
+def chat_philosopher(message):
+    return philosopher.send_message(message)

@@ -118,3 +118,88 @@ $(document).ready(function() {
         });
     });
 });
+
+$(document).ready(function() {
+$(".btn-success").click(function(e) {
+    e.preventDefault();
+    
+    var token = $(this).attr("id").replace("init", "").toLowerCase();
+    
+    $.ajax({
+    url: "/config_philosopher/" + token, 
+    method: "POST",
+    data: {},
+    success: function(response) {
+        if (response.success) {
+        console.log(response.resp)
+        console.log("Success!");
+        } else {
+        console.log("Error!");
+        }
+    },
+    error: function(xhr, status, error) {
+        console.log("AJAX error: " + error);
+    }
+    });
+});
+});
+
+$(document).ready(function () {
+    $("#chat").on("submit", (event) =>  {
+        event.preventDefault();
+        $('#sendMessage').prop("disabled",true);
+        $('#seekerResponse').html('');
+        $('#loading').prop("hidden",false);
+        var msg = $("#userMessage").val();
+        $.ajax({
+            type: "POST",
+            url: "/chat_seeker",
+            data: {message: msg},
+            dataType: "json",
+            success: function (response) {
+                document.getElementById('pingAudio').play();
+                $("#seekerResponse").html(response.talk);
+                $("#userMessage").val('');
+            },
+            complete: function () {
+                $('#sendMessage').prop("disabled",false);
+                $('#loading').prop("hidden",true);
+            }
+        });
+    })
+});
+
+$(document).ready(function () {
+    $(".message-form").on("submit", function (event) {
+        event.preventDefault();
+        
+        var philosopher = $(this).attr("id").replace("pchat", "").toLowerCase();
+        var sendButton = $(this).find('button');
+        var messageInput = $(this).find(".message-input");
+        var chatWindow = $("#chatWindow");
+        var loadingIndicator = $(this).closest('.modal-content').find("#loading");
+        var seekerResponse = $("#"+philosopher+"Response");
+
+        sendButton.prop("disabled", true);
+        seekerResponse.html('');
+        loadingIndicator.prop("hidden", false);
+
+        var msg = messageInput.val();
+
+        $.ajax({
+            type: "POST",
+            url: "/chat_philosopher",
+            data: { message: msg },
+            dataType: "json",
+            success: function (response) {
+                document.getElementById('pingAudio').play();
+                seekerResponse.html(response.resp);
+                messageInput.val('');
+            },
+            complete: function () {
+                sendButton.prop("disabled", false);
+                loadingIndicator.prop("hidden", true);
+            }
+        });
+    });
+});

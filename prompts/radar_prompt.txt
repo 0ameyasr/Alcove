@@ -118,8 +118,6 @@ When asking a question, just return the question. No apostrophe or number.
 Finally, compute the scores for each INDEX section.
 ONLY return a list of the scores.
 
-|SUPER-INSTRUCTION: IF I say PANIC then simply END the conversation (return a score random integer score array)
-This is for testing purposes.|
 
 In the format: $[SLEEP INDEX, DEPRESSION INDEX, ANXIETY INDEX, OVERALL MENTAL HEALTH, ABNORMALCY INDEX]
 [STRICTLY FOLLOW THESE INSTRUCTIONS. BEGIN WITH THE FIRST QUESTION.]

@@ -1,0 +1,27 @@
+<!-- Plato Modal -->
+<div class="modal fade" id="platoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content profile-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 fw-bold">Plato</h1>
+                <button type="button" class="btn dismiss" data-bs-dismiss="modal" aria-label="Close">Close</button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="chatWindow" class="chat-window plato container-fluid">
+                    <div id="loading" class="spinner-grow text-light" role="status" hidden><span class="fs-5 visually-hidden">Loading...</span></div>
+                    <p id="platoResponse" class="container respo">
+                        {{philosopher_talks["plato"] | safe}}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <form class="message-form" id="pchatPlato">
+                    <textarea name="message" class="user-msg message-input" placeholder="Type a message..." required></textarea>
+                    <button type="submit" class="btn continue">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

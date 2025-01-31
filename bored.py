@@ -77,6 +77,10 @@ except Exception as e:
 # def resource_exhausted(error):
 #     return redirect("/dynamo")
 
+@app.errorhandler(geminiExceptions.DeadlineExceeded)
+def resource_exhausted(error):
+    return render_template("response.html",code=504)
+
 @app.route("/")
 def intro():
     if not session:
@@ -120,6 +124,7 @@ def register():
 def login():
     nickname = request.form.get('nickname')
     safeword = request.form.get('safeword')
+
     existing_user = mongo.db.users.find_one({"nickname":nickname})
     if not existing_user:
         return render_template("response.html",code=100)
@@ -205,8 +210,8 @@ def survey_submit():
         if "first_visit" in cookie:
             response.set_cookie("survey","true")
             mongo.db.survey.insert_one(survey_det)
-            Prompts = prompts.prompt_corpus(home_engine.build_tags(session["nickname"]))
-            user_class = gemini.fit_prompt(Prompts.get_sentiment_corpus())
+            Prompts = prompts.prompt_corpus()
+            user_class = gemini.fit_prompt(Prompts.get_sentiment_corpus(tags=home_engine.build_tags(session["nickname"])))
             data["user_class"] = user_class.capitalize()
             mongo.db.user_classes.insert_one({"nickname":session["nickname"],"class":user_class})
     return response
@@ -1026,41 +1031,37 @@ def seeker():
         return redirect("/")
     
     user = mongo.db.seeker.find_one({"nickname": session["nickname"]})
-    banned = False
-    warning = None
-    duration = 0
-    enable_ban_lift = False
 
-    exclude = user.get("facts_history","")
-    fact_topic,fact = gemini.get_fotd(user["topics"],exclude)
-    personalizer.update_fact_history(session["nickname"],fact,fact_topic)
+    last_fact = user["fotd_last"]
+    last_fact_content = user["fotd_last_content"]
+    last_fact_topic = user["fotd_last_topic"]
 
-    if user:
-        tz = pytz.UTC
-        now = datetime.now(tz)
-        ban_expiry = user.get("ban_expiry")
-        if ban_expiry:
-            if isinstance(ban_expiry, datetime) and ban_expiry.tzinfo is None:
-                ban_expiry = tz.localize(ban_expiry)
-            
-            if isinstance(ban_expiry, datetime) and ban_expiry.tzinfo is not None:
-                if now < ban_expiry:
-                    banned = True
-                    warning = True
-                    duration = (ban_expiry - now).total_seconds()
-                else:
-                    mongo.db.seeker.update_one(
-                        {"nickname": session["nickname"]},
-                        {"$set": {"active": 0, "ban_duration": 0, "ban_expiry": None}}
-                    )
-                    banned = False
-                    warning = None
-                    enable_ban_lift = True
-            else:
-                enable_ban_lift = True
-        else:
-            enable_ban_lift = True
+    session["fact_topic"] = str(last_fact_topic).capitalize()
+    session["fact"] = last_fact_content
+
+    philosopher_talks = {
+        "aristotle":personalizer.get_philosopher_icebreaker("aristotle"),
+        "nietzsche":personalizer.get_philosopher_icebreaker("nietzsche"),
+        "plato":personalizer.get_philosopher_icebreaker("plato"),
+        "socrates":personalizer.get_philosopher_icebreaker("socrates"),
+        "confucius":personalizer.get_philosopher_icebreaker("confucius"),
+        "descartes":personalizer.get_philosopher_icebreaker("descartes")
+    }
+
+    session["philosopher_icebreakers"] = philosopher_talks
+
+    date = datetime.now().strftime(f"%d/%m/%Y")
+    if last_fact != date:
+        exclude = user.get("facts_history","")
+        fact_topic, fact = gemini.get_fotd(user["topics"],exclude)
+
+        session["fact_topic"] = str(fact_topic).capitalize()
+        session["fact"] = fact
+
+        personalizer.update_fact_history(session["nickname"],fact,fact_topic)
+        mongo.db.seeker.update_one({"nickname":session["nickname"]},{"$set":{"fotd_last":date,"fotd_last_topic":fact_topic,"fotd_last_content":fact}})
         
+    if user:
         if not user or not user.get("survey"):
             mongo.db.seeker.insert_one({"nickname": session["nickname"], "survey": "False"})
             session["askTopics"] = True
@@ -1092,8 +1093,9 @@ def seeker():
             session["icebreaker"] = icebreaker
             session["tip"] = dynamic_web.no_history_response(opted=False)
             gemini.config_seeker(session["nickname"],user,None)
-        return render_template("seeker.html",talk=session["icebreaker"],data=data,error=False, user_topics=user_topics, warning=warning, banned=banned, duration=int(duration), enable_ban_lift=enable_ban_lift,fact=fact,fact_topic = str(fact_topic).capitalize())
-    except KeyError:
+        return render_template("seeker.html",talk=session["icebreaker"],philosopher_talks=philosopher_talks,data=data,error=False, user_topics=user_topics, fact=session.get("fact",""),fact_topic = session.get("fact_topic",""))
+    except Exception as error:
+        print(error)
         return redirect("/")
     
 @app.route("/condense_wiki", methods=["POST"])
@@ -1146,6 +1148,25 @@ def chat_wiki():
         return jsonify(talk=html_content, error=False)
     except Exception as e:
         return jsonify(talk="Seeker could not respond to your request.", error=True)
+
+@app.route("/config_philosopher/<token>",methods=["POST"])
+def philosopher_mask(token):
+    try:
+        resp = gemini.config_philosopher(session["nickname"],token,icebreaker=session["philosopher_icebreakers"][token])
+        return jsonify(success=True,resp=resp.text)
+    except Exception as error:
+        print(error)
+        return jsonify(success=False,resp=None)
+    
+@app.route("/chat_philosopher",methods=["POST"])
+def philosopher_chat():
+    try:
+        message = request.form["message"]
+        response = gemini.chat_philosopher(message)
+        return jsonify(success=True,resp=markdown2.markdown(response.text))
+    except Exception as error:
+        print(error)
+        return jsonify(success=False,resp=None)
 
 if __name__ == "__main__":
     socketio.run(app, debug=True, port=7000)

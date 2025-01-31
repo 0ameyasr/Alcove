@@ -53,7 +53,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-7 col-sm-12">
               <div class="main-body">
-                <div id="chatWindow" class="chat-window container-fluid text-center">
+                <div id="chatWindowSocrates" class="chat-window container-fluid text-center">
                     <div id="loading" class="spinner-grow text-light" role="status" hidden><span class="fs-5 visually-hidden">Loading...</span></div>
                     <p id="seekerResponse" class="container">
                         {{talk | safe}}
@@ -76,17 +76,87 @@
                 </div>
               </div>
           </div>
+
           <div class="col-lg-4 col-md-5 col-sm-12">
-              <div class="sidebar">
-                  <div class="sidebar-content">
-                      <div class="card">
-                          <h5 class="card-header"><i class="fa-solid fa-lightbulb"></i>&nbsp;Random Fact - {{fact_topic}}</h5>
-                          <div class="card-body">
-                            {{fact}}
-                          </div>
-                      </div>
-                  </div>
+            <div class="sidebar">
+              <div class="sidebar-content">
+                <div class="card">
+                    <h5 class="card-header"><i class="fa-solid fa-lightbulb"></i>&nbsp;Random Fact - {{fact_topic}}</h5>
+                    <div class="card-body">
+                      {{fact}}
+                    </div>
+                </div>
+                <div class="card">
+                  <h5 class="card-header"><i class="fa-solid fa-book"></i>&nbsp;Talk to a Philosopher</h5>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <tbody>
+                          <tr>
+                            <td>Socrates</td>
+                            <td>
+                              <div class="d-flex flex-row g-3 buttons">
+                                <button id="initSocrates" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#socratesModal">Talk</button>
+                                &nbsp;
+                                <div><a class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#aboutSocratesModal">About</a></div>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Nietzsche</td>
+                            <td>
+                              <div class="d-flex flex-row g-3 buttons">
+                                <button id="initNietzsche" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#nietzscheModal">Talk</button>
+                                &nbsp;
+                                <div><a class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#aboutNietzscheModal">About</a></div>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Confucius</td>
+                            <td>
+                              <div class="d-flex flex-row g-3 buttons">
+                                <button id="initConfucius" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#confuciusModal">Talk</button>
+                                &nbsp;
+                                <div><a class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#aboutConfuciusModal">About</a></div>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Descartes</td>
+                            <td>
+                              <div class="d-flex flex-row g-3 buttons">
+                                <button id="initDescartes" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#descartesModal">Talk</button>
+                                &nbsp;
+                                <div><a class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#aboutDescartesModal">About</a></div>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Aristotle</td>
+                            <td>
+                              <div class="d-flex flex-row g-3 buttons">
+                                <button id="initAristotle" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#aristotleModal">Talk</button>
+                                &nbsp;
+                                <div><a class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#aboutAristotleModal">About</a></div>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Plato</td>
+                            <td>
+                              <div class="d-flex flex-row g-5 buttons">
+                                <button id="initPlato" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#platoModal">Talk</button>
+                                &nbsp;
+                                <div><a class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#aboutPlatoModal">About</a></div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
               </div>
+            </div>
           </div>
         </div>
       </div>
@@ -164,13 +234,49 @@
       </div>
 
     </div>
+
+    <!-- About Seeker -->
+    <div class="modal fade" id="infoModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header border-none">
+            <h1 class="modal-title fs-5">Seeker</h1>
+          </div>
+          <div class="modal-body">
+            Seeker is your chat companion for anything intellectually 
+            exciting and intriguing. It allows you to delve deeper into 
+            questions and ideas you would often ruminate on. It excels
+            at philosophical conversation, and its responses are more 
+            verbose than other companions.
+            <br><br>
+            Here are some ways you can engage in conversations with it:
+            <ul>
+              <li>Asking any philosophical questions, reasoning or logic problems.</li>
+              <li>Simulating thought experiments.</li>
+              <li>Gaining deeper or nuanced insights or perspectives on topics.</li>
+              <li>Any discussion that piques your interest.</li>
+            </ul>
+          </div>
+          <div class="modal-footer border-none">
+            <button type="button" class="btn dismiss" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <!-- Include the rest of the partial templates -->
     {% include "personalise_modal.html"%}
     {% include "partial_profile.html"%}
     {% include "partial_menu.html"%}
     {% include "partial_footer.html"%}
-    
+    {% include "socrates_modal.html"%}
+    {% include "nietzsche_modal.html"%}
+    {% include "confucius_modal.html"%}
+    {% include "aristotle_modal.html"%}
+    {% include "descartes_modal.html"%}
+    {% include "plato_modal.html"%}
+    {% include "about_philosophers.html"%}
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>

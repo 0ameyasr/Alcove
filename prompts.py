@@ -174,7 +174,7 @@ class prompt_corpus:
         """
     
     def get_radar_prompt(self):
-        return self.prompt_helper("prompts/radar_prompt.txt")
+        return self.prompt_helper("prompts/radar_prompt.txt",to_format=[])
     
     def get_analysis_prompt(self,pDict):
         return self.prompt_helper("prompts/analysis_prompt.txt",to_format = [pDict["verdict"],pDict["pDepression"],pDict["pAnxiety"],pDict["pOverall"],pDict["pRisk"]])
@@ -236,9 +236,16 @@ class prompt_corpus:
             The format should be
 
             **Topic**
-            A detailed summary of the topic
+            A detailed summary of the topic, (if the description is too small, just include the key points and terms)
 
             and so on.
+
+            You are not allowed to skip the description of any topic. Even if the topic is too large, you may just as 
+            well condense it into key points in a few sentences.
+
+            Do not summarize content in sections like "This section covers ... " 
+
+            Skip any "See Also" or "Bibliography" related sections.
 
             [ONLY RESPOND AS YOU ARE ASKED TO.]
         """
@@ -253,3 +260,14 @@ class prompt_corpus:
             {exclude}
             [ONLY RETURN THE FACT]
         """
+
+    def get_philosopher_mask(self,nickname,philosopher,icebreaker):
+        philosopher_prompts = {
+            "aristotle": self.prompt_helper("prompts/aristotle_config.txt",to_format=[nickname,icebreaker]),
+            "nietzsche": self.prompt_helper("prompts/nietzsche_config.txt",to_format=[nickname,icebreaker]),
+            "confucius": self.prompt_helper("prompts/confucius_config.txt",to_format=[nickname,icebreaker]),
+            "plato": self.prompt_helper("prompts/plato_config.txt",to_format=[nickname,icebreaker]),
+            "socrates": self.prompt_helper("prompts/socrates_config.txt",to_format=[nickname,icebreaker]),
+            "descartes": self.prompt_helper("prompts/descartes_config.txt",to_format=[nickname,icebreaker])
+        }
+        return philosopher_prompts[philosopher]

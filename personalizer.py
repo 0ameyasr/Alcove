@@ -251,3 +251,14 @@ def update_fact_history(nickname,fact,fact_topic):
         return True
     except Exception:
         return False
+
+def get_philosopher_icebreaker(philosopher):
+    philosopher_icebreakers = {
+        "socrates": "What insights from questioning the world around you are you seeking today?",
+        "nietzsche": "What strength do you want to build by overcoming challenges in your life?",
+        "confucius": "What lessons of balance and harmony do you hope to find today?",
+        "plato": "What truths about the world beyond what we see are you looking to discover?",
+        "aristotle": "What virtues are you hoping to cultivate in yourself today?",
+        "descartes": "What thoughts or doubts are you wrestling with to find clarity today?"
+    }
+    return philosopher_icebreakers[philosopher]
