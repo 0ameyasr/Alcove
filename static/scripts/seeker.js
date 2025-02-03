@@ -120,7 +120,7 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-$(".btn-success").click(function(e) {
+$(".phil-init").click(function(e) {
     e.preventDefault();
     
     var token = $(this).attr("id").replace("init", "").toLowerCase();

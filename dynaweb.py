@@ -319,3 +319,9 @@ class curate_web:
                 topics[topic_name] = topic_desc
 
         return topics
+    
+    def get_context(self,context):
+        duplets = context.split("n\"~")
+        for i,dup in enumerate(duplets):
+            duplets[i] = re.sub("\"",'',dup)
+        return '\n'.join(duplets)

@@ -49,33 +49,33 @@ try:
 except Exception as e:
     print("Error connecting to MongoDB:", e)
 
-# @app.errorhandler(NotFound)
-# def not_found(error):
-#     return render_template("response.html",code=404)
+@app.errorhandler(NotFound)
+def not_found(error):
+    return render_template("response.html",code=404)
 
-# @app.errorhandler(MethodNotAllowed)
-# def method_not_allowed(error):
-#     return render_template("response.html",code=405)
+@app.errorhandler(MethodNotAllowed)
+def method_not_allowed(error):
+    return render_template("response.html",code=405)
 
-# @app.errorhandler(RequestTimeout)
-# def method_not_allowed(error):
-#     return render_template("response.html",code=408)
+@app.errorhandler(RequestTimeout)
+def method_not_allowed(error):
+    return render_template("response.html",code=408)
 
-# @app.errorhandler(BadRequestKeyError)
-# def bad_request_key_error(error):
-#     return render_template("response.html",code=410)
+@app.errorhandler(BadRequestKeyError)
+def bad_request_key_error(error):
+    return render_template("response.html",code=410)
 
-# @app.errorhandler(InternalServerError)
-# def internal_server_error(error):
-#     return render_template("response.html",code=500)
+@app.errorhandler(InternalServerError)
+def internal_server_error(error):
+    return render_template("response.html",code=500)
 
-# @app.errorhandler(geminiExceptions.InternalServerError)
-# def internal_server_error(error):
-#     return redirect("/dynamo")
+@app.errorhandler(geminiExceptions.InternalServerError)
+def internal_server_error(error):
+    return render_template("response.html",code=500)
 
-# @app.errorhandler(geminiExceptions.ResourceExhausted)
-# def resource_exhausted(error):
-#     return redirect("/dynamo")
+@app.errorhandler(geminiExceptions.ResourceExhausted)
+def resource_exhausted(error):
+    return render_template("response.html",code=504)
 
 @app.errorhandler(geminiExceptions.DeadlineExceeded)
 def resource_exhausted(error):
@@ -220,6 +220,7 @@ def survey_submit():
 def dynamo():
     try:
         user = session["nickname"]
+        mongo.db.users.update_one({"nickname":user},{"$inc":{"dynamo":1}})
         session["opted_users%"] = home_engine.opted_users_p()
         session["is_opted"] = home_engine.is_opted(session["nickname"])
 
@@ -322,6 +323,7 @@ def clear_mask():
 def shaman():
     try:
         user = session["nickname"]
+        mongo.db.users.update_one({"nickname":user},{"$inc":{"shaman":1}})
         session["opted_users%"] = home_engine.opted_users_p()
         session["is_opted"] = home_engine.is_opted(session["nickname"])
         opted_in_user =  mongo.db.opted_users.find_one({"nickname":session["nickname"]})
@@ -536,6 +538,7 @@ def ace():
     session["today"] = dynamic_web.today()
     icebreaker = "How can I help you?"
     user = session["nickname"]
+    mongo.db.users.update_one({"nickname":user},{"$inc":{"ace":1}})
     gemini.config_ace(user)
 
     session["modified_habits"] = {}
@@ -691,7 +694,7 @@ def new_project(token):
     project_id = token
     project = dict(mongo.db.projects.find_one({"nickname": session["nickname"],"project_id":token}, {"_id": False}))
     conv = None
-    marked_catchup,marked_history = None,None
+    marked_catchup,marked_history,marked_tip = None,None,None
     tip = None
     catchup = None
     if project["init"] == True:
@@ -703,14 +706,15 @@ def new_project(token):
             conv = None
         else:
             if project["active"] != 0:
-                history = gemini.fit_prompt(prompts.prompt_corpus().get_discussion_history(project["context"]))
-                catchup = gemini.fit_prompt(prompts.prompt_corpus().get_discussion_icebreaker(project["context"]))
+                history = dynamic_web.get_context(project["context"]).split("$$$BREAK$$$")[-1]
+                catchup_context = prompts.prompt_corpus().get_discussion_icebreaker(project["context"])
+                catchup = gemini.fit_prompt(catchup_context)
                 tip = gemini.fit_prompt(prompts.prompt_corpus().get_tip(project["context"]))
                 marked_history = markdown2.markdown(history,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])    
                 marked_catchup = markdown2.markdown(catchup,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
                 marked_tip = markdown2.markdown(tip,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
             gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"],catchup=catchup)
-    return render_template("project.html",project_id=project_id,project=project,conversation=conv,history=marked_history,talk=None,tip=tip,catchup=marked_catchup)
+    return render_template("project.html",project_id=project_id,project=project,conversation=conv,history=marked_history,talk=None,tip=marked_tip,catchup=marked_catchup)
 
 @app.route("/delete_project/<token>",methods=["POST"])
 def delete_project(token):
@@ -770,6 +774,7 @@ def chat_project_ace(token):
         
         filename = secure_filename(file.filename)
         file_extension = os.path.splitext(filename)[1][1:].lower()
+
         if (file_extension not in allowed_text_extensions) and (file_extension not in allowed_image_extensions):
             return jsonify(talk="ERROR: Invalid file type. Ace only serves text, code or image types.", catchup=None, error=False)
         elif file_extension in allowed_text_extensions:
@@ -783,12 +788,14 @@ def chat_project_ace(token):
             response, latest_message = gemini.chat_project_ace(message,image=path)
             current_history = personalizer.build_project_history(session["nickname"],project["context"],str(latest_message),message,model="Ace")
             mongo.db.projects.update_one({"nickname":session["nickname"],"project_id":token},{"$set":{"context":current_history}})
-            return jsonify(talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"]),catchup=None,error=False,file_link=file_url)
+            talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+            return jsonify(talk=talk,catchup=None,error=False,file_link=file_url)
 
     response, latest_message = gemini.chat_project_ace(message)
-    current_history = personalizer.build_project_history(session["nickname"],project["context"],str(latest_message),message,model="Ace")
+    current_history = personalizer.build_project_history(session["nickname"],project["context"],response.text,message,model="Ace")
+    talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
     mongo.db.projects.update_one({"nickname":session["nickname"],"project_id":token},{"$set":{"context":current_history}})
-    return jsonify(talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"]),catchup=None,error=False)
+    return jsonify(talk=talk,catchup=None,error=False)
 
 @app.route("/new_discussion/<token>",methods=["POST"])
 def new_discussion(token):
@@ -835,10 +842,8 @@ def conclude_discussion(token,title):
         flash(f"A discussion titled '{title}' does not exist.","error")
         return redirect(f"/project/{token}")
     
-    latest_discussion = str(project["context"]).split("$$$BREAK$$$")[-1]
-    marked_history = markdown2.markdown(
-        gemini.fit_prompt(prompts.prompt_corpus().get_discussion_history(latest_discussion)),
-        extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+    latest_discussion = dynamic_web.get_context(str(project["context"]).split("$$$BREAK$$$")[-1])
+    marked_history = markdown2.markdown(latest_discussion,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
     mongo.db.projects.update_one(
         {
             "nickname": session["nickname"],
@@ -888,7 +893,7 @@ def delete_discussion(token):
         },
         {
             "$set": {
-                "active": project["active"] - 1,
+                "active": project["active"] - 1 if project["active"] != 0 else 0,
                 "context": new_context,
             },
             "$pull": {
@@ -1031,6 +1036,7 @@ def seeker():
         return redirect("/")
     
     user = mongo.db.seeker.find_one({"nickname": session["nickname"]})
+    mongo.db.users.update_one({"nickname":session["nickname"]},{"$inc":{"seeker":1}})
 
     last_fact = user["fotd_last"]
     last_fact_content = user["fotd_last_content"]

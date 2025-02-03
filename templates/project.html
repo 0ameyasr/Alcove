@@ -157,85 +157,96 @@
                   </div>
                   <div>
                     {% if not discussion["closed"]: %}
-                    <button id="editDiscussionTitle" type="submit" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editDiscussionModal">
-                      <i class="fa-solid fa-pen" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit Title"></i>
-                    </button>
-                    <button id="viewHistory" type="submit" class="btn btn-sm btn-help" data-bs-toggle="modal" data-bs-target="#historyModal">
-                      <i class="fa-solid fa-clock-rotate-left" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View History"></i>
-                    </button>
-                    <form style="display:inline;" action="/conclude_discussion/{{project_id}}/{{discussion.get('discussion_title','ERROR')}}" method="POST">
-                      <button id="stopDiscussion" type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Close this discussion">
-                        <i class="fa-solid fa-circle-stop"></i>
+                      <button id="editDiscussionTitle" type="submit" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editDiscussionModal">
+                        <i class="fa-solid fa-pen" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit Title"></i>
                       </button>
-                    </form>
+                      <button id="viewHistory" type="submit" class="btn btn-sm btn-help" data-bs-toggle="modal" data-bs-target="#historyModal">
+                        <i class="fa-solid fa-clock-rotate-left" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View History"></i>
+                      </button>
+                      <form style="display:inline;" action="/conclude_discussion/{{project_id}}/{{discussion.get('discussion_title','ERROR')}}" method="POST">
+                        <button id="stopDiscussion" type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Close this discussion">
+                          <i class="fa-solid fa-circle-stop"></i>
+                        </button>
+                      </form>
+                    {% endif %}
+                    {% if discussion["closed"]: %}
+                      <button id="toggleDiscussion{{ loop.index }}" class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Collapse/Expand Discussion">
+                        <i id="toggleIcon{{ loop.index }}" class="fa-solid fa-eye"></i>
+                      </button>
                     {% endif %}
                   </div>
                 </div>
-                <div class="container discussion-pane border p-3 d-flex flex-column info-pane">
+                <div id="discussionPane{{loop.index}}" class="container discussion-pane border p-3 info-pane">
                   {% if not discussion["closed"]:%}
-                  <div class="flex-grow-1">
-                    {% if catchup: %}
-                    <small><i>Resumed from: </i></small>
-                    <p id="catchup-{{loop.index}}" style="display: {% if catchup %}block{% else %}none{% endif %};">
-                        {{ catchup | safe }}
-                    </p>
-                    <hr>
-                    {% endif %}
-                    <span id="talkSpinner" class="spinner-border me-2" role="status" aria-hidden="true" hidden><br></span>
-                    <p id="talk-{{loop.index}}" style="display: none;">
-                      {{ talk | safe }}
-                    </p>
-                    <img id="attached-{{loop.index}}" src="">
-                    <br>
-                  </div>
-                  <form class="d-flex align-items-center mb-0 discussion-form" role="search" action="/chat_project_ace/{{project_id}}" method="POST" enctype="multipart/form-data">
-                    <br>
-                    <textarea id="msg-{{loop.index}}" name="usermsg" class="message form-control fc-dark" placeholder="Message Ace.." required></textarea>
-                    <button class="btn btn-success btn-sm ms-2" type="submit" id="askButton-{{loop.index}}">
-                      <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                  </form>
-                  <div class="container">
-                    <small><i class="fa-solid fa-circle-info"></i> Or, <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#uploadFileModal">choose a file and give special instructions</a></small>
-                    <br>
-                  </div>
-                  <!-- Upload a File -->
-                  <div class="modal fade" id="uploadFileModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-                    <div class="modal-dialog">
-                      <form action="/chat_project_ace/{{project_id}}" method="POST" enctype="multipart/form-data">
-                        <div class="modal-content profile-content">
-                          <div class="border-none modal-header">
-                            <h1 class="modal-title fs-5 fw-bold" id="profile-title">Upload a file</h1>
-                          </div>
-                          <div class="border-none modal-content profile-content">
-                            <div class="border-none modal-body">
-                              <div class="mb-3">
-                                <label for="attachment" class="form-label fw-bold">Attachment</label>
-                                <input name="attachment" type="file" class="fc-dark" required>
+
+                    <div class="flex-grow-1">
+                      {% if catchup: %}
+                      <small><i>Resumed from: </i></small>
+                      <p id="catchup-{{loop.index}}" style="display: {% if catchup %}block{% else %}none{% endif %};">
+                          {{ catchup | safe }}
+                      </p>
+                      <hr>
+                      {% endif %}
+                      <span id="talkSpinner" class="spinner-border me-2" role="status" aria-hidden="true" hidden><br></span>
+                      <p id="talk-{{loop.index}}" style="display: none;">
+                        {% if talk: %}
+                          {{ talk | safe }}
+                        {% endif %}
+                      </p>
+                      <img id="attached-{{loop.index}}" src="">
+                      <br>
+                    </div>
+
+                    <form class="d-flex align-items-center mb-0 discussion-form" role="search" action="/chat_project_ace/{{project_id}}" method="POST" enctype="multipart/form-data">
+                      <br>
+                      <textarea id="msg-{{loop.index}}" name="usermsg" class="message form-control fc-dark" placeholder="Message Ace.." required></textarea>
+                      <button class="btn btn-success btn-sm ms-2" type="submit" id="askButton-{{loop.index}}">
+                        <i class="fa-solid fa-paper-plane"></i>
+                      </button>
+                    </form>
+
+                    <div class="container">
+                      <small><i class="fa-solid fa-circle-info"></i> Or, <a class="upload-link" type="button" data-bs-toggle="modal" data-bs-target="#uploadFileModal">choose a file and give special instructions</a></small>
+                      <br>
+                    </div>
+            
+                    <!-- Upload a File -->
+                    <div class="modal fade" id="uploadFileModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                      <div class="modal-dialog">
+                        <form action="/chat_project_ace/{{project_id}}" method="POST" enctype="multipart/form-data">
+                          <div class="modal-content profile-content">
+                            <div class="border-none modal-header">
+                              <h1 class="modal-title fs-5 fw-bold" id="profile-title">Upload a file</h1>
+                            </div>
+                            <div class="border-none modal-content profile-content">
+                              <div class="border-none modal-body">
+                                <div class="mb-3">
+                                  <label for="attachment" class="form-label fw-bold">Attachment</label>
+                                  <input name="attachment" type="file" class="fc-dark" required>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="newtitle" class="form-label fw-bold">Instructions</label>
+                                  <textarea id="msg-{{loop.index}}" name="usermsg" class="message form-control fc-dark" placeholder="What do you want Ace to do?" required></textarea>
+                                </div>
+                                <span id="talkSpinnerModal" class="spinner-border me-2" role="status" aria-hidden="true" hidden><br></span>
                               </div>
-                              <div class="mb-3">
-                                <label for="newtitle" class="form-label fw-bold">Instructions</label>
-                                <textarea id="msg-{{loop.index}}" name="usermsg" class="message form-control fc-dark" placeholder="What do you want Ace to do?" required></textarea>
-                              </div>
-                              <span id="talkSpinnerModal" class="spinner-border me-2" role="status" aria-hidden="true" hidden><br></span>
+                            </div>
+                            <div class="border-none modal-footer">
+                              <button type="submit" id="askButton-{{loop.index}}" class="btn continue">
+                                Submit
+                              </button>
+                              <button type="button" class="btn dismiss" data-bs-toggle="modal">
+                                Close
+                              </button>
                             </div>
                           </div>
-                          <div class="border-none modal-footer">
-                            <button type="submit" id="askButton-{{loop.index}}" class="btn continue">
-                              Submit
-                            </button>
-                            <button type="button" class="btn dismiss" data-bs-toggle="modal">
-                              Close
-                            </button>
-                          </div>
-                        </div>
-                      </form>
+                        </form>
+                      </div>
                     </div>
-                  </div>
                   {% endif %}
 
                   {% if discussion["closed"]: %}
-                  {{discussion["discussion_history"] | safe}}
+                    {{discussion["discussion_history"] | safe}}
                   {% endif %}
                 </div>
               </div>
@@ -264,10 +275,10 @@
               <small>To create a new discussion, you must conclude a preceding one. You can have only one discussion at a time.</small>
             </div>
             <div class="border-none modal-footer">
-              <button type="submit" class="btn btn-success rounded-pill px-3" {% if project["active"] == 1:%}disabled{% endif %}>
+              <button type="submit" class="btn continue" {% if project["active"] == 1:%}disabled{% endif %}>
                   Create
               </button>
-              <button type="button" class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal">
+              <button type="button" class="btn dismiss" data-bs-toggle="modal">
                   Close
               </button>
             </div>
@@ -292,10 +303,10 @@
                 </div>
               </div>
               <div class="border-none modal-footer">
-                <button type="submit" class="btn btn-success rounded-pill px-3">
+                <button type="submit" class="btn continue">
                     Delete
                 </button>
-                <button type="button" class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                <button type="button" class="btn dismiss" data-bs-toggle="modal">
                     Cancel
                 </button>
               </div>
@@ -324,10 +335,10 @@
                 </div>
             </div>
             <div class="border-none modal-footer">
-                <button type="submit" class="btn btn-lg btn-success rounded-pill px-3">
+                <button type="submit" class="btn continue">
                     Edit
                 </button>
-                <button type="button" class="btn btn-lg btn-danger rounded-pill px-3" data-bs-toggle="modal">
+                <button type="button" class="btn dismiss" data-bs-toggle="modal">
                     Close
                 </button>
             </div>
@@ -338,25 +349,30 @@
     
     <!-- Previous chat history will be displayed in this -->
     <div class="modal fade" id="historyModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-fullscreen">
         <div class="modal-content profile-content">
           <div class="border-none modal-header">
             <h1 class="modal-title fs-5 fw-bold" id="profile-title">History</h1>
           </div>
           <div class="modal-body">
-            <p class="fs-6 p-1">
-              {{history | safe}}
-            <p>
+            {% if history: %}
+              <p class="fs-6 p-1">
+                {{history | safe}}
+              <p>
+            {% endif %}
+            {% if not history: %}
+              <p class="fs-6 p-1"> No recorded history found. </p>
+            {% endif %}
           </div>
           <div class="border-none modal-footer">
-            <button type="button" class="btn btn-lg btn-danger rounded-pill px-3" data-bs-toggle="modal">
+            <button type="button" class="btn dismiss" data-bs-toggle="modal">
                 Close
             </button>
           </div>
         </div>
       </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="/static/scripts/home.js"></script>

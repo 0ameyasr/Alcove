@@ -27,11 +27,9 @@ def build_history(conversation_history,latest_message:str,user_message:str,model
 
 def build_project_history(nickname,conversation_history,latest_message:str,user_message:str,model="Dynamo"):
     trace='role: "model"'
-    latest_message = f"{model}: "+latest_message.replace("text: ","").replace("parts {","").replace("}","").replace(trace,"").strip() + "~"
-    user_message = f"{nickname}: "+user_message+"\n"
-    latest_message = clean_message(latest_message)
-    user_message = clean_message(user_message)
-    return conversation_history +"\n"+user_message+"\n"+latest_message
+    latest_message = f"**{model}**:<br>"+latest_message.replace("text: ","").replace("parts {","").replace("}","").replace(trace,"").strip() + "<br>"
+    user_message = f"**{nickname}**:<br>"+user_message+" <br>"
+    return conversation_history +"<br>"+user_message+"<br>"+latest_message+"<br>"
 
 def get_dynamo_history(nickname):
     config = configparser.ConfigParser()

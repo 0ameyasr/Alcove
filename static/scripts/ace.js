@@ -81,6 +81,24 @@ $(document).ready(function () {
         }
     });    
 
+    $(document).ready(function() {
+        $('[id^="toggleDiscussion"]').click(function() {
+            let index = this.id.replace("toggleDiscussion", "");
+            let toggle = document.getElementById("toggleIcon" + index);
+            let discussionPane = "#discussionPane" + index;
+            
+            if (toggle.classList.contains("fa-eye")) {
+                toggle.classList.replace("fa-eye", "fa-eye-slash");
+                $(discussionPane).css("display", "none");
+                $(this).attr("title", "Show");
+            } else if (toggle.classList.contains("fa-eye-slash")) {
+                toggle.classList.replace("fa-eye-slash", "fa-eye");
+                $(discussionPane).css("display", "block");
+                $(this).attr("title", "Hide");
+            }
+        });
+      });
+
     $('.discussions-container').on('submit', '.discussion-form', function(event) {
         event.preventDefault();
         var $form = $(this);
@@ -239,7 +257,6 @@ $(document).ready(function () {
             }
         });
     });
-
     
     $(".updateHabits").on('submit', '.deleteHabit', function (e) {
         e.preventDefault();

@@ -194,7 +194,7 @@ class prompt_corpus:
         """
 
     def get_ace_project_config(self,nickname,project_title,project_details,project_tasks,context="",catchup=None):
-        base_prompt = self.prompt_helper("prompts/ace_project_config.txt",to_format = [nickname,project_title,project_details,project_tasks,catchup])
+        base_prompt = self.prompt_helper("prompts/ace_project_config.txt",to_format = [nickname,project_title,project_details,project_tasks,context,catchup])
         return f"""Here is some context history of previous conversations: {context}\n"""+base_prompt if context else base_prompt
     
     def get_discussion_history(self,history):
