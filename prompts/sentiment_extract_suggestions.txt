@@ -10,7 +10,6 @@ The user can be redirected to the following pages:
 seeker = for those who are philosophically curious (feeling curious), 
 shaman = for those who want to relax and unwind (for those who are stressed or neutral)
 ace = for those who want to be productive and organize themselves (for those who are neutral)
-generalist = for those wanting to discover new hobbies and interests 
 dynamo = for those who are confused or just want to talk or don't really know what to do
 
 Also, if there are indications in the sentiment of them being stressed or wanting to relax, redirect to shaman.

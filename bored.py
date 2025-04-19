@@ -1,21 +1,37 @@
+"""
+bored.py
+
+The core flask app that is responsible for running everything behind Alcove.
+"""
+
+# Server dependencies
 from flask import Flask, render_template,redirect,request,session,make_response,url_for,jsonify,flash,Response
 from flask_pymongo import PyMongo
-from flask_socketio import SocketIO, emit
-from gridfs import GridFS
 from authlib.integrations.flask_client import OAuth
-import dynaweb,engine,gemini,prompts,personalizer
-from datetime import datetime
-import configparser, time
-import google.generativeai as gemini_model
 from werkzeug.exceptions import NotFound,MethodNotAllowed,RequestTimeout,BadRequestKeyError,InternalServerError
-import google.api_core.exceptions as geminiExceptions
-import markdown2,models,os,base64,requests
 from werkzeug.utils import secure_filename
+import google.api_core.exceptions as geminiExceptions
+
+# Helper dependencies
+import os
+import markdown2
+from functools import wraps
 from datetime import datetime, timedelta
-import pytz
+
+# Modules
+import dynaweb
+import engine
+import gemini
+import prompts
+import personalizer
+import configparser
+import models
+from error_handlers import handle_error, ErrorCodes
+
+# ======== App Configuration ======== #
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+
 config = configparser.ConfigParser()
 config.read("secrets.cfg")
 
@@ -24,17 +40,24 @@ app.config["SECRET_KEY"] = config['captcha']['secret_key']
 app.config["SITE_KEY"] = config['captcha']['site_key']
 app.config["UPLOADS"] = "static/uploads"
 app.config["API_KEY"] = config["gemini"]["api_key"]
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
+app.permanent_session_lifetime = timedelta(minutes=30)
+
 mongo = PyMongo(app)
 oauth = OAuth(app)
 
 home_engine = engine.engine_client(app.config["MONGO_URI"])
 dynamic_web = dynaweb.curate_web()
-data = {}
+prompt_handler = prompts.prompt_corpus()
+
+# ======== Database and Auth Connections ======== #
 
 google = oauth.register(
     name='google',
-    client_id='953946004284-uofaq8ej75e9l0vfkb3o2mdl2gdpc6q7.apps.googleusercontent.com',
-    client_secret='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',
+    client_id=config["oauth"]["client_id"],
+    client_secret=config["oauth"]["client_secret"],
     access_token_url='https://accounts.google.com/o/oauth2/token',
     access_token_params=None,
     authorize_url='https://accounts.google.com/o/oauth2/auth',
@@ -49,45 +72,56 @@ try:
 except Exception as e:
     print("Error connecting to MongoDB:", e)
 
+# ======== Decorators and Error Handlers ========
+
+def login_required(function):
+    @wraps(function)
+    def decorated_function(*args, **kwargs):
+        if 'nickname' not in session:
+            return redirect(url_for('intro'))
+        return function(*args, **kwargs)
+    return decorated_function
+
 @app.errorhandler(NotFound)
-def not_found(error):
-    return render_template("response.html",code=404)
+@handle_error(ErrorCodes.NOT_FOUND, "Page not found")
+def not_found(error): ...
 
 @app.errorhandler(MethodNotAllowed)
-def method_not_allowed(error):
-    return render_template("response.html",code=405)
+@handle_error(ErrorCodes.METHOD_NOT_ALLOWED, "Method not Allowed")
+def method_not_allowed(error): ...
 
 @app.errorhandler(RequestTimeout)
-def method_not_allowed(error):
-    return render_template("response.html",code=408)
+@handle_error(ErrorCodes.TIMEOUT, "Request Timed Out")
+def timeout_error(error): ...
 
 @app.errorhandler(BadRequestKeyError)
-def bad_request_key_error(error):
-    return render_template("response.html",code=410)
+@handle_error(ErrorCodes.BAD_REQUEST, "Bad Request")
+def bad_request_key_error(error): ...
 
 @app.errorhandler(InternalServerError)
-def internal_server_error(error):
-    return render_template("response.html",code=500)
+@handle_error(ErrorCodes.INTERNAL_ERROR, "Internal Server Error")
+def internal_server_error(error): ...
 
 @app.errorhandler(geminiExceptions.InternalServerError)
-def internal_server_error(error):
-    return render_template("response.html",code=500)
+@handle_error(ErrorCodes.INTERNAL_ERROR, "Internal Server Error")
+def internal_server_error(error): ...
 
 @app.errorhandler(geminiExceptions.ResourceExhausted)
-def resource_exhausted(error):
-    return render_template("response.html",code=504)
+@handle_error(ErrorCodes.RESOURCE_EXHAUSTED, "Resource Exhausted")
+def resource_exhausted(error): ...
 
 @app.errorhandler(geminiExceptions.DeadlineExceeded)
-def resource_exhausted(error):
-    return render_template("response.html",code=504)
+@handle_error(ErrorCodes.INTERNAL_ERROR, "Resource Exhausted")
+def resource_exhausted(error): ...
+
+# ======== Entry Routes ======== #
 
 @app.route("/")
 def intro():
-    if not session:
-        return render_template("login.html",SITE_KEY=app.config["SITE_KEY"])
-    else:
-        return redirect("/home")
-    
+    if 'nickname' not in session:
+        return render_template("login.html", SITE_KEY=app.config["SITE_KEY"]) 
+    return redirect("/home")
+
 @app.route("/logout")
 def clear_session():
     session.clear()
@@ -109,7 +143,11 @@ def register():
     user_creds = {
         "nickname": nickname,
         "safeword": safeword,
-        "recovery": recovery 
+        "recovery": recovery,
+        "dynamo": 0,
+        "ace": 0,
+        "shaman": 0,
+        "seeker": 0,
     }
     
     existing_user = mongo.db.users.find_one({"nickname":nickname})
@@ -137,12 +175,6 @@ def login():
     elif existing_user and existing_user["safeword"] != safeword:
         return render_template("response.html",code=150)
     
-@app.route('/reset')
-def reset():
-    google = oauth.create_client('google')
-    redirect_uri = url_for('authorize',_external=True)
-    return google.authorize_redirect(redirect_uri)
-
 @app.route('/authorize')
 def authorize():
     google = oauth.create_client('google')
@@ -158,41 +190,58 @@ def authorize():
         return response
     else:
         return render_template("response.html",code=100)
-    
+
+@app.route('/alt')
+def alt():
+    google = oauth.create_client('google')
+    redirect_uri = url_for('authorize',_external=True)
+    return google.authorize_redirect(redirect_uri)
+
+# ======== Entry Primer Routes ======== #
+
 @app.route("/home",methods=["GET","POST"])
+@login_required
 def home():
     session["year"] = str(datetime.now().year)
     if session:    
         user_class = mongo.db.user_classes.find_one({"nickname":session["nickname"]})
-        data["first_visit"] = False
+        session["first_visit"] = False
 
         if user_class:
-            data["desc"] = dynamic_web.get_class_description(user_class["class"])
+            session["desc"] = dynamic_web.get_class_description(user_class["class"])
         
         if not (mongo.db.survey.find_one({"nickname":session["nickname"]})):
             return redirect("/survey")
         
+        is_a_first_visit = False
         for cookie in request.cookies:
             if cookie == "first_visit":
-                data["first_visit"] = True
+                session["first_visit"] = True
+                is_a_first_visit = True
+                break
+        
+        recommendations = []        
+        if is_a_first_visit:
+            tags = home_engine.build_tags(session["nickname"])
+            recommendations = [tag.capitalize() for tag in gemini.fit_prompt(prompt_handler.get_sentiment_corpus(tags,True)).split()]
+        else:
+            recommendations = personalizer.get_top_tools(session["nickname"])
 
-        tags = home_engine.build_tags(session["nickname"])
-        rec_prompts = prompts.prompt_corpus()
-        recommendations = [tag.capitalize() for tag in gemini.fit_prompt(rec_prompts.get_sentiment_corpus(tags,True)).split()]
-        data["top1"] = recommendations[0]
-        data["top2"] = recommendations[1]
-        data["top3"] = recommendations[2]
-        data["top1_desc"] = dynamic_web.get_tag_tooltip(data["top1"])
-        data["top2_desc"] = dynamic_web.get_tag_tooltip(data["top2"])
-        data["top3_desc"] = dynamic_web.get_tag_tooltip(data["top3"])
-    
-        response = make_response(render_template("home.html",data=data))
+        session["top1"] = recommendations[0]
+        session["top2"] = recommendations[1]
+        session["top3"] = recommendations[2]
+        session["top1_desc"] = dynamic_web.get_tag_tooltip(session["top1"])
+        session["top2_desc"] = dynamic_web.get_tag_tooltip(session["top2"])
+        session["top3_desc"] = dynamic_web.get_tag_tooltip(session["top3"])
+
+        response = make_response(render_template("home.html",data=session))
         response.set_cookie("first_visit",expires=0)
         return response
     else:
         return redirect("/")
         
 @app.route("/survey")
+@login_required
 def survey():
     if not session:
         return redirect("/")
@@ -202,6 +251,7 @@ def survey():
         return redirect("/home")
 
 @app.route("/survey/submit",methods=["POST"])
+@login_required
 def survey_submit():
     response = make_response(redirect("/home"))
     survey_det = dict(request.form)
@@ -210,13 +260,15 @@ def survey_submit():
         if "first_visit" in cookie:
             response.set_cookie("survey","true")
             mongo.db.survey.insert_one(survey_det)
-            Prompts = prompts.prompt_corpus()
-            user_class = gemini.fit_prompt(Prompts.get_sentiment_corpus(tags=home_engine.build_tags(session["nickname"])))
-            data["user_class"] = user_class.capitalize()
+            user_class = gemini.fit_prompt(prompt_handler.get_sentiment_corpus(tags=home_engine.build_tags(session["nickname"])))
+            session["user_class"] = user_class.capitalize()
             mongo.db.user_classes.insert_one({"nickname":session["nickname"],"class":user_class})
     return response
 
+# ======== Routes related to Dynamo ======== #
+
 @app.route("/dynamo")
+@login_required
 def dynamo():
     try:
         user = session["nickname"]
@@ -229,17 +281,17 @@ def dynamo():
         topics_list = None
         if opted_in_user:
             history = personalizer.get_dynamo_history(session["nickname"])
-            topics_list = gemini.fit_prompt(prompts.prompt_corpus().get_dynamo_highlights(history)).split('#')
+            topics_list = gemini.fit_prompt(prompt_handler.get_dynamo_highlights(history)).split('#')
             if not history or history == "":
                 icebreaker = dynamic_web.get_dynamo_icebreaker()
                 session["icebreaker"] = icebreaker
                 session["tip"] = dynamic_web.no_history_response(opted=True)
             else:
                 if not session["mask"]:
-                    icebreaker = gemini.fit_prompt(prompts.prompt_corpus().get_relevant_icebreaker(session["nickname"],history))
+                    icebreaker = gemini.fit_prompt(prompt_handler.get_relevant_icebreaker(session["nickname"],history))
                 else:
-                    icebreaker = gemini.fit_prompt(prompts.prompt_corpus().get_relevant_icebreaker(session["nickname"],history,instructions=session["mask"]))
-                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus().get_tip(history))
+                    icebreaker = gemini.fit_prompt(prompt_handler.get_relevant_icebreaker(session["nickname"],history,instructions=session["mask"]))
+                session["tip"] = gemini.fit_prompt(prompt_handler.get_tip(history))
                 session["icebreaker"] = icebreaker    
             gemini.config_dynamo(session["icebreaker"],user,history,instructions=session["mask"])
         else:
@@ -247,7 +299,7 @@ def dynamo():
             session["icebreaker"] = icebreaker
             session["tip"] = dynamic_web.no_history_response(opted=False)
             gemini.config_dynamo(session["nickname"],user,history=None,instructions=session["mask"])
-        return render_template("dynamo.html",talk=session["icebreaker"],data=data,topics=topics_list,error=False)
+        return render_template("dynamo.html",talk=session["icebreaker"],data=session,topics=topics_list,error=False)
     except KeyError:
         return redirect("/")
 
@@ -278,7 +330,7 @@ def create_mask():
     instructions = request.form.get("mask")
     status = False
     try:
-        status = dynamic_web.get_instruction_status(gemini.fit_prompt(prompts.prompt_corpus().get_dynamo_mask(instructions)))
+        status = dynamic_web.get_instruction_status(gemini.fit_prompt(prompt_handler.get_dynamo_mask(instructions)))
     except:
         status = False
     
@@ -293,12 +345,12 @@ def create_mask():
             mongo.db.masks.insert_one({"nickname":session["nickname"],"default_mask":None,"mask":instructions})
         return redirect("/dynamo")
     else:
-        return render_template("response.html",code=500)
+        return render_template("response.html",code=600)
 
 @app.route("/create_mask/<token>",methods=["POST"])
 def default_mask(token):
     try:
-        instructions = prompts.prompt_corpus().get_default_mask(token)
+        instructions = prompt_handler.get_default_mask(token)
         session["default_mask"] = token
         session["is_default_mask"] = True
         session["mask"] = instructions
@@ -318,8 +370,11 @@ def clear_mask():
     session["is_default_mask"] = False
     mongo.db.masks.delete_one({"nickname":session["nickname"]})
     return redirect("/dynamo")
-    
+
+# ======== Routes related to Shaman ======== #
+
 @app.route("/shaman")
+@login_required
 def shaman():
     try:
         user = session["nickname"]
@@ -334,8 +389,8 @@ def shaman():
                 session["icebreaker"] = icebreaker
                 session["tip"] = dynamic_web.no_history_response(opted=True)
             else:
-                icebreaker = gemini.fit_prompt(prompts.prompt_corpus().get_relevant_icebreaker(session["nickname"],history))
-                session["tip"] = gemini.fit_prompt(prompts.prompt_corpus().get_tip(history))
+                icebreaker = gemini.fit_prompt(prompt_handler.get_relevant_icebreaker(session["nickname"],history))
+                session["tip"] = gemini.fit_prompt(prompt_handler.get_tip(history))
                 session["icebreaker"] = icebreaker    
             gemini.config_shaman(session["icebreaker"],user,history)
         else:
@@ -343,7 +398,7 @@ def shaman():
             session["icebreaker"] = icebreaker
             session["tip"] = dynamic_web.no_history_response(opted=False)
             gemini.config_shaman(session["nickname"],user,None)
-        return render_template("shaman.html",talk=session["icebreaker"],data=data,error=False)
+        return render_template("shaman.html",talk=session["icebreaker"],data=session,error=False)
     except KeyError:
         return redirect("/")
 
@@ -385,6 +440,7 @@ def dontPersonalize():
     return redirect(request.referrer)
 
 @app.route("/journal")
+@login_required
 def journal():
     session["today"] = dynamic_web.today()
     existing_journals = mongo.db.journals.find({"nickname":session["nickname"]},{"_id":False})
@@ -401,6 +457,7 @@ def blank_journal():
     return redirect(url_for("get_journal",token=token))
 
 @app.route("/entry/<token>")
+@login_required
 def get_journal(token):
     if not mongo.db.journals.find_one({"token":token}):
         return redirect("/")
@@ -426,6 +483,7 @@ def get_prompt():
     return jsonify(prompt=f'{jprompt}',error="False")
 
 @app.route("/reflection")
+@login_required
 def reflect():
     return render_template("reflection.html")
 
@@ -440,6 +498,7 @@ def do_reflection():
     })
 
 @app.route("/timeline")
+@login_required
 def timeline():
     if not session:
         return redirect("/")
@@ -473,7 +532,7 @@ def update_mood():
     existing_user = mongo.db.timeline.find_one({"nickname":session["nickname"]})
     corpus = request.form["corpus"]
 
-    mood_prompt = prompts.prompt_corpus().get_mood_prompt(corpus)
+    mood_prompt = prompt_handler.get_mood_prompt(corpus)
     detected_mood = gemini.fit_prompt(mood_prompt)
     if existing_user and existing_user["last_interacted"] != date: 
         mongo.db.timeline.update_one({
@@ -491,6 +550,7 @@ def update_mood():
     return jsonify({"status":"success","flash":"Save successful! Come back again tommorrow!"})
 
 @app.route("/zen")
+@login_required
 def zen():
     if not session:
         return redirect("/")
@@ -503,6 +563,7 @@ def choose_zen():
     return jsonify({"status":"success","choice":request.form["zenChoice"]})
 
 @app.route("/radar")
+@login_required
 def radar():
     if not session:
         return redirect("/")
@@ -530,10 +591,14 @@ def radar_response():
 @app.route("/get_radar_analysis",methods=["POST"])
 def get_radar_analysis():
     scores = personalizer.get_scores(request.json)
-    analysis = gemini.fit_prompt(prompts.prompt_corpus().get_analysis_prompt(scores))
+    print(scores)
+    analysis = gemini.fit_prompt(prompt_handler.get_analysis_prompt(scores))
     return jsonify(success=True,title=scores["title"],scores=scores,analysis=analysis,safeword="Analysis")
 
+# ======== Routes related to Ace ======== #
+
 @app.route("/ace")
+@login_required
 def ace():
     session["today"] = dynamic_web.today()
     icebreaker = "How can I help you?"
@@ -588,16 +653,12 @@ def chat_ace():
         return jsonify(talk="Ace could not respond to your request.", error=True)
 
 @app.route("/pomodoro")
+@login_required
 def pomodoro():
     return render_template("pomodoro.html")
 
-@app.route("/tasksempty")
-def empty():
-    session["tasks"] = {}
-    session["num_tasks"] = 0
-    return redirect("/outline")
-
 @app.route("/outline")
+@login_required
 def outline():
     try:
         existing_user = mongo.db.plans.find_one({"nickname":session["nickname"]})
@@ -640,6 +701,7 @@ def delete_task(token):
     return redirect("/outline")
 
 @app.route("/collaborate")
+@login_required
 def progress():
     projects = mongo.db.projects.count_documents({"nickname": session["nickname"]})
     if projects > 0:
@@ -647,6 +709,7 @@ def progress():
     return render_template("collaborate.html")
 
 @app.route("/projects")
+@login_required
 def projects():
     page = int(request.args.get('page', 1))
     per_page = 5
@@ -690,6 +753,7 @@ def create_project():
     return redirect("/projects")
 
 @app.route("/project/<token>")
+@login_required
 def new_project(token):
     project_id = token
     project = dict(mongo.db.projects.find_one({"nickname": session["nickname"],"project_id":token}, {"_id": False}))
@@ -707,9 +771,9 @@ def new_project(token):
         else:
             if project["active"] != 0:
                 history = dynamic_web.get_context(project["context"]).split("$$$BREAK$$$")[-1]
-                catchup_context = prompts.prompt_corpus().get_discussion_icebreaker(project["context"])
+                catchup_context = prompt_handler.get_discussion_icebreaker(project["context"])
                 catchup = gemini.fit_prompt(catchup_context)
-                tip = gemini.fit_prompt(prompts.prompt_corpus().get_tip(project["context"]))
+                tip = gemini.fit_prompt(prompt_handler.get_tip(project["context"]))
                 marked_history = markdown2.markdown(history,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])    
                 marked_catchup = markdown2.markdown(catchup,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
                 marked_tip = markdown2.markdown(tip,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
@@ -1023,14 +1087,36 @@ def delete_habit(nickname, habit):
     else:
         return jsonify(success=False, error="Habit not found"), 404
 
+# ======== Routes related to Seeker ======== #
+
 @app.route("/seeker/intro",methods=["POST"])
 def seeker_intro():
     topics = list(dict(request.form).keys())
     session["askTopics"] = False
-    mongo.db.seeker.update_one({"nickname":session["nickname"],"survey":"False"},{"$set":{"survey":"True","topics":topics,"history":""}})
+
+    date = datetime.now().strftime(f"%d/%m/%Y")
+    fact_topic, fact = gemini.get_fotd(topics,exclude="[No history as of now]")
+    
+    session["fact_topic"] = str(fact_topic).capitalize()
+    session["fact"] = fact
+
+    mongo.db.seeker.update_one({
+        "nickname":session["nickname"],
+        "survey":"False"
+    },{
+        "$set":{
+            "survey":"True",
+            "topics":topics,
+            "history":"",
+            "fotd_last": date,
+            "fotd_last_content": fact,
+            "last_fact_topic": fact_topic,
+        }
+    })
     return redirect("/seeker")
 
 @app.route("/seeker")
+@login_required
 def seeker():
     if not session:
         return redirect("/")
@@ -1038,13 +1124,33 @@ def seeker():
     user = mongo.db.seeker.find_one({"nickname": session["nickname"]})
     mongo.db.users.update_one({"nickname":session["nickname"]},{"$inc":{"seeker":1}})
 
-    last_fact = user["fotd_last"]
-    last_fact_content = user["fotd_last_content"]
-    last_fact_topic = user["fotd_last_topic"]
+    if not user: 
+        mongo.db.seeker.insert_one({"nickname": session["nickname"], "survey":"False"})
+        session["askTopics"] = True
 
-    session["fact_topic"] = str(last_fact_topic).capitalize()
-    session["fact"] = last_fact_content
+    if user and user.get("survey") == "True":
+        session["askTopics"] = False
+        user_topics = [str(x).capitalize() for x in user.get("topics", [])]
+        last_fact = user["fotd_last"]
+        last_fact_content = user["fotd_last_content"]
+        last_fact_topic = user["last_fact_topic"]
 
+        session["fact_topic"] = str(last_fact_topic).capitalize()
+        session["fact"] = last_fact_content
+
+        date = datetime.now().strftime(f"%d/%m/%Y")
+        if last_fact != date:
+            exclude = user.get("facts_history","")
+            fact_topic, fact = gemini.get_fotd(user["topics"],exclude)
+
+            session["fact_topic"] = str(fact_topic).capitalize()
+            session["fact"] = fact
+
+            personalizer.update_fact_history(session["nickname"],fact,fact_topic)
+            mongo.db.seeker.update_one({"nickname":session["nickname"]},{"$set":{"fotd_last":date,"fotd_last_topic":fact_topic,"fotd_last_content":fact}})
+    elif user and user.get("survey") == "False":
+        session["askTopics"] = True
+    
     philosopher_talks = {
         "aristotle":personalizer.get_philosopher_icebreaker("aristotle"),
         "nietzsche":personalizer.get_philosopher_icebreaker("nietzsche"),
@@ -1055,29 +1161,8 @@ def seeker():
     }
 
     session["philosopher_icebreakers"] = philosopher_talks
-
-    date = datetime.now().strftime(f"%d/%m/%Y")
-    if last_fact != date:
-        exclude = user.get("facts_history","")
-        fact_topic, fact = gemini.get_fotd(user["topics"],exclude)
-
-        session["fact_topic"] = str(fact_topic).capitalize()
-        session["fact"] = fact
-
-        personalizer.update_fact_history(session["nickname"],fact,fact_topic)
-        mongo.db.seeker.update_one({"nickname":session["nickname"]},{"$set":{"fotd_last":date,"fotd_last_topic":fact_topic,"fotd_last_content":fact}})
-        
-    if user:
-        if not user or not user.get("survey"):
-            mongo.db.seeker.insert_one({"nickname": session["nickname"], "survey": "False"})
-            session["askTopics"] = True
-        
-        if user and user.get("survey") == "True":
-            session["askTopics"] = False
-            user_topics = [str(x).capitalize() for x in user.get("topics", [])]
-    else:
-        user_topics = []
     
+    user_topics = []
     try:
         user = session["nickname"]
         session["opted_users%"] = home_engine.opted_users_p()
@@ -1099,7 +1184,7 @@ def seeker():
             session["icebreaker"] = icebreaker
             session["tip"] = dynamic_web.no_history_response(opted=False)
             gemini.config_seeker(session["nickname"],user,None)
-        return render_template("seeker.html",talk=session["icebreaker"],philosopher_talks=philosopher_talks,data=data,error=False, user_topics=user_topics, fact=session.get("fact",""),fact_topic = session.get("fact_topic",""))
+        return render_template("seeker.html",talk=session["icebreaker"],philosopher_talks=philosopher_talks,data=session,error=False, user_topics=user_topics, fact=session.get("fact",""),fact_topic = session.get("fact_topic",""))
     except Exception as error:
         print(error)
         return redirect("/")
@@ -1118,11 +1203,6 @@ def condense_wiki():
     summary = gemini.condense_wiki(title,topics)
     gemini.config_context_seeker(session["nickname"],corpus=summary)
     return jsonify(success=True, title=title, summary=markdown2.markdown(summary))
-
-@app.route("/lift_ban", methods=["POST"])
-def lift_ban():
-    mongo.db.seeker.update_one({"nickname": session["nickname"]}, {"$set": {"active": 0, "ban_duration": 0, "ban_expiry": None}})
-    return redirect("/logout")
 
 @app.route("/chat_seeker",methods=["POST"])
 def chat_seeker():
@@ -1175,4 +1255,4 @@ def philosopher_chat():
         return jsonify(success=False,resp=None)
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, port=7000)
+    app.run(debug=True, port=7000)

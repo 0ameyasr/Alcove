@@ -62,7 +62,10 @@ class engine_client:
 
     def build_tags(self,nickname:str) -> list[str]:
         survey = self.client["credentials"]["survey"]
-        user_response = survey.find_one({"nickname":nickname})
+        user_response = survey.find_one({
+            "nickname":nickname
+        })
+        
         if user_response:
             qs_r = [user_response["q1"],user_response["q2"],user_response["q3"],user_response["q4"],user_response["q5"]]
             return [

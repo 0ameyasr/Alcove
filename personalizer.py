@@ -12,6 +12,11 @@ import random
 import libs
 import re
 
+def mongo_client():
+    config = configparser.ConfigParser()
+    config.read("secrets.cfg")
+    return MongoClient(config["mongodb"]["uri"])
+
 def clean_message(message):
     message = re.sub(r'\\(.)', r'\1', message)
     message = message.replace('\\"', '"')
@@ -32,10 +37,7 @@ def build_project_history(nickname,conversation_history,latest_message:str,user_
     return conversation_history +"<br>"+user_message+"<br>"+latest_message+"<br>"
 
 def get_dynamo_history(nickname):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     chats = mongo["credentials"]["chats"]
     user = chats.find_one({"nickname":nickname})
     
@@ -47,10 +49,7 @@ def get_dynamo_history(nickname):
         return ""
     
 def get_shaman_history(nickname):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     chats = mongo["credentials"]["shaman"]
     user = chats.find_one({"nickname":nickname})
     
@@ -62,10 +61,7 @@ def get_shaman_history(nickname):
         return ""
 
 def get_seeker_history(nickname):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     chats = mongo["credentials"]["seeker"]
     user = chats.find_one({"nickname":nickname})
     
@@ -78,19 +74,13 @@ def get_seeker_history(nickname):
         return ""
 
 def get_random_topics(nickname):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     seeker = mongo["credentials"]["seeker"]
     user = seeker.find_one({"nickname":nickname})
     return random.sample(user["topics"],k=3 if len(user["topics"]) >=3 else 1) if user else None
 
 def get_journal_data(token):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     journals = mongo["credentials"]["journals"]
     journal = journals.find_one({"token": token})
     if not journal:
@@ -139,10 +129,8 @@ def get_question_set(mood,mode):
 def build_corpus_history(nickname,date,corpus,mode=0):
     if mode == 1:
         return f"({date}):{corpus}"
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-
-    mongo = MongoClient(config["mongodb"]["uri"])
+    
+    mongo = mongo_client()
     timelines = mongo["credentials"]["timeline"]
     user = timelines.find_one({"nickname":nickname})
     return user["corpus"]+f"({date}):{corpus}\n"
@@ -151,24 +139,21 @@ def build_timeline_history(nickname,date,mood,mode=0):
     mood = mood.replace("\\n","").replace("\\","").strip()
     if mode == 1:
         return f"({date}):{mood}"
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
 
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     timelines = mongo["credentials"]["timeline"]
     user = timelines.find_one({"nickname":nickname})
     return user["history"]+f"({date}):{mood}\n"
 
 def get_timeline(nickname):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     timelines = mongo["credentials"]["timeline"]
     user = timelines.find_one({"nickname":nickname})
 
     if not user:
         return []
-    mongo = MongoClient(config["mongodb"]["uri"])
+    
+    mongo = mongo_client()
     timelines = mongo["credentials"]["timeline"]
     user = timelines.find_one({"nickname":nickname})
 
@@ -212,9 +197,7 @@ def get_scores(scores):
     return userScores
 
 def get_mask_details(nickname):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     masks = mongo["credentials"]["masks"]
     user = masks.find_one({"nickname":nickname})
     if user:
@@ -226,9 +209,7 @@ def get_mask_details(nickname):
         return None,False
 
 def get_tasks(nickname):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     plans = mongo["credentials"]["plans"]
     user = plans.find_one({"nickname":nickname})
     if user:
@@ -239,9 +220,7 @@ def get_tasks(nickname):
         return None,None
     
 def update_fact_history(nickname,fact,fact_topic):
-    config = configparser.ConfigParser()
-    config.read("secrets.cfg")
-    mongo = MongoClient(config["mongodb"]["uri"])
+    mongo = mongo_client()
     seeker = mongo["credentials"]["seeker"]
     try:
         user = seeker.find_one({"nickname":nickname})
@@ -260,3 +239,20 @@ def get_philosopher_icebreaker(philosopher):
         "descartes": "What thoughts or doubts are you wrestling with to find clarity today?"
     }
     return philosopher_icebreakers[philosopher]
+
+def get_top_tools(nickname):
+    mongo = mongo_client()
+    users = mongo["credentials"]["users"]
+    user = users.find_one({
+        "nickname":nickname
+    })
+
+    tool_hits = {
+        "dynamo": user["dynamo"],
+        "ace": user["ace"],
+        "seeker": user["seeker"],
+        "shaman": user["shaman"]
+    }
+    
+    sorted_tools = dict(sorted(tool_hits.items(), key = lambda item: item[1], reverse = True))
+    return [item.capitalize() for i,item in enumerate(sorted_tools) if i <= 2]

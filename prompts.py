@@ -177,7 +177,7 @@ class prompt_corpus:
         return self.prompt_helper("prompts/radar_prompt.txt",to_format=[])
     
     def get_analysis_prompt(self,pDict):
-        return self.prompt_helper("prompts/analysis_prompt.txt",to_format = [pDict["verdict"],pDict["pDepression"],pDict["pAnxiety"],pDict["pOverall"],pDict["pRisk"]])
+        return self.prompt_helper("prompts/analysis_prompt.txt",to_format = [pDict["verdict"],pDict["pSleep"],pDict["pDepression"],pDict["pAnxiety"],pDict["pOverall"],pDict["pRisk"]])
     
     def get_radar_concerns(self,history):
         return f"""

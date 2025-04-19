@@ -45,6 +45,47 @@
     <!-- Hidden audio element -->
     <audio controls id="pingAudio" src="static/audio/ping.mp3" style="display:none;"></audio>
     
+    {% if session["askTopics"]:%}
+      <div class="modal fade" id="topicModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content topic-content">
+            <div class="modal-header border-none">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">Select some topics you're interested in</h1>
+            </div>
+            <form action="/seeker/intro" method="POST">
+                <div class="modal-body">
+                    <p class="text-center">
+                        Your experience won't be limited to these topics, but some of them may be given preference over others. We're
+                        just collecting this information to improve the results and responses on Alcove
+                    </p>
+                    <br>
+                    <div class="survey-body">
+                        <div class="survey-item"><input type="checkbox" class="survey-check" name="history" value="history"/> History </div>
+                        <div class="survey-item"><input type="checkbox" class="survey-check" name="ecology" value="ecology"/> Ecology</div>
+                        <div class="survey-item"><input type="checkbox" class="survey-check" name="science" value="science"/> Science and Technology</div>
+                        <div class="survey-item"><input type="checkbox" class="survey-check" name="arts" value="arts"/> Arts and Culture</div>
+                        <div class="survey-item"><input type="checkbox" class="survey-check" name="philosophy" value="philosophy"/> Philosophy</div>
+                        <div class="survey-item"><input type="checkbox" class="survey-check" name="finance" value="finance"/> Finance and Business</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-none">
+                  <button type="submit" id="submitIntro" class="btn continue" data-bs-dismiss="modal" disabled>Submit</button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var myModal = new bootstrap.Modal(document.getElementById('topicModal'), {
+            backdrop: 'static',
+            keyboard: false
+          });
+          myModal.show();
+        });
+      </script>
+    {% endif %}
+
     <!-- Seeker Widget -->
     <div class="container">
       <h1 class="h1"><i class="fa-solid fa-comments"></i>&nbsp;Discuss and Debate</h1>
@@ -285,5 +326,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
     <script src="static/scripts/home.js"></script>
     <script src="static/scripts/seeker.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          const checkboxes = document.querySelectorAll('.survey-check');
+          const submitButton = document.querySelector('#submitIntro');
+
+          checkboxes.forEach(checkbox => {
+              checkbox.addEventListener('change', function () {
+                  const atLeastOneChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                  submitButton.disabled = !atLeastOneChecked;
+              });
+          });
+      });
+    </script>
   </body>
 </html>

@@ -118,6 +118,5 @@ When asking a question, just return the question. No apostrophe or number.
 Finally, compute the scores for each INDEX section.
 ONLY return a list of the scores.
 
-
 In the format: $[SLEEP INDEX, DEPRESSION INDEX, ANXIETY INDEX, OVERALL MENTAL HEALTH, ABNORMALCY INDEX]
 [STRICTLY FOLLOW THESE INSTRUCTIONS. BEGIN WITH THE FIRST QUESTION.]
