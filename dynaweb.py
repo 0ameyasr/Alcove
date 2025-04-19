@@ -325,3 +325,7 @@ class curate_web:
         for i,dup in enumerate(duplets):
             duplets[i] = re.sub("\"",'',dup)
         return '\n'.join(duplets)
+
+    def issue_catchup(self,last_recorded,now):
+        time_since_last = now - last_recorded
+        return time_since_last >= timedelta(minutes=1)

@@ -747,7 +747,9 @@ def create_project():
         "project_desc":project_desc,
         "created":dynamic_web.today(),
         "init":False,
-        "context":""
+        "context":"",
+        "last_tip": None,
+        "last_catchup": None
     })
     flash("Project created successfully.","success")
     return redirect("/projects")
@@ -758,9 +760,9 @@ def new_project(token):
     project_id = token
     project = dict(mongo.db.projects.find_one({"nickname": session["nickname"],"project_id":token}, {"_id": False}))
     conv = None
-    marked_catchup,marked_history,marked_tip = None,None,None
-    tip = None
-    catchup = None
+    marked_catchup, marked_tip = project["last_catchup"], project["last_tip"]
+    marked_history = None
+
     if project["init"] == True:
         project_details = project["project_details"]
         project_tasks = project["project_tasks"]
@@ -771,14 +773,58 @@ def new_project(token):
         else:
             if project["active"] != 0:
                 history = dynamic_web.get_context(project["context"]).split("$$$BREAK$$$")[-1]
-                catchup_context = prompt_handler.get_discussion_icebreaker(project["context"])
-                catchup = gemini.fit_prompt(catchup_context)
-                tip = gemini.fit_prompt(prompt_handler.get_tip(project["context"]))
                 marked_history = markdown2.markdown(history,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])    
-                marked_catchup = markdown2.markdown(catchup,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
-                marked_tip = markdown2.markdown(tip,extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
-            gemini.config_project_ace(session["nickname"],project["project_title"],project_details,project_tasks,context=project["context"],catchup=catchup)
-    return render_template("project.html",project_id=project_id,project=project,conversation=conv,history=marked_history,talk=None,tip=marked_tip,catchup=marked_catchup)
+
+                now = datetime.now()
+                last_chat = project.get("last_chat", now)
+                last_catchup_time = project.get("last_catchup_time", now - timedelta(days=1))
+                
+                recent_activity = last_chat > last_catchup_time
+                can_issue = dynamic_web.issue_catchup(last_catchup_time, now)
+                
+                if recent_activity and can_issue:
+                    catchup_context = prompt_handler.get_discussion_icebreaker(project["context"])
+                    catchup = gemini.fit_prompt(catchup_context)
+                    tip = gemini.fit_prompt(prompt_handler.get_tip(project["context"]))    
+
+                    marked_catchup = markdown2.markdown(catchup, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+                    marked_tip = markdown2.markdown(tip, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+
+                    mongo.db.projects.update_one({
+                        "nickname": session["nickname"],
+                        "project_title": project["project_title"],
+                    }, {
+                        "$set": {
+                            "last_tip": marked_tip,
+                            "last_catchup": marked_catchup,
+                            "last_catchup_time": now,
+                            "first_chat": project["first_chat"]
+                        }
+                    })
+                
+                elif (not project.get("first_chat_processed", False)) and project.get("first_chat") == now.strftime("%d/%m/%Y"):
+                    catchup_context = prompt_handler.get_discussion_icebreaker(project["context"])
+                    catchup = gemini.fit_prompt(catchup_context)
+                    tip = gemini.fit_prompt(prompt_handler.get_tip(project["context"]))    
+
+                    marked_catchup = markdown2.markdown(catchup, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+                    marked_tip = markdown2.markdown(tip, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
+                    
+                    mongo.db.projects.update_one({
+                        "nickname": session["nickname"],
+                        "project_title": project["project_title"],
+                    }, {
+                        "$set": {
+                            "last_tip": marked_tip,
+                            "last_catchup": marked_catchup,
+                            "last_catchup_time": now,
+                            "first_chat_processed": True
+                        }
+                    })
+
+            gemini.config_project_ace(session["nickname"], project["project_title"], project_details, project_tasks, context=project["context"], catchup=marked_catchup)
+    
+    return render_template("project.html", project_id=project_id, project=project, conversation=conv, history=marked_history, talk=None, tip=marked_tip, catchup=marked_catchup)
 
 @app.route("/delete_project/<token>",methods=["POST"])
 def delete_project(token):
@@ -858,7 +904,26 @@ def chat_project_ace(token):
     response, latest_message = gemini.chat_project_ace(message)
     current_history = personalizer.build_project_history(session["nickname"],project["context"],response.text,message,model="Ace")
     talk=markdown2.markdown(response.text, extras=["fenced-code-blocks", "code-friendly", "highlightjs-lang"])
-    mongo.db.projects.update_one({"nickname":session["nickname"],"project_id":token},{"$set":{"context":current_history}})
+    
+    if not project.get("first_chat",None):
+        mongo.db.projects.update_one({
+            "nickname": session["nickname"],
+            "project_id": token
+        },{"$set":
+           {
+                "first_chat": datetime.now().strftime("%d/%m/%Y")
+        }})
+
+    mongo.db.projects.update_one({
+        "nickname":session["nickname"],
+        "project_id":token
+    }
+    ,{
+        "$set":{
+            "context":current_history,
+            "last_chat":datetime.now()
+        }
+    })
     return jsonify(talk=talk,catchup=None,error=False)
 
 @app.route("/new_discussion/<token>",methods=["POST"])
