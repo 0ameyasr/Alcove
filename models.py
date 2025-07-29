@@ -19,7 +19,7 @@ class ANNModel(nn.Module):
     self.fc3 = nn.Linear(16,32)
     self.fc4 = nn.Linear(32,4)
 
-    self.dropout = nn.Dropout(p=0.75)
+    self.dropout = nn.Dropout(p=0.25)
 
     self.relu = nn.ReLU()
     self.softmax = nn.Softmax(dim=1)
