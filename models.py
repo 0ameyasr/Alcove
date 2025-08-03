@@ -22,14 +22,13 @@ class ANNModel(nn.Module):
     self.dropout = nn.Dropout(p=0.25)
 
     self.relu = nn.ReLU()
-    self.softmax = nn.Softmax(dim=1)
   
   def forward(self,x):
     x = self.relu(self.fc1(x))
     x = self.relu(self.fc2(x))
     x = self.relu(self.fc3(x))
     x = self.dropout(x)
-    x = self.softmax(self.fc4(x))
+    x = self.fc4(x)
     return x
 
 def make_radar_verdict(score):
