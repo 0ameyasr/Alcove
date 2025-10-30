@@ -20,7 +20,6 @@ class ANNModel(nn.Module):
     self.fc4 = nn.Linear(32,4)
 
     self.dropout = nn.Dropout(p=0.25)
-
     self.relu = nn.ReLU()
   
   def forward(self,x):
