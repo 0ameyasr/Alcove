@@ -45,5 +45,7 @@ A quick widget for co-operative pomodoro based work that allows you to access AI
 ### Projects - Collaborate with AI 
 ![projects](screenshots/projects.png)
 A comprehensive platform that allows you to create projects and collaborate with AI - be it technical, personal or academic.
+_____
+These are some of the highlights - Alcove has many more minor features and tools that could help you balance your productivity!
 
-... and many more such tools
+**NOTE:** Several performance-related refactors (including the original backend) are being undertaken for this project. 
