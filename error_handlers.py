@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import render_template
 
+
 class ErrorCodes:
     USER_NOT_FOUND = 100
     INVALID_PASSWORD = 150
@@ -13,12 +14,15 @@ class ErrorCodes:
     BAD_REQUEST = 410
     RESOURCE_EXHAUSTED = 504
 
+
 def handle_error(code, message=None):
     def decorator(function):
         @wraps(function)
         def wrapper(error):
-            return render_template("response.html", 
-                                 code=code,
-                                 default_message=message or str(error))
+            return render_template(
+                "response.html", code=code, default_message=message or str(error)
+            )
+
         return wrapper
+
     return decorator

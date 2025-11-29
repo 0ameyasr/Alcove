@@ -76,7 +76,7 @@ window.onload = function () {
 document.addEventListener("DOMContentLoaded", function() {
     const textarea = document.getElementById('radarResponse');
     const wordCountDisplay = document.getElementById('wordCount');
-    const maxWords = 200;
+    const maxWords = 50;
 
     textarea.addEventListener('input', function() {
     const words = textarea.value.split(/\s+/).filter(word => word.length > 0);
@@ -109,34 +109,20 @@ document.addEventListener("DOMContentLoaded", function() {
     observer.observe(questionElement, { childList: true });
 
     function updateProgressBar() {
-        if (changeCount <= 49) {
-            const progressPercentage = (changeCount / 49) * 100;
+        if (changeCount <= 16) {
+            const progressPercentage = (changeCount / 16) * 100;
             progressBar.style.width = progressPercentage + "%";
             progressBar.setAttribute("aria-valuenow", changeCount);
         }
     }
 });
 
-function analyze(score,verdict,concerns) {
-    const riskIndication = verdict;
-    const scores = score;
-    const sleepIndex = score[0];
-    const depressionIndex = score[1];
-    const anxietyIndex = score[2];
-    const overallMentalHealth = score[3];
-    const abnormalcyIndex = score[4];
+function analyze(score, verdict, concerns) {
     const analysis = document.getElementById('analysis');
     const concernsDiv = document.getElementById('concernsDiv');
     const concernsPar = document.getElementById('concerns');
 
-    const data = {
-        "verdict": verdict,
-        "sleepIndex":sleepIndex,
-        "depressionIndex":depressionIndex,
-        "anxietyIndex":anxietyIndex,
-        "overallMentalHealth":overallMentalHealth,
-        "abnormalcyIndex":abnormalcyIndex
-    }
+    const data = {}
 
     $.ajax({
         type: "POST",
@@ -148,53 +134,61 @@ function analyze(score,verdict,concerns) {
             analysis.classList.add("fade-in");
             analysis.hidden = false;
             analysis.innerText = response.analysis;
+
             document.getElementById('title').innerText = response.title;
             document.getElementById('analysisContainer').hidden = false;
+
             concernsDiv.classList.add('fade-in');
             concernsPar.innerText = concerns;
             concernsDiv.hidden = false;
-            createDoughnutChart([sleepIndex, depressionIndex, anxietyIndex, abnormalcyIndex]);
+
+            const ctx = document.getElementById("combinedDoughnutChart");
+
+            if (window.radarChartInstance) {
+                window.radarChartInstance.destroy();
+            }
+
+            window.radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ["Sleep", "Depression", "Abnormal", "Anxiety"],
+                    datasets: [{
+                        label: "Your Mental Health Radar",
+                        data: [
+                            response.scores.pSleep,
+                            response.scores.pDepression,
+                            response.scores.pAbnormal,
+                            response.scores.pAnxiety
+                        ],
+                        fill: true,
+                        backgroundColor: "rgba(54, 162, 235, 0.2)",
+                        borderColor: "rgba(54, 162, 235, 1)",
+                        pointBackgroundColor: "rgba(54, 162, 235, 1)",
+                        pointBorderColor: "#fff",
+                        pointHoverBackgroundColor: "#fff",
+                        pointHoverBorderColor: "rgba(54, 162, 235, 1)"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            angleLines: { color: "#aaa" },
+                            grid: { color: "#ddd" },
+                            pointLabels: { color: "#333", font: { size: 14 } }
+                        }
+                    }
+                }
+            });
         },
         error: function (error) {
             alert("Error occurred: " + error.responseText);
         }
     });
-
-    document.getElementById('progressSleep').style.width = sleepIndex*2 + '%';
-    document.getElementById('progressDepression').style.width = depressionIndex*2 + '%';
-    document.getElementById('progressAnxiety').style.width = anxietyIndex*2 + '%';
-    document.getElementById('progressOverall').style.width = overallMentalHealth*2 + '%';
 }
 
-function createDoughnutChart(data) {
-    const ctx = document.getElementById('combinedDoughnutChart').getContext('2d');
-    if (window.myDoughnutChart) {
-        window.myDoughnutChart.data.datasets[0].data = data;
-        window.myDoughnutChart.update();
-    } else {
-        window.myDoughnutChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Sleep', 'Depression', 'Anxiety', 'Mood Abnormality'],
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#007bff'],
-                    hoverBackgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#007bff']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-}
 
 $('#radarForm').submit(function (e) {
     e.preventDefault();
@@ -208,12 +202,13 @@ $('#radarForm').submit(function (e) {
         success: function (response) {
             document.getElementById("pingAudio").play();
             $('#radarResponse').val('');
-            if (response.status == 0) {
+            if (response.status === 1) {
+                console.log(response)
                 document.getElementById('interactPane').hidden = true;
                 analyze(response.score,response.verdict,response.concerns)
             }
             document.getElementById("question").innerText = response.question;
-            wordCountDisplay.textContent = `Remaining words: 200`;
+            wordCountDisplay.textContent = `Remaining words: 50`;
             wordCountDisplay.classList.add('text-muted');
             wordCountDisplay.classList.remove('text-danger');
         }

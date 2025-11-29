@@ -1,34 +1,42 @@
-""" 
+"""
 prompts.py
 
-This serves, upon invocation, prompts relevant to the situation or scenarios. 
+This serves, upon invocation, prompts relevant to the situation or scenarios.
 Each prompt has a purpose, and is absolutely essential to maintain the integrity of Alcove.
 """
 
 import personalizer
 
+
 class prompt_corpus:
-    def __init__(self): pass
+    def __init__(self):
+        pass
 
     def prompt_helper(self, path, to_format, format=True):
         if format:
-            return open(path, "r",encoding="utf8").read().format(*to_format)
+            return open(path, "r", encoding="utf8").read().format(*to_format)
         else:
             return open(path, "r").read()
 
-    def get_sentiment_corpus(self,tags=None,suggestions=False) -> str:
+    def get_sentiment_corpus(self, tags=None, suggestions=False) -> str:
         if not suggestions:
-            return self.prompt_helper("prompts/sentiment_extract_class.txt",to_format=tags)
+            return self.prompt_helper(
+                "prompts/sentiment_extract_class.txt", to_format=tags
+            )
         else:
-            return self.prompt_helper("prompts/sentiment_extract_suggestions.txt",to_format=tags)
-            
-    def digest_current_dynamo_history(self,nickname):
+            return self.prompt_helper(
+                "prompts/sentiment_extract_suggestions.txt", to_format=tags
+            )
+
+    def digest_current_dynamo_history(self, nickname):
         history = personalizer.get_dynamo_history(nickname)
-        return self.prompt_helper("prompts/digest_current_dynamo_history.txt",to_format=[history])
-    
-    def get_default_mask(self,token):
+        return self.prompt_helper(
+            "prompts/digest_current_dynamo_history.txt", to_format=[history]
+        )
+
+    def get_default_mask(self, token):
         prompt_dict = {
-            "bored":"""
+            "bored": """
                 Act bored, as if you don't have any interest in doing things.
                 However, don't make the user feel bored. That is, keep them
                 engaged by asking random, stupid or goofy questions, even if
@@ -36,7 +44,7 @@ class prompt_corpus:
                 responses should be chill, quite informal and friendly. Never
                 be rude.
             """,
-            "formal":"""
+            "formal": """
                 Act formal. Your responses should feel and sound professional.
                 That is, make sure you use full grammar, punctuation, full 
                 sentences, and formal lingo as if you are a colleague. The 
@@ -44,7 +52,7 @@ class prompt_corpus:
                 skills (don't reveal this). Don't be rude, but ensure to keep
                 the user engaged.
             """,
-            "sarcastic":"""
+            "sarcastic": """
                 Act sarcastic. Add a tinge of sarcasm in everything you say, but
                 do not be rude and do not abuse. Whatever you say or do should 
                 be sarcastic and funny, so as to entertain the user. Don't overdo
@@ -52,7 +60,7 @@ class prompt_corpus:
                 you really don't feel like talking or shock the user with your 
                 sarcasm.
             """,
-            "nerdy":"""
+            "nerdy": """
                 Act nerdy. Whatever the topic, starting acting like an outright 
                 nerd (if you have knowledge about it). Your responses should 
                 reflect that you're like a nerd wanting to know everything 
@@ -60,24 +68,24 @@ class prompt_corpus:
                 to the point that the user gets irritated. Also, give them random
                 facts of information on topics they have talked about.
             """,
-            "coach":"""
+            "coach": """
                 Act like a coach. Your responses should reflect that you are 
                 listening by what they say. Give them motivation often upon
                 anything relevant to the conversation. Ask them if they'd like
                 advice on anything that's troubling them. Be their guide and
                 behave charismatically. 
             """,
-            "poetic":"""
+            "poetic": """
                 Make your responses like poems, even if they are simple free
                 verses. Sometimes they should rhyme but it isn't really necessary.
                 Often, you must also poetically reflect on things you find worth 
                 reflecting from the conversation in the form of a poem. The user
                 should find it engaging.
-            """
+            """,
         }
         return prompt_dict[token]
-    
-    def get_dynamo_mask(self,instructions):
+
+    def get_dynamo_mask(self, instructions):
         return f"""
             *** PRIORITY ***
             The user has given you the following instructions:
@@ -92,7 +100,7 @@ class prompt_corpus:
             [ONLY RETURN THE GIVEN INTEGERS AS PER THE SITUATION]
         """
 
-    def get_dynamo_highlights(self,history):
+    def get_dynamo_highlights(self, history):
         return f"""
         List the top 10 topics (one-word) of interest of the user in this conversation
         background. Return them as a string separated by # that can be split in Python.
@@ -100,11 +108,17 @@ class prompt_corpus:
         [ONLY RETURN THE # DELIMITED STRING OF TOPICS]
         """
 
-    def get_chat_config(self,icebreaker,nickname,history=None,mode="dynamo",mask=None):
+    def get_chat_config(
+        self, icebreaker, nickname, history=None, mode="dynamo", mask=None
+    ):
         if mode == "dynamo":
-            base_prompt = self.prompt_helper("prompts/dynamo_config_base.txt",to_format=[nickname,icebreaker])
+            base_prompt = self.prompt_helper(
+                "prompts/dynamo_config_base.txt", to_format=[nickname, icebreaker]
+            )
             if history or history != "":
-                base_prompt += self.prompt_helper("prompts/history_add_dynamo.txt",to_format=[history])
+                base_prompt += self.prompt_helper(
+                    "prompts/history_add_dynamo.txt", to_format=[history]
+                )
             if mode or mode != "":
                 base_prompt += f"""
                     *** PRIORITY *** 
@@ -119,28 +133,40 @@ class prompt_corpus:
                 """
             return base_prompt
         elif mode == "shaman":
-            base_prompt = self.prompt_helper("prompts/shaman_config_base.txt",to_format=[nickname,icebreaker])
+            base_prompt = self.prompt_helper(
+                "prompts/shaman_config_base.txt", to_format=[nickname, icebreaker]
+            )
             if history or history != "":
-                base_prompt += self.prompt_helper("prompts/history_add_shaman.txt",to_format=[history])
+                base_prompt += self.prompt_helper(
+                    "prompts/history_add_shaman.txt", to_format=[history]
+                )
             return base_prompt
         elif mode == "ace":
-            return self.prompt_helper("prompts/ace_config_base.txt",to_format=[nickname,icebreaker])
+            return self.prompt_helper(
+                "prompts/ace_config_base.txt", to_format=[nickname, icebreaker]
+            )
         elif mode == "seeker":
-            base_prompt = self.prompt_helper("prompts/seeker_config_base.txt",to_format=[nickname,icebreaker])
+            base_prompt = self.prompt_helper(
+                "prompts/seeker_config_base.txt", to_format=[nickname, icebreaker]
+            )
             if history or history != "":
-                base_prompt += self.prompt_helper("prompts/history_add_seeker.txt",to_format=[history])
+                base_prompt += self.prompt_helper(
+                    "prompts/history_add_seeker.txt", to_format=[history]
+                )
             return base_prompt
 
-    def get_relevant_icebreaker(self,nickname,history,instructions=None):
-        base_prompt = self.prompt_helper("prompts/icebreaker_config.txt",to_format=[nickname,history])
+    def get_relevant_icebreaker(self, nickname, history, instructions=None):
+        base_prompt = self.prompt_helper(
+            "prompts/icebreaker_config.txt", to_format=[nickname, history]
+        )
         if instructions:
             base_prompt += f"""
                 For this user, return the icebreaker in the following style:
                 {instructions}
             """
         return base_prompt
-    
-    def get_tip(self,history):
+
+    def get_tip(self, history):
         return f"""
             Here is some relevant conversation history:
             {history}
@@ -149,8 +175,8 @@ class prompt_corpus:
             Do not include phrases like "The user".
             [ONLY RETURN THE TIP. NOTHING ELSE]
         """
-    
-    def get_mood_prompt(self,corpus):
+
+    def get_mood_prompt(self, corpus):
         return f"""
             Classify the following corpus into exactly one of the following tags:
             
@@ -172,14 +198,25 @@ class prompt_corpus:
 
             [ONLY RETURN THE TAG (ONE-WORD OUTPUT)]
         """
-    
-    def get_radar_prompt(self):
-        return self.prompt_helper("prompts/radar_prompt.txt",to_format=[])
-    
-    def get_analysis_prompt(self,pDict):
-        return self.prompt_helper("prompts/analysis_prompt.txt",to_format = [pDict["verdict"],pDict["pSleep"],pDict["pDepression"],pDict["pAnxiety"],pDict["pOverall"],pDict["pRisk"]])
-    
-    def get_radar_concerns(self,history):
+
+    def get_radar_prompt(self, question, user_response):
+        return self.prompt_helper(
+            "prompts/radar_prompt.txt", to_format=[question, user_response]
+        )
+
+    def get_analysis_prompt(self, pDict):
+        return self.prompt_helper(
+            "prompts/analysis_prompt.txt",
+            to_format=[
+                pDict["verdict"],
+                pDict["pSleep"],
+                pDict["pDepression"],
+                pDict["pAbnormal"],
+                pDict["pAnxiety"],
+            ],
+        )
+
+    def get_radar_concerns(self, history):
         return f"""
         Here is a therapist talk session conversation history:
         {history}
@@ -193,11 +230,34 @@ class prompt_corpus:
         [ONLY RETURN THE PARAGRAPH AS MENTIONED ABOVE]
         """
 
-    def get_ace_project_config(self,nickname,project_title,project_details,project_tasks,context="",catchup=None):
-        base_prompt = self.prompt_helper("prompts/ace_project_config.txt",to_format = [nickname,project_title,project_details,project_tasks,context,catchup])
-        return f"""Here is some context history of previous conversations: {context}\n"""+base_prompt if context else base_prompt
-    
-    def get_discussion_history(self,history):
+    def get_ace_project_config(
+        self,
+        nickname,
+        project_title,
+        project_details,
+        project_tasks,
+        context="",
+        catchup=None,
+    ):
+        base_prompt = self.prompt_helper(
+            "prompts/ace_project_config.txt",
+            to_format=[
+                nickname,
+                project_title,
+                project_details,
+                project_tasks,
+                context,
+                catchup,
+            ],
+        )
+        return (
+            f"""Here is some context history of previous conversations: {context}\n"""
+            + base_prompt
+            if context
+            else base_prompt
+        )
+
+    def get_discussion_history(self, history):
         return f""" 
         This is some conversation history:
         \n{history}
@@ -208,7 +268,7 @@ class prompt_corpus:
         [ONLY RETURN THE SUMMARY PARAGRAPH (ONLY 1 PARAGRAPH)]
         """
 
-    def get_discussion_icebreaker(self,history):
+    def get_discussion_icebreaker(self, history):
         return f""" 
         This is some conversation history:
         \n{history}
@@ -218,13 +278,13 @@ class prompt_corpus:
         The question you ask should be in first person, directly to the user, as if 
         you had the conversation with them.
         [ONLY RETURN THE CATCH-UP QUESTION]
-        """    
-    
-    def condense_wiki_corpus(self,title,topics):
+        """
+
+    def condense_wiki_corpus(self, title, topics):
         corpus = f"{title}\n\n"
         for topic in topics:
             corpus += f"{topic}\n{topics[topic]}\n\n"
-        
+
         return f"""
             Provided is a wikipedia article corpus for a page:
 
@@ -250,10 +310,12 @@ class prompt_corpus:
             [ONLY RESPOND AS YOU ARE ASKED TO.]
         """
 
-    def get_wiki_context(self,nickname,corpus):
-        return self.prompt_helper("prompts/wiki_config_base.txt",to_format=[nickname,corpus])
+    def get_wiki_context(self, nickname, corpus):
+        return self.prompt_helper(
+            "prompts/wiki_config_base.txt", to_format=[nickname, corpus]
+        )
 
-    def get_fact_prompt(self,topic,exclude):
+    def get_fact_prompt(self, topic, exclude):
         return f"""
             Return a random, interesting fact on the following topic: {topic}
             DO NOT INCLUDE FACTS FROM THE FOLLOWING HISTORY:
@@ -261,13 +323,25 @@ class prompt_corpus:
             [ONLY RETURN THE FACT]
         """
 
-    def get_philosopher_mask(self,nickname,philosopher,icebreaker):
+    def get_philosopher_mask(self, nickname, philosopher, icebreaker):
         philosopher_prompts = {
-            "aristotle": self.prompt_helper("prompts/aristotle_config.txt",to_format=[nickname,icebreaker]),
-            "nietzsche": self.prompt_helper("prompts/nietzsche_config.txt",to_format=[nickname,icebreaker]),
-            "confucius": self.prompt_helper("prompts/confucius_config.txt",to_format=[nickname,icebreaker]),
-            "plato": self.prompt_helper("prompts/plato_config.txt",to_format=[nickname,icebreaker]),
-            "socrates": self.prompt_helper("prompts/socrates_config.txt",to_format=[nickname,icebreaker]),
-            "descartes": self.prompt_helper("prompts/descartes_config.txt",to_format=[nickname,icebreaker])
+            "aristotle": self.prompt_helper(
+                "prompts/aristotle_config.txt", to_format=[nickname, icebreaker]
+            ),
+            "nietzsche": self.prompt_helper(
+                "prompts/nietzsche_config.txt", to_format=[nickname, icebreaker]
+            ),
+            "confucius": self.prompt_helper(
+                "prompts/confucius_config.txt", to_format=[nickname, icebreaker]
+            ),
+            "plato": self.prompt_helper(
+                "prompts/plato_config.txt", to_format=[nickname, icebreaker]
+            ),
+            "socrates": self.prompt_helper(
+                "prompts/socrates_config.txt", to_format=[nickname, icebreaker]
+            ),
+            "descartes": self.prompt_helper(
+                "prompts/descartes_config.txt", to_format=[nickname, icebreaker]
+            ),
         }
         return philosopher_prompts[philosopher]

@@ -3,11 +3,10 @@ Here is a keyword: {}
 Here are some scores:
 Sleep Abnormality: {}%
 Depression Indication: {}%
+Mood Abnormalcy Indication: {}%
 Anxiety Indication: {}%
-Overall Mental Health Factor: {}%
-Mood Abnormalcy: {}%
 
-What the keyword means:
+What the keyword means: 
 NONE: 
     Little to no indication of bad mental health
     Describe that the user is safe, and shows no signs of bad mental health
