@@ -1,5 +1,7 @@
 # Alcove
 
+**Developer's Notice:** Several performance-related refactors (including re-writing the original backend) are being undertaken for this project. 
+
 Alcove is a light-weight AI guided companion website that serves various purposes and allows for a multifaceted and personalized experience. It has a collection of chatbots, interfaces and various tools that can be used for info-tainment and productivity, also including brief exercises and mindfulness activities - an intellectual suite in itself.
 
 ## Gallery - Platform Highlights
@@ -47,5 +49,3 @@ A quick widget for co-operative pomodoro based work that allows you to access AI
 A comprehensive platform that allows you to create projects and collaborate with AI - be it technical, personal or academic.
 _____
 These are some of the highlights - Alcove has many more minor features and tools that could help you balance your productivity!
-
-**NOTE:** Several performance-related refactors (including the original backend) are being undertaken for this project. 
